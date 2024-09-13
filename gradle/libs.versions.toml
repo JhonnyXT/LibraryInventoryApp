@@ -1,0 +1,49 @@
+[versions]
+agp = "8.6.0"
+kotlin = "1.9.0"
+coreKtx = "1.13.1"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.0"
+material = "1.12.0"
+activity = "1.9.0"
+constraintlayout = "2.1.4"
+
+firebase-auth = "23.5.0"
+firebase-firestore = "24.3.0"
+firebase-storage = "20.1.0"
+firebase-auth-ktx = "21.1.0"
+
+zxing-core = "3.4.1"
+zxing-android-embedded = "4.2.0"
+camerax-core = "1.1.0"
+camerax-camera2 = "1.1.0"
+camerax-lifecycle = "1.1.0"
+camerax-view = "1.1.0"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+
+firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebase-auth" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore", version.ref = "firebase-firestore" }
+firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebase-storage" }
+zxing-core = { module = "com.google.zxing:core", version.ref = "zxing-core" }
+zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxing-android-embedded" }
+camerax-core = { module = "androidx.camera:camera-core", version.ref = "camerax-core" }
+camerax-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camerax-camera2" }
+camerax-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camerax-lifecycle" }
+camerax-view = { module = "androidx.camera:camera-view", version.ref = "camerax-view" }
+firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebase-auth-ktx" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
