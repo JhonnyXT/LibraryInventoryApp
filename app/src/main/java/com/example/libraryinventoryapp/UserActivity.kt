@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import com.example.libraryinventoryapp.fragments.AssignedBooksFragment
 import com.example.libraryinventoryapp.fragments.BookListFragment
+import com.example.libraryinventoryapp.fragments.ProfileFragment
 import com.example.libraryinventoryapp.fragments.RegisterBookFragment
 import com.example.libraryinventoryapp.fragments.ViewBooksFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -25,8 +27,8 @@ class UserActivity : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_books_list -> loadFragment(BookListFragment())
-                R.id.nav_assigned_books -> loadFragment(ViewBooksFragment())
-                R.id.nav_profile -> loadFragment(RegisterBookFragment())
+                R.id.nav_assigned_books -> loadFragment(AssignedBooksFragment())
+                R.id.nav_profile -> loadFragment(ProfileFragment())
             }
             true
         }
