@@ -19,7 +19,9 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.libraryinventoryapp.LoginActivity
 import com.example.libraryinventoryapp.R
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.mlkit.vision.barcode.BarcodeScanner
@@ -35,6 +37,7 @@ class RegisterBookFragment : Fragment() {
         private const val PICK_IMAGE_REQUEST = 1
     }
 
+    private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storage: FirebaseStorage
     private var imageUri: Uri? = null
@@ -45,6 +48,7 @@ class RegisterBookFragment : Fragment() {
     private lateinit var scanCodeButton: Button
     private lateinit var uploadImageButton: Button
     private lateinit var registerBookButton: Button
+    private lateinit var logOutButton: Button
     private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(
@@ -60,9 +64,11 @@ class RegisterBookFragment : Fragment() {
         scanCodeButton = view.findViewById(R.id.scan_code_button)
         uploadImageButton = view.findViewById(R.id.upload_image_button)
         registerBookButton = view.findViewById(R.id.register_book_button)
+        logOutButton = view.findViewById(R.id.logout_button)
         progressBar = view.findViewById(R.id.progress_bar)
 
         // Initialize Firebase instances
+        auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
 
@@ -97,6 +103,12 @@ class RegisterBookFragment : Fragment() {
             } else {
                 Toast.makeText(context, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        logOutButton.setOnClickListener {
+            auth.signOut()
+            startActivity(Intent(requireContext(), LoginActivity::class.java))
+            activity?.finish()
         }
 
         return view
