@@ -25,7 +25,7 @@ class ViewBooksFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_view_books, container, false)
 
-        booksRecyclerView = view.findViewById(R.id.books_recycler_view)
+        booksRecyclerView = view.findViewById(R.id.recyclerViewBookList)
         booksRecyclerView.layoutManager = LinearLayoutManager(context)
         firestore = FirebaseFirestore.getInstance()
 
@@ -41,6 +41,7 @@ class ViewBooksFragment : Fragment() {
                 val books = mutableListOf<Book>()
                 for (document in result) {
                     val book = document.toObject(Book::class.java)
+                    book.id = document.id
                     books.add(book)
                 }
                 booksAdapter = BookAdapter(books)

@@ -29,6 +29,11 @@ class LoginActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
+        emailEditText = findViewById(R.id.emailEditText)
+        passwordEditText = findViewById(R.id.passwordEditText)
+        loginButton = findViewById(R.id.loginButton)
+        progressBar = findViewById(R.id.progressBarLogin)
+
         // Verificar si el usuario ya está autenticado
         val currentUser = auth.currentUser
         if (currentUser != null) {
@@ -41,11 +46,6 @@ class LoginActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-        emailEditText = findViewById(R.id.emailEditText)
-        passwordEditText = findViewById(R.id.passwordEditText)
-        loginButton = findViewById(R.id.loginButton)
-        progressBar = findViewById(R.id.progressBarLogin)
 
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
@@ -60,6 +60,8 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "Por favor ingresa un email válido.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
+            progressBar.visibility = ProgressBar.VISIBLE
 
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->

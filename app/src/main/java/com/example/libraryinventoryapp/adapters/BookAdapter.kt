@@ -32,7 +32,7 @@ class BookAdapter(private val books: List<Book>) : RecyclerView.Adapter<BookAdap
         holder.bookAuthor.text = "Autor: ${book.author}"
         holder.bookIsbn.text = "ISBN: ${book.isbn}"
         holder.bookStatus.text = "Estado: ${book.status}"
-        holder.bookAssignedTo.text = "Asignado a: ${book.assignedTo ?: "Nadie"}"
+        holder.bookAssignedTo.text = "Asignado a: ${book.assignedToEmail ?: "Nadie"}"
 
         // Cargar la imagen usando Glide
         if (book.imageUrl != null) {
