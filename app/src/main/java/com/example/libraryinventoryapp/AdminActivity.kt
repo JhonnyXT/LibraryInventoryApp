@@ -3,8 +3,9 @@ package com.example.libraryinventoryapp
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import com.example.libraryinventoryapp.fragments.RegisterBookFragment
+import com.example.libraryinventoryapp.fragments.ViewBooksFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class AdminActivity : AppCompatActivity() {
@@ -14,29 +15,23 @@ class AdminActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_admin)
 
-        // Ajustar los insets de la ventana
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        val bottomNav = findViewById<BottomNavigationView>(R.id.admin_bottom_nav)
 
-        // Configurar el BottomNavigationView
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+        // Default fragment to load
+        loadFragment(RegisterBookFragment())
+
+        bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_register -> {
-                    // Navegar a la pantalla de registrar libros
-                    // Puedes usar un Fragment o Activity
-                    true
-                }
-                R.id.nav_view_books -> {
-                    // Navegar a la pantalla de ver libros registrados
-                    // Puedes usar un Fragment o Activity
-                    true
-                }
-                else -> false
+                R.id.nav_register_book -> loadFragment(RegisterBookFragment())
+                R.id.nav_view_books -> loadFragment(ViewBooksFragment())
             }
+            true
         }
+    }
+
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.admin_fragment_container, fragment)
+            .commit()
     }
 }

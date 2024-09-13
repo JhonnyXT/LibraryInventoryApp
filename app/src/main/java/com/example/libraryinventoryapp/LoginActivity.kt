@@ -38,12 +38,12 @@ class LoginActivity : AppCompatActivity() {
             val password = passwordEditText.text.toString().trim()
 
             if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please enter both email and password.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Por favor revisa que todos los campos estén diligenciados.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(this, "Please enter a valid email address.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Por favor ingresa un email válido.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -53,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
                         val user = auth.currentUser
                         navigateToAppropriateScreen(user)
                     } else {
-                        val errorMessage = task.exception?.message ?: "Authentication failed."
+                        val errorMessage = task.exception?.message ?: "Autenticación fallida."
                         Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
                     }
                 }
