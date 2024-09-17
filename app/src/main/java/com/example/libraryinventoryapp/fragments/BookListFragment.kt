@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,7 @@ import com.example.libraryinventoryapp.adapters.BookListAdapter
 import com.example.libraryinventoryapp.models.Book
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.Normalizer
 
 class BookListFragment : Fragment() {
 
@@ -22,6 +24,9 @@ class BookListFragment : Fragment() {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var progressBar: ProgressBar
+    private lateinit var searchView: SearchView
+    private var booksList: MutableList<Book> = mutableListOf()
+    private var filteredBooksList: MutableList<Book> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,12 +40,26 @@ class BookListFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.books_recycler_view)
         progressBar = view.findViewById(R.id.progress_bar)
+        searchView = view.findViewById(R.id.searchView)
+
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
         fetchBooks()
+
+        // Configuración del SearchView para filtrar libros
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterBooks(newText ?: "")
+                return true
+            }
+        })
     }
 
     private fun fetchBooks() {
@@ -48,14 +67,17 @@ class BookListFragment : Fragment() {
 
         firestore.collection("books").get()
             .addOnSuccessListener { result ->
-                val books = mutableListOf<Book>()
+                booksList.clear()
                 for (document in result) {
                     val book = document.toObject(Book::class.java)
                     book.id = document.id
-                    books.add(book)
+                    booksList.add(book)
                 }
 
-                bookListAdapter = BookListAdapter(books) { book ->
+                // Copia la lista original para usar en el filtrado
+                filteredBooksList = booksList.toMutableList()
+
+                bookListAdapter = BookListAdapter(filteredBooksList) { book ->
                     assignBook(book)
                 }
                 recyclerView.adapter = bookListAdapter
@@ -65,6 +87,22 @@ class BookListFragment : Fragment() {
                 progressBar.visibility = View.GONE
                 Toast.makeText(context, "Error al cargar los libros: ${exception.message}", Toast.LENGTH_LONG).show()
             }
+    }
+
+    // Filtrar libros según el texto ingresado
+    private fun filterBooks(query: String) {
+        val normalizedQuery = removeAccents(query.toLowerCase())
+
+        filteredBooksList.clear()
+        filteredBooksList.addAll(
+            booksList.filter {
+                val normalizedTitle = removeAccents(it.title?.toLowerCase() ?: "")
+                normalizedTitle.contains(normalizedQuery)
+            }
+        )
+
+        // Notifica al adaptador para que actualice la vista
+        bookListAdapter.notifyDataSetChanged()
     }
 
     private fun assignBook(book: Book) {
@@ -98,5 +136,11 @@ class BookListFragment : Fragment() {
         }.addOnCompleteListener {
             progressBar.visibility = View.GONE
         }
+    }
+
+    // Método para eliminar tildes y otros signos diacríticos
+    private fun removeAccents(text: String): String {
+        return Normalizer.normalize(text, Normalizer.Form.NFD)
+            .replace(Regex("\\p{InCombiningDiacriticalMarks}+"), "")
     }
 }
