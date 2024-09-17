@@ -1,6 +1,7 @@
 package com.example.libraryinventoryapp.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -122,20 +123,35 @@ class BookListFragment : Fragment() {
 
         progressBar.visibility = View.VISIBLE
 
-        firestore.collection("books").document(book.id).update(
-            mapOf(
-                "status" to "Asignado",
-                "assignedTo" to userId,
-                "assignedToEmail" to userEmail
-            )
-        ).addOnSuccessListener {
-            Toast.makeText(context, "Libro asignado exitosamente.", Toast.LENGTH_SHORT).show()
-            fetchBooks()  // Refresh the list
-        }.addOnFailureListener { exception ->
-            Toast.makeText(context, "Error al asignar el libro: ${exception.message}", Toast.LENGTH_LONG).show()
-        }.addOnCompleteListener {
-            progressBar.visibility = View.GONE
-        }
+        firestore.collection("users").document(userId).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val userName = document.getString("name") ?: "Usuario desconocido"
+
+                    firestore.collection("books").document(book.id).update(
+                        mapOf(
+                            "status" to "Asignado",
+                            "assignedTo" to userId,
+                            "assignedToEmail" to userEmail,
+                            "assignedWithName" to userName
+                        )
+                    ).addOnSuccessListener {
+                        Toast.makeText(context, "Libro asignado exitosamente.", Toast.LENGTH_SHORT).show()
+                        fetchBooks()  // Actualiza la lista de libros
+                    }.addOnFailureListener { exception ->
+                        Toast.makeText(context, "Error al asignar el libro: ${exception.message}", Toast.LENGTH_LONG).show()
+                    }.addOnCompleteListener {
+                        progressBar.visibility = View.GONE
+                    }
+
+                } else {
+                    progressBar.visibility = View.GONE
+                    Toast.makeText(context, "No se encontró el nombre del usuario.", Toast.LENGTH_LONG).show()
+                }
+            }.addOnFailureListener { exception ->
+                progressBar.visibility = View.GONE
+                Toast.makeText(context, "Error al obtener los datos del usuario: ${exception.message}", Toast.LENGTH_LONG).show()
+            }
     }
 
     // Método para eliminar tildes y otros signos diacríticos

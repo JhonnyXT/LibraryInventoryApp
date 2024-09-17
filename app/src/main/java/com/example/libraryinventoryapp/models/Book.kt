@@ -8,5 +8,6 @@ data class Book(
     val imageUrl: String? = null,
     val status: String = "",
     val assignedTo: String? = null,
-    val assignedToEmail: String? = null
+    val assignedToEmail: String? = null,
+    val assignedWithName: String? = null
 )
