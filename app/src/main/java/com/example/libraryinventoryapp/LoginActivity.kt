@@ -2,6 +2,7 @@ package com.example.libraryinventoryapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -48,11 +49,16 @@ class LoginActivity : AppCompatActivity() {
         }
 
         loginButton.setOnClickListener {
+            // Ocultar el teclado
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
 
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Por favor revisa que todos los campos estén diligenciados.", Toast.LENGTH_SHORT).show()
+            // Validar el campo de email
+            if (email.isEmpty()) {
+                Toast.makeText(this, "Por favor ingresa un email.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -61,17 +67,40 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Validar el campo de contraseña
+            if (password.isEmpty()) {
+                Toast.makeText(this, "Por favor ingresa una contraseña.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (password.length < 6) {
+                Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             progressBar.visibility = ProgressBar.VISIBLE
 
+            // Autenticación con Firebase
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
+                    progressBar.visibility = ProgressBar.GONE // Ocultar la barra de progreso
+
                     if (task.isSuccessful) {
+                        // Autenticación exitosa
                         val user = auth.currentUser
-                        progressBar.visibility = ProgressBar.VISIBLE
                         navigateToAppropriateScreen(user)
                     } else {
-                        progressBar.visibility = ProgressBar.GONE
-                        val errorMessage = task.exception?.message ?: "Autenticación fallida."
+                        // Manejo de errores específicos
+                        val errorMessage = when (task.exception?.message) {
+                            "The password is invalid or the user does not have a password." ->
+                                "Correo o contraseña incorrectos. Inténtalo de nuevo."
+                            "There is no user record corresponding to this identifier. The user may have been deleted." ->
+                                "No existe una cuenta registrada con este correo electrónico."
+                            "An internal error has occurred. [ INVALID_LOGIN_CREDENTIALS ]" ->
+                                "Correo o contraseña incorrectos. Inténtalo de nuevo."
+                            else ->
+                                task.exception?.localizedMessage ?: "Error de autenticación. Inténtalo de nuevo."
+                        }
                         Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
                     }
                 }
