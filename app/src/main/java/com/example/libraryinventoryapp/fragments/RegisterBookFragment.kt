@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,10 +15,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.libraryinventoryapp.LoginActivity
 import com.example.libraryinventoryapp.R
@@ -27,14 +30,16 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 class RegisterBookFragment : Fragment() {
 
     companion object {
         private const val CAMERA_PERMISSION_REQUEST_CODE = 1001
         private const val REQUEST_IMAGE_CAPTURE = 1002
-        private const val REQUEST_PERMISSION_CODE = 1003
-        private const val PICK_IMAGE_REQUEST = 1
+        private const val SCAN_BARCODE_REQUEST_CODE = 1003
     }
 
     private lateinit var auth: FirebaseAuth
@@ -46,10 +51,11 @@ class RegisterBookFragment : Fragment() {
     private lateinit var bookAuthorInput: EditText
     private lateinit var bookIsbnInput: EditText
     private lateinit var scanCodeButton: Button
-    private lateinit var uploadImageButton: Button
+    private lateinit var captureImageButton: Button
     private lateinit var registerBookButton: Button
     private lateinit var logOutButton: Button
     private lateinit var progressBar: ProgressBar
+    private lateinit var capturedImageView: ImageView // ImageView para mostrar la imagen capturada
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,10 +68,11 @@ class RegisterBookFragment : Fragment() {
         bookAuthorInput = view.findViewById(R.id.book_author_input)
         bookIsbnInput = view.findViewById(R.id.book_isbn_input)
         scanCodeButton = view.findViewById(R.id.scan_code_button)
-        uploadImageButton = view.findViewById(R.id.upload_image_button)
+        captureImageButton = view.findViewById(R.id.capture_image_button) // Nuevo botón para capturar imagen
         registerBookButton = view.findViewById(R.id.register_book_button)
         logOutButton = view.findViewById(R.id.logout_button)
         progressBar = view.findViewById(R.id.progress_bar)
+        capturedImageView = view.findViewById(R.id.captured_image_view) // ImageView para mostrar la imagen capturada
 
         // Initialize Firebase instances
         auth = FirebaseAuth.getInstance()
@@ -77,7 +84,7 @@ class RegisterBookFragment : Fragment() {
             != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(),
                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                REQUEST_PERMISSION_CODE)
+                CAMERA_PERMISSION_REQUEST_CODE)
         }
 
         // Handle QR/barcode scanning
@@ -85,10 +92,15 @@ class RegisterBookFragment : Fragment() {
             scanBarcode()
         }
 
-        // Handle image upload
-        uploadImageButton.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            startActivityForResult(intent, PICK_IMAGE_REQUEST)
+        // Handle image capture
+        captureImageButton.setOnClickListener {
+            if (imageUri != null) {
+                // Si ya hay una imagen capturada, limpiar la vista y permitir nueva captura
+                capturedImageView.setImageBitmap(null) // Limpiar la imagen anterior
+                imageUri = null // Limpiar URI
+                Toast.makeText(context, "Captura una nueva imagen", Toast.LENGTH_SHORT).show()
+            }
+            captureImage() // Llama a la función para capturar la imagen
         }
 
         // Handle book registration
@@ -97,11 +109,11 @@ class RegisterBookFragment : Fragment() {
             val author = bookAuthorInput.text.toString().trim()
             val isbn = bookIsbnInput.text.toString().trim()
 
-            if (title.isNotEmpty() && author.isNotEmpty() && isbn.isNotEmpty()) {
+            if (title.isNotEmpty() && author.isNotEmpty() && isbn.isNotEmpty() && imageUri != null) {
                 showProgressBar()
                 uploadBookToFirebase(title, author, isbn)
             } else {
-                Toast.makeText(context, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Todos los campos son obligatorios y debe capturar una imagen", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -122,22 +134,44 @@ class RegisterBookFragment : Fragment() {
 
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (intent.resolveActivity(requireActivity().packageManager) != null) {
+            startActivityForResult(intent, SCAN_BARCODE_REQUEST_CODE)
+        }
+    }
+
+    private fun captureImage() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+            return
+        }
+
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (intent.resolveActivity(requireActivity().packageManager) != null) {
             startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        // Proceso de captura de imagen
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             val imageBitmap = data?.extras?.get("data") as Bitmap
-            processImage(imageBitmap)
-        } else if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
-            imageUri = data?.data
-            Toast.makeText(context, "Imagen seleccionada", Toast.LENGTH_SHORT).show()
+            imageUri = getImageUri(imageBitmap) // Obtener URI de la imagen
+            if (imageUri != null) {
+                capturedImageView.setImageBitmap(imageBitmap) // Mostrar la imagen capturada
+                capturedImageView.visibility = View.VISIBLE // Asegúrate de que el ImageView sea visible
+            } else {
+                Toast.makeText(context, "Error al obtener la URI de la imagen", Toast.LENGTH_SHORT).show()
+            }
+        }
+        // Proceso de escaneo de código de barras
+        else if (requestCode == SCAN_BARCODE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+            processBarcodeImage(imageBitmap)
         }
     }
 
-    private fun processImage(bitmap: Bitmap) {
+    private fun processBarcodeImage(bitmap: Bitmap) {
         val inputImage = InputImage.fromBitmap(bitmap, 0)
         val scanner: BarcodeScanner = BarcodeScanning.getClient()
 
@@ -153,6 +187,22 @@ class RegisterBookFragment : Fragment() {
             .addOnFailureListener { e ->
                 Toast.makeText(context, "Error al escanear el código: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun getImageUri(bitmap: Bitmap): Uri? {
+        val file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "captured_image.jpg")
+
+        try {
+            val outputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            outputStream.flush()
+            outputStream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return null
+        }
+
+        return FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.provider", file)
     }
 
     private fun uploadBookToFirebase(title: String, author: String, isbn: String) {
@@ -218,7 +268,9 @@ class RegisterBookFragment : Fragment() {
         bookTitleInput.text.clear()
         bookAuthorInput.text.clear()
         bookIsbnInput.text.clear()
-        imageUri = null
+        capturedImageView.setImageBitmap(null) // Limpiar la imagen capturada
+        imageUri = null // Limpiar la URI de la imagen
+        capturedImageView.visibility = View.GONE // Ocultar el ImageView
     }
 
     private fun showProgressBar() {
