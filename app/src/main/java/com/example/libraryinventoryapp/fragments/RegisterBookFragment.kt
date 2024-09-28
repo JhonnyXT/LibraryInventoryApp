@@ -2,6 +2,7 @@ package com.example.libraryinventoryapp.fragments
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -17,6 +18,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -56,6 +58,10 @@ class RegisterBookFragment : Fragment() {
     private lateinit var logOutButton: Button
     private lateinit var progressBar: ProgressBar
     private lateinit var capturedImageView: ImageView // ImageView para mostrar la imagen capturada
+    private lateinit var selectCategoryButton: Button
+    private lateinit var selectedCategoriesTextView: TextView
+    private var selectedCategories = mutableListOf<String>()
+    private val categoriesArray by lazy { resources.getStringArray(R.array.book_categories) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,6 +79,8 @@ class RegisterBookFragment : Fragment() {
         logOutButton = view.findViewById(R.id.logout_button)
         progressBar = view.findViewById(R.id.progress_bar)
         capturedImageView = view.findViewById(R.id.captured_image_view) // ImageView para mostrar la imagen capturada
+        selectCategoryButton = view.findViewById(R.id.selectCategoryButton)
+        selectedCategoriesTextView = view.findViewById(R.id.selectedCategoriesTextView)
 
         // Initialize Firebase instances
         auth = FirebaseAuth.getInstance()
@@ -92,6 +100,11 @@ class RegisterBookFragment : Fragment() {
             scanBarcode()
         }
 
+        // Configurar el botón para seleccionar múltiples categorías
+        selectCategoryButton.setOnClickListener {
+            showCategorySelectionDialog()
+        }
+
         // Handle image capture
         captureImageButton.setOnClickListener {
             if (imageUri != null) {
@@ -109,9 +122,9 @@ class RegisterBookFragment : Fragment() {
             val author = bookAuthorInput.text.toString().trim()
             val isbn = bookIsbnInput.text.toString().trim()
 
-            if (title.isNotEmpty() && author.isNotEmpty() && isbn.isNotEmpty() && imageUri != null) {
+            if (title.isNotEmpty() && author.isNotEmpty() && isbn.isNotEmpty() && imageUri != null && selectedCategories.isNotEmpty()) {
                 showProgressBar()
-                uploadBookToFirebase(title, author, isbn)
+                uploadBookToFirebase(title, author, isbn, selectedCategories)
             } else {
                 Toast.makeText(context, "Todos los campos son obligatorios y debe capturar una imagen", Toast.LENGTH_SHORT).show()
             }
@@ -136,6 +149,35 @@ class RegisterBookFragment : Fragment() {
         if (intent.resolveActivity(requireActivity().packageManager) != null) {
             startActivityForResult(intent, SCAN_BARCODE_REQUEST_CODE)
         }
+    }
+
+    private fun showCategorySelectionDialog() {
+        val selectedItems = BooleanArray(categoriesArray.size) { i ->
+            selectedCategories.contains(categoriesArray[i])
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Selecciona Categorías")
+            .setMultiChoiceItems(categoriesArray, selectedItems) { dialog, which, isChecked ->
+                if (isChecked) {
+                    // Si está marcada, la agregamos a las seleccionadas
+                    selectedCategories.add(categoriesArray[which])
+                } else {
+                    // Si está desmarcada, la quitamos de las seleccionadas
+                    selectedCategories.remove(categoriesArray[which])
+                }
+            }
+            .setPositiveButton("Aceptar") { dialog, _ ->
+                // Mostrar las categorías seleccionadas en el TextView
+                selectedCategoriesTextView.text = "Categorías seleccionadas: ${selectedCategories.joinToString(", ")}"
+            }
+            .setNegativeButton("Cancelar", null)
+            .setNeutralButton("Borrar Selección") { dialog, _ ->
+                // Limpiar la selección de categorías
+                selectedCategories.clear()
+                selectedCategoriesTextView.text = "Categorías seleccionadas: Ninguna"
+            }
+            .show()
     }
 
     private fun captureImage() {
@@ -205,7 +247,12 @@ class RegisterBookFragment : Fragment() {
         return FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.provider", file)
     }
 
-    private fun uploadBookToFirebase(title: String, author: String, isbn: String) {
+    private fun uploadBookToFirebase(
+        title: String,
+        author: String,
+        isbn: String,
+        categories: List<String>
+    ) {
         if (imageUri != null) {
             // Subir la imagen a Firebase Storage
             val ref = storage.reference.child("books/${System.currentTimeMillis()}.jpg")
@@ -217,6 +264,7 @@ class RegisterBookFragment : Fragment() {
                         "title" to title,
                         "author" to author,
                         "isbn" to isbn,
+                        "categories" to categories,
                         "imageUrl" to uri.toString(),
                         "assignedTo" to null,
                         "status" to "Disponible"
@@ -271,6 +319,8 @@ class RegisterBookFragment : Fragment() {
         capturedImageView.setImageBitmap(null) // Limpiar la imagen capturada
         imageUri = null // Limpiar la URI de la imagen
         capturedImageView.visibility = View.GONE // Ocultar el ImageView
+        selectedCategories.clear() // Limpiar las categorías seleccionadas
+        selectedCategoriesTextView.text = "Categorías seleccionadas: Ninguna" // Actualizar el TextView
     }
 
     private fun showProgressBar() {

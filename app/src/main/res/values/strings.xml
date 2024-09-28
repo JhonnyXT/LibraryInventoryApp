@@ -3,4 +3,28 @@
     <string name="app_version">V 1.0.1</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="book_categories">
+        <item>Biblia</item>
+        <item>Liderazgo</item>
+        <item>Jóvenes</item>
+        <item>Mujeres</item>
+        <item>Profecía bíblica</item>
+        <item>Familia</item>
+        <item>Matrimonio</item>
+        <item>Finanzas</item>
+        <item>Estudio bíblico</item>
+        <item>Evangelismo</item>
+        <item>Navidad</item>
+        <item>Emaus</item>
+        <item>Misiones</item>
+        <item>Devocionales</item>
+        <item>Curso vida</item>
+        <item>Iglesia</item>
+        <item>Vida cristiana</item>
+        <item>Libros de la Biblia</item>
+        <item>Enciclopedia</item>
+        <item>Religiones</item>
+        <item>Inglés</item>
+    </string-array>
 </resources>
