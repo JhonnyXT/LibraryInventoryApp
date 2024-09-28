@@ -5,6 +5,7 @@ data class Book(
     val title: String = "",
     val author: String = "",
     val isbn: String = "",
+    val categories: List<String> = emptyList(),
     val imageUrl: String? = null,
     val status: String = "",
     val assignedTo: String? = null,

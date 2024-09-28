@@ -15,6 +15,7 @@ class BookAdapter(private var books: List<Book>) : RecyclerView.Adapter<BookAdap
     inner class BookViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val bookTitle: TextView = view.findViewById(R.id.book_title)
         val bookAuthor: TextView = view.findViewById(R.id.book_author)
+        val bookCategory: TextView = view.findViewById(R.id.book_category)
         val bookIsbn: TextView = view.findViewById(R.id.book_isbn)
         val bookStatus: TextView = view.findViewById(R.id.book_status)
         val bookAssignedTo: TextView = view.findViewById(R.id.book_assigned_to)
@@ -30,6 +31,12 @@ class BookAdapter(private var books: List<Book>) : RecyclerView.Adapter<BookAdap
         val book = books[position]
         holder.bookTitle.text = book.title
         holder.bookAuthor.text = "Autor: ${book.author}"
+        // Verifica si hay categorías y únelas con comas
+        holder.bookCategory.text = if (book.categories.isNotEmpty()) {
+            "Categoría: ${book.categories.joinToString(", ")}"
+        } else {
+            "Categoría: Ninguna"
+        }
         holder.bookIsbn.text = "ISBN: ${book.isbn}"
         holder.bookStatus.text = "Estado: ${book.status}"
         holder.bookAssignedTo.text = "Asignado a: ${book.assignedWithName ?: "Nadie"}"

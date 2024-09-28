@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="16dp"
-        android:text="Título del libro"
+        android:text="Título del libro: Libro"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,8 +38,19 @@
         android:id="@+id/book_author"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Autor"
+        android:text="Autor: Autor"
         app:layout_constraintTop_toBottomOf="@+id/book_title"
+        app:layout_constraintStart_toStartOf="@+id/book_title"
+        app:layout_constraintEnd_toEndOf="@+id/book_title"
+        android:layout_marginTop="8dp" />
+
+    <!-- Category of the book -->
+    <TextView
+        android:id="@+id/book_category"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Categoría: Biblia, Ciencia Ficción, etc."
+        app:layout_constraintTop_toBottomOf="@+id/book_author"
         app:layout_constraintStart_toStartOf="@+id/book_title"
         app:layout_constraintEnd_toEndOf="@+id/book_title"
         android:layout_marginTop="8dp" />
@@ -50,7 +61,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="ISBN: 1234567890"
-        app:layout_constraintTop_toBottomOf="@+id/book_author"
+        app:layout_constraintTop_toBottomOf="@+id/book_category"
         app:layout_constraintStart_toStartOf="@+id/book_title"
         app:layout_constraintEnd_toEndOf="@+id/book_title"
         android:layout_marginTop="8dp" />
