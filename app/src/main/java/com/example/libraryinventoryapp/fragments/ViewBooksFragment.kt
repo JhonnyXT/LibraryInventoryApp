@@ -111,6 +111,11 @@ class ViewBooksFragment : Fragment() {
                 return true
             }
         })
+
+        searchView.setOnCloseListener {
+            loadBooks()
+            false
+        }
     }
 
     // Método para eliminar tildes y otros signos diacríticos
