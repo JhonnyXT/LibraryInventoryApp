@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.libraryinventoryapp.R
 import com.example.libraryinventoryapp.adapters.BookAdapter
 import com.example.libraryinventoryapp.models.Book
+import com.example.libraryinventoryapp.models.User
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.Normalizer
 
@@ -22,6 +23,8 @@ class ViewBooksFragment : Fragment() {
     private lateinit var booksAdapter: BookAdapter
     private lateinit var searchView: SearchView
     private var booksList: MutableList<Book> = mutableListOf()
+    private var userNamesList: MutableList<String> = mutableListOf()
+    private var userList: MutableList<User> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,6 +38,11 @@ class ViewBooksFragment : Fragment() {
         booksRecyclerView.layoutManager = LinearLayoutManager(context)
         firestore = FirebaseFirestore.getInstance()
 
+        // Inicializar el adaptador vacío
+        booksAdapter = BookAdapter(booksList, userNamesList, userList)
+        booksRecyclerView.adapter = booksAdapter
+
+        loadUsers()
         loadBooks()
 
         // Configurar el listener del SearchView
@@ -58,12 +66,37 @@ class ViewBooksFragment : Fragment() {
                 booksList.sortBy { removeAccents(it.title ?: "") }
 
                 // Actualizar el adaptador
-                booksAdapter = BookAdapter(booksList)
+                booksAdapter = BookAdapter(booksList, userNamesList, userList)
                 booksRecyclerView.adapter = booksAdapter
             }
             .addOnFailureListener { e ->
                 // Manejar el error de carga
                 Toast.makeText(context, "Error al cargar los libros: $e", Toast.LENGTH_LONG).show()
+            }
+    }
+
+    private fun loadUsers() {
+        firestore.collection("users")
+            .whereEqualTo("role", "usuario")
+            .get()
+            .addOnSuccessListener { result ->
+                userList.clear() // Asegúrate de tener una lista de usuarios para almacenar los datos
+                userNamesList.clear() // Esta lista puede seguir existiendo para el autocompletar si lo necesitas
+                for (document in result) {
+                    val user = document.toObject(User::class.java) // Convierte el documento a tu data class User
+                    userList.add(user) // Agrega el usuario a la lista de usuarios
+                    userNamesList.add(user.name) // También agrega solo el nombre si aún lo necesitas
+                }
+
+                // Actualizar el adaptador con la lista de usuarios
+                booksAdapter.updateUserNames(userNamesList)
+
+                // Si necesitas guardar la lista de usuarios en el adaptador, puedes crear un método para ello
+                booksAdapter.updateUsers(userList)
+            }
+            .addOnFailureListener { e ->
+                // Manejar el error de carga
+                Toast.makeText(context, "Error al cargar los usuarios: $e", Toast.LENGTH_LONG).show()
             }
     }
 
