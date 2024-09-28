@@ -32,6 +32,7 @@ class BookListAdapter(
     inner class BookListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val titleTextView: TextView = itemView.findViewById(R.id.book_title)
         private val authorTextView: TextView = itemView.findViewById(R.id.book_author)
+        private val categoriesTextView: TextView = itemView.findViewById(R.id.book_categories)
         private val statusTextView: TextView = itemView.findViewById(R.id.book_status)
         private val bookImageView: ImageView = itemView.findViewById(R.id.book_image)
         private val assignButton: Button = itemView.findViewById(R.id.assign_button)
@@ -39,6 +40,11 @@ class BookListAdapter(
         fun bind(book: Book) {
             titleTextView.text = book.title
             authorTextView.text = "Autor: ${book.author}"
+            if (book.categories.isNotEmpty()) {
+                categoriesTextView.text = "Categoría: ${book.categories.joinToString()}"
+            } else {
+                categoriesTextView.text = "Categoría: Ninguna"
+            }
             statusTextView.text = "Estado: ${book.status}"
 
             // Load book image with Glide

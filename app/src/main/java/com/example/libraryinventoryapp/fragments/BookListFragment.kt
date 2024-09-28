@@ -72,8 +72,14 @@ class BookListFragment : Fragment() {
                 for (document in result) {
                     val book = document.toObject(Book::class.java)
                     book.id = document.id
-                    booksList.add(book)
+                    // Filtra solo los libros que estén en estado "Disponible"
+                    if (book.status == "Disponible") {
+                        booksList.add(book)
+                    }
                 }
+
+                // Ordena la lista de libros alfabéticamente por el título
+                booksList.sortBy { it.title?.toLowerCase() }
 
                 // Copia la lista original para usar en el filtrado
                 filteredBooksList = booksList.toMutableList()
