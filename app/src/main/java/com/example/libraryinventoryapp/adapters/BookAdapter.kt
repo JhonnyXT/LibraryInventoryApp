@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Button
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +18,7 @@ import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 class BookAdapter(
     private var books: List<Book>,
@@ -25,6 +28,7 @@ class BookAdapter(
 
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
+    private lateinit var storage: FirebaseStorage
 
     inner class BookViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val bookTitle: TextView = view.findViewById(R.id.book_title)
@@ -36,14 +40,23 @@ class BookAdapter(
         val bookImage: ImageView = view.findViewById(R.id.book_image)
         val bookUserSearch: AutoCompleteTextView = view.findViewById(R.id.autoCompleteTextView)
         val assignUserButton: TextView = view.findViewById(R.id.assignButton)
+        val deleteBookButton: Button = view.findViewById(R.id.deleteBookButton)
+        val progressBar: ProgressBar = view.findViewById(R.id.progressBarAssignBook)
 
         init {
             firestore = FirebaseFirestore.getInstance()
             auth = FirebaseAuth.getInstance()
+            storage = FirebaseStorage.getInstance()
+
             assignUserButton.setOnClickListener {
                 val book = books[adapterPosition]
                 val userName = bookUserSearch.text.toString()
                 assignUserToBook(book, userName, this, itemView.context)
+            }
+
+            deleteBookButton.setOnClickListener {
+                val book = books[adapterPosition]
+                deleteBook(book, this, itemView.context)
             }
         }
 
@@ -113,12 +126,44 @@ class BookAdapter(
         notifyDataSetChanged()
     }
 
+    private fun deleteBook(book: Book, holder: BookViewHolder, context: Context) {
+        showProgressBar(holder, true)
+        Toast.makeText(context, "Eliminando libro...", Toast.LENGTH_SHORT).show()
+
+        // Eliminar el libro de Firestore
+        val bookRef = firestore.collection("books").document(book.id)
+        bookRef.delete()
+            .addOnSuccessListener {
+                // Eliminar la imagen de Firebase Storage si existe
+                book.imageUrl?.let { imageUrl ->
+                    val storageRef = storage.getReferenceFromUrl(imageUrl)
+                    storageRef.delete()
+                        .addOnSuccessListener {
+                            showProgressBar(holder, false)
+                            Toast.makeText(context, "Libro e imagen eliminados correctamente", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener { e ->
+                            showProgressBar(holder, false)
+                            Toast.makeText(context, "Error al eliminar la imagen: $e", Toast.LENGTH_LONG).show()
+                        }
+                }
+
+                // Actualizar la lista de libros en el adaptador después de eliminar
+                updateBookList(context)
+            }
+            .addOnFailureListener { e ->
+                showProgressBar(holder, false)
+                Toast.makeText(context, "Error al eliminar el libro: $e", Toast.LENGTH_LONG).show()
+            }
+    }
+
     private fun assignUserToBook(
         book: Book,
         userName: String,
         holder: BookViewHolder,
         context: Context
     ) {
+        showProgressBar(holder, true)
         if (userName.isNotBlank()) {
             val user = userList.find { it.name.equals(userName, ignoreCase = true) }
             if (user != null) {
@@ -128,17 +173,21 @@ class BookAdapter(
                     "assignedWithName", user.name,
                     "status", "Asignado")
                     .addOnSuccessListener {
+                        showProgressBar(holder, false)
                         Toast.makeText(context, "Libro asignado a ${user.name}", Toast.LENGTH_SHORT).show()
                         holder.bookUserSearch.setText("")
                         updateBookList(context)
                     }
                     .addOnFailureListener { e ->
+                        showProgressBar(holder, false)
                         Toast.makeText(context, "Error al asignar libro: $e", Toast.LENGTH_LONG).show()
                     }
             } else {
+                showProgressBar(holder, false)
                 Toast.makeText(context, "Usuario no encontrado.", Toast.LENGTH_SHORT).show()
             }
         } else {
+            showProgressBar(holder, false)
             Toast.makeText(context, "Por favor, ingrese un nombre de usuario.", Toast.LENGTH_SHORT).show()
         }
     }
@@ -156,5 +205,17 @@ class BookAdapter(
             .addOnFailureListener { e ->
                 Toast.makeText(context, "Error al recuperar la lista de libros: $e", Toast.LENGTH_LONG).show()
             }
+    }
+
+    private fun showProgressBar(holder: BookViewHolder, show: Boolean) {
+        if (show) {
+            holder.progressBar.visibility = View.VISIBLE
+            holder.assignUserButton.isEnabled = false
+            holder.deleteBookButton.isEnabled = false
+        } else {
+            holder.progressBar.visibility = View.GONE
+            holder.assignUserButton.isEnabled = true
+            holder.deleteBookButton.isEnabled = true
+        }
     }
 }
