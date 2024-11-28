@@ -32,6 +32,7 @@ class BookAdapter(
 
     inner class BookViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val bookTitle: TextView = view.findViewById(R.id.book_title)
+        val bookDescription: TextView = view.findViewById(R.id.book_description)
         val bookAuthor: TextView = view.findViewById(R.id.book_author)
         val bookCategory: TextView = view.findViewById(R.id.book_category)
         val bookIsbn: TextView = view.findViewById(R.id.book_isbn)
@@ -74,6 +75,7 @@ class BookAdapter(
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
         val book = books[position]
         holder.bookTitle.text = book.title
+        holder.bookDescription.text = "Descripción: ${book.description}"
         holder.bookAuthor.text = "Autor: ${book.author}"
         // Verifica si hay categorías y únelas con comas
         holder.bookCategory.text = if (book.categories.isNotEmpty()) {

@@ -35,11 +35,21 @@
         app:layout_constraintTop_toTopOf="@+id/book_image" />
 
     <TextView
+        android:id="@+id/book_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Descripción: Descripción del libro"
+        app:layout_constraintTop_toBottomOf="@+id/book_title"
+        app:layout_constraintStart_toStartOf="@+id/book_title"
+        app:layout_constraintEnd_toEndOf="@+id/book_title"
+        android:layout_marginTop="8dp" />
+
+    <TextView
         android:id="@+id/book_author"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Autor: Autor"
-        app:layout_constraintTop_toBottomOf="@+id/book_title"
+        app:layout_constraintTop_toBottomOf="@+id/book_description"
         app:layout_constraintStart_toStartOf="@+id/book_title"
         app:layout_constraintEnd_toEndOf="@+id/book_title"
         android:layout_marginTop="8dp" />

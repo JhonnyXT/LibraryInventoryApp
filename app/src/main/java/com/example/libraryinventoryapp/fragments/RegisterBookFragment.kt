@@ -52,6 +52,7 @@ class RegisterBookFragment : Fragment() {
     private lateinit var bookTitleInput: EditText
     private lateinit var bookAuthorInput: EditText
     private lateinit var bookIsbnInput: EditText
+    private lateinit var bookDescriptionInput: EditText
     private lateinit var scanCodeButton: Button
     private lateinit var captureImageButton: Button
     private lateinit var registerBookButton: Button
@@ -73,6 +74,7 @@ class RegisterBookFragment : Fragment() {
         bookTitleInput = view.findViewById(R.id.book_title_input)
         bookAuthorInput = view.findViewById(R.id.book_author_input)
         bookIsbnInput = view.findViewById(R.id.book_isbn_input)
+        bookDescriptionInput = view.findViewById(R.id.book_description_input)
         scanCodeButton = view.findViewById(R.id.scan_code_button)
         captureImageButton = view.findViewById(R.id.capture_image_button) // Nuevo botón para capturar imagen
         registerBookButton = view.findViewById(R.id.register_book_button)
@@ -121,10 +123,11 @@ class RegisterBookFragment : Fragment() {
             val title = bookTitleInput.text.toString().trim()
             val author = bookAuthorInput.text.toString().trim()
             val isbn = bookIsbnInput.text.toString().trim()
+            val description = bookDescriptionInput.text.toString().trim()
 
-            if (title.isNotEmpty() && author.isNotEmpty() && isbn.isNotEmpty() && imageUri != null && selectedCategories.isNotEmpty()) {
+            if (title.isNotEmpty() && author.isNotEmpty() && isbn.isNotEmpty() && imageUri != null && selectedCategories.isNotEmpty() && description.isNotEmpty()) {
                 showProgressBar()
-                uploadBookToFirebase(title, author, isbn, selectedCategories)
+                uploadBookToFirebase(title, author, isbn, description, selectedCategories)
             } else {
                 Toast.makeText(context, "Todos los campos son obligatorios y debe capturar una imagen", Toast.LENGTH_SHORT).show()
             }
@@ -251,6 +254,7 @@ class RegisterBookFragment : Fragment() {
         title: String,
         author: String,
         isbn: String,
+        description: String,
         categories: List<String>
     ) {
         if (imageUri != null) {
@@ -264,6 +268,7 @@ class RegisterBookFragment : Fragment() {
                         "title" to title,
                         "author" to author,
                         "isbn" to isbn,
+                        "description" to description,
                         "categories" to categories,
                         "imageUrl" to uri.toString(),
                         "assignedTo" to null,
@@ -293,6 +298,7 @@ class RegisterBookFragment : Fragment() {
                 "title" to title,
                 "author" to author,
                 "isbn" to isbn,
+                "description" to description,
                 "imageUrl" to null,
                 "assignedTo" to null,
                 "status" to "Disponible"
@@ -316,6 +322,7 @@ class RegisterBookFragment : Fragment() {
         bookTitleInput.text.clear()
         bookAuthorInput.text.clear()
         bookIsbnInput.text.clear()
+        bookDescriptionInput.text.clear()
         capturedImageView.setImageBitmap(null) // Limpiar la imagen capturada
         imageUri = null // Limpiar la URI de la imagen
         capturedImageView.visibility = View.GONE // Ocultar el ImageView

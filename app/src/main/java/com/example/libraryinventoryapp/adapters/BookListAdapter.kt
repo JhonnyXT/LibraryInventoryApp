@@ -31,6 +31,7 @@ class BookListAdapter(
 
     inner class BookListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val titleTextView: TextView = itemView.findViewById(R.id.book_title)
+        private val descriptionView: TextView = itemView.findViewById(R.id.book_description)
         private val authorTextView: TextView = itemView.findViewById(R.id.book_author)
         private val categoriesTextView: TextView = itemView.findViewById(R.id.book_categories)
         private val statusTextView: TextView = itemView.findViewById(R.id.book_status)
@@ -39,6 +40,7 @@ class BookListAdapter(
 
         fun bind(book: Book) {
             titleTextView.text = book.title
+            descriptionView.text = "Descripción: ${book.description}"
             authorTextView.text = "Autor: ${book.author}"
             if (book.categories.isNotEmpty()) {
                 categoriesTextView.text = "Categoría: ${book.categories.joinToString()}"

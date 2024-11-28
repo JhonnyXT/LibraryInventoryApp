@@ -3,6 +3,7 @@ package com.example.libraryinventoryapp.models
 data class Book(
     var id: String = "",
     val title: String = "",
+    val description: String = "",
     val author: String = "",
     val isbn: String = "",
     val categories: List<String> = emptyList(),
