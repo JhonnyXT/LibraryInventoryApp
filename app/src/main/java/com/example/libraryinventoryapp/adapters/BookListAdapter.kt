@@ -37,6 +37,7 @@ class BookListAdapter(
         private val statusTextView: TextView = itemView.findViewById(R.id.book_status)
         private val bookImageView: ImageView = itemView.findViewById(R.id.book_image)
         private val assignButton: Button = itemView.findViewById(R.id.assign_button)
+        private val quantityTextView: TextView = itemView.findViewById(R.id.book_quantity)
 
         fun bind(book: Book) {
             titleTextView.text = book.title
@@ -48,6 +49,8 @@ class BookListAdapter(
                 categoriesTextView.text = "Categoría: Ninguna"
             }
             statusTextView.text = "Estado: ${book.status}"
+            quantityTextView.text = "Cantidad: ${book.quantity}"
+
 
             // Load book image with Glide
             Glide.with(itemView.context)

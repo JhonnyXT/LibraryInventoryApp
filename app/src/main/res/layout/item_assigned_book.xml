@@ -1,83 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
 
-    <!-- Image of the book -->
-    <ImageView
-        android:id="@+id/book_image"
-        android:layout_width="90dp"
-        android:layout_height="120dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <!-- Title of the book -->
-    <TextView
-        android:id="@+id/book_title"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="Título del libro"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/book_image"
-        app:layout_constraintTop_toTopOf="@+id/book_image" />
+        android:padding="16dp">
 
-    <!-- Description of the book -->
-    <TextView
-        android:id="@+id/book_description"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="Descripción"
-        app:layout_constraintEnd_toEndOf="@+id/book_title"
-        app:layout_constraintStart_toStartOf="@+id/book_title"
-        app:layout_constraintTop_toBottomOf="@+id/book_title" />
+        <!-- Image of the book -->
+        <ImageView
+            android:id="@+id/book_image"
+            android:layout_width="90dp"
+            android:layout_height="120dp"
+            android:layout_marginStart="8dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="@+id/book_isbn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/book_title"
+            tools:srcCompat="@tools:sample/avatars" />
 
-    <!-- Author of the book -->
-    <TextView
-        android:id="@+id/book_author"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="Autor"
-        app:layout_constraintEnd_toEndOf="@+id/book_title"
-        app:layout_constraintStart_toStartOf="@+id/book_title"
-        app:layout_constraintTop_toBottomOf="@+id/book_description" />
+        <!-- Title of the book -->
+        <TextView
+            android:id="@+id/book_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Título del libro"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/book_image"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Categories of the book -->
-    <TextView
-        android:id="@+id/book_cetegories"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="Categoría"
-        app:layout_constraintEnd_toEndOf="@+id/book_title"
-        app:layout_constraintStart_toStartOf="@+id/book_title"
-        app:layout_constraintTop_toBottomOf="@+id/book_author" />
+        <!-- Description of the book -->
+        <TextView
+            android:id="@+id/book_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Descripción"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/book_image" />
 
-    <!-- ISBN of the book -->
-    <TextView
-        android:id="@+id/book_isbn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="ISBN: 1234567890"
-        app:layout_constraintEnd_toEndOf="@+id/book_title"
-        app:layout_constraintStart_toStartOf="@+id/book_title"
-        app:layout_constraintTop_toBottomOf="@+id/book_cetegories" />
+        <!-- Author of the book -->
+        <TextView
+            android:id="@+id/book_author"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Autor"
+            app:layout_constraintEnd_toEndOf="@+id/book_title"
+            app:layout_constraintStart_toStartOf="@+id/book_title"
+            app:layout_constraintTop_toBottomOf="@+id/book_title" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Categories of the book -->
+        <TextView
+            android:id="@+id/book_cetegories"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Categoría"
+            app:layout_constraintEnd_toEndOf="@+id/book_title"
+            app:layout_constraintStart_toStartOf="@+id/book_title"
+            app:layout_constraintTop_toBottomOf="@+id/book_author" />
+
+        <!-- ISBN of the book -->
+        <TextView
+            android:id="@+id/book_isbn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="ISBN: 1234567890"
+            app:layout_constraintEnd_toEndOf="@+id/book_title"
+            app:layout_constraintStart_toStartOf="@+id/book_title"
+            app:layout_constraintTop_toBottomOf="@+id/book_cetegories" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

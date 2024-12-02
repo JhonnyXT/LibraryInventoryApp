@@ -40,6 +40,7 @@ class BookAdapter(
         val bookAssignedTo: TextView = view.findViewById(R.id.book_assigned_to)
         val bookImage: ImageView = view.findViewById(R.id.book_image)
         val bookUserSearch: AutoCompleteTextView = view.findViewById(R.id.autoCompleteTextView)
+        val bookQuantity: TextView = view.findViewById(R.id.book_quantity)
         val assignUserButton: TextView = view.findViewById(R.id.assignButton)
         val deleteBookButton: Button = view.findViewById(R.id.deleteBookButton)
         val progressBar: ProgressBar = view.findViewById(R.id.progressBarAssignBook)
@@ -86,6 +87,7 @@ class BookAdapter(
         holder.bookIsbn.text = "ISBN: ${book.isbn}"
         holder.bookStatus.text = "Estado: ${book.status}"
         holder.bookAssignedTo.text = "Asignado a: ${book.assignedWithName ?: "Nadie"}"
+        holder.bookQuantity.text = "Cantidad: ${book.quantity}"
 
         // Mostrar el botón de asignar usuario si el libro está disponible
         if (book.status == "Disponible") {

@@ -11,5 +11,6 @@ data class Book(
     val status: String = "",
     val assignedTo: String? = null,
     val assignedToEmail: String? = null,
-    val assignedWithName: String? = null
+    val assignedWithName: String? = null,
+    val quantity: Int = 0
 )
