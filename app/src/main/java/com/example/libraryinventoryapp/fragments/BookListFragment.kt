@@ -72,14 +72,11 @@ class BookListFragment : Fragment() {
                 for (document in result) {
                     val book = document.toObject(Book::class.java)
                     book.id = document.id
-                    // Filtra solo los libros que estén en estado "Disponible"
-                    if (book.status == "Disponible") {
-                        booksList.add(book)
-                    }
+                    booksList.add(book)
                 }
 
                 // Ordena la lista de libros alfabéticamente por el título
-                booksList.sortBy { it.title?.toLowerCase() }
+                booksList.sortBy { it.title?.lowercase() }
 
                 // Copia la lista original para usar en el filtrado
                 filteredBooksList = booksList.toMutableList()
@@ -98,12 +95,12 @@ class BookListFragment : Fragment() {
 
     // Filtrar libros según el texto ingresado
     private fun filterBooks(query: String) {
-        val normalizedQuery = removeAccents(query.toLowerCase())
+        val normalizedQuery = removeAccents(query.lowercase())
 
         filteredBooksList.clear()
         filteredBooksList.addAll(
             booksList.filter {
-                val normalizedTitle = removeAccents(it.title?.toLowerCase() ?: "")
+                val normalizedTitle = removeAccents(it.title?.lowercase() ?: "")
                 normalizedTitle.contains(normalizedQuery)
             }
         )
@@ -120,10 +117,11 @@ class BookListFragment : Fragment() {
         }
 
         val userId = currentUser.uid
-        val userEmail = currentUser.email
+        val userEmail = currentUser.email ?: "Correo desconocido"
 
-        if (book.status == "Asignado") {
-            Toast.makeText(context, "El libro ya está asignado.", Toast.LENGTH_SHORT).show()
+        // Verificar si el libro ya está asignado al usuario actual
+        if (book.assignedTo?.contains(userId) == true) {
+            Toast.makeText(context, "Ya tienes este libro asignado.", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -134,27 +132,41 @@ class BookListFragment : Fragment() {
                 if (document.exists()) {
                     val userName = document.getString("name") ?: "Usuario desconocido"
 
-                    firestore.collection("books").document(book.id).update(
-                        mapOf(
-                            "status" to "Asignado",
-                            "assignedTo" to userId,
-                            "assignedToEmail" to userEmail,
-                            "assignedWithName" to userName
-                        )
-                    ).addOnSuccessListener {
-                        Toast.makeText(context, "Libro asignado exitosamente.", Toast.LENGTH_SHORT).show()
-                        fetchBooks()  // Actualiza la lista de libros
-                    }.addOnFailureListener { exception ->
-                        Toast.makeText(context, "Error al asignar el libro: ${exception.message}", Toast.LENGTH_LONG).show()
-                    }.addOnCompleteListener {
-                        progressBar.visibility = View.GONE
-                    }
+                    // Preparar las listas actualizadas
+                    val updatedAssignedTo = (book.assignedTo ?: mutableListOf()).toMutableList()
+                    val updatedAssignedWithNames = (book.assignedWithNames ?: mutableListOf()).toMutableList()
+                    val updatedAssignedToEmails = (book.assignedToEmails ?: mutableListOf()).toMutableList()
 
+                    updatedAssignedTo.add(userId)
+                    updatedAssignedWithNames.add(userName)
+                    updatedAssignedToEmails.add(userEmail)
+
+                    val newQuantity = book.quantity - 1
+                    val updateMap = mapOf(
+                        "status" to if (newQuantity == 0) "No disponible" else "Disponible",
+                        "quantity" to newQuantity,
+                        "assignedTo" to updatedAssignedTo,
+                        "assignedWithNames" to updatedAssignedWithNames,
+                        "assignedToEmails" to updatedAssignedToEmails
+                    )
+
+                    firestore.collection("books").document(book.id).update(updateMap)
+                        .addOnSuccessListener {
+                            Toast.makeText(context, "Libro asignado exitosamente.", Toast.LENGTH_SHORT).show()
+                            fetchBooks() // Actualizar la lista de libros
+                        }
+                        .addOnFailureListener { exception ->
+                            Toast.makeText(context, "Error al asignar el libro: ${exception.message}", Toast.LENGTH_LONG).show()
+                        }
+                        .addOnCompleteListener {
+                            progressBar.visibility = View.GONE
+                        }
                 } else {
                     progressBar.visibility = View.GONE
                     Toast.makeText(context, "No se encontró el nombre del usuario.", Toast.LENGTH_LONG).show()
                 }
-            }.addOnFailureListener { exception ->
+            }
+            .addOnFailureListener { exception ->
                 progressBar.visibility = View.GONE
                 Toast.makeText(context, "Error al obtener los datos del usuario: ${exception.message}", Toast.LENGTH_LONG).show()
             }

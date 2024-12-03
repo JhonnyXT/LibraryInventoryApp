@@ -86,7 +86,11 @@ class BookAdapter(
         }
         holder.bookIsbn.text = "ISBN: ${book.isbn}"
         holder.bookStatus.text = "Estado: ${book.status}"
-        holder.bookAssignedTo.text = "Asignado a: ${book.assignedWithName ?: "Nadie"}"
+        holder.bookAssignedTo.text = if (!book.assignedWithNames.isNullOrEmpty()) {
+            "Asignado a: ${book.assignedWithNames.joinToString(", ")}"
+        } else {
+            "Asignado a: Nadie"
+        }
         holder.bookQuantity.text = "Cantidad: ${book.quantity}"
 
         // Mostrar el botón de asignar usuario si el libro está disponible
@@ -168,32 +172,86 @@ class BookAdapter(
         context: Context
     ) {
         showProgressBar(holder, true)
-        if (userName.isNotBlank()) {
-            val user = userList.find { it.name.equals(userName, ignoreCase = true) }
-            if (user != null) {
-                val bookRef = firestore.collection("books").document(book.id)
-                bookRef.update("assignedTo", user.uid,
-                    "assignedToEmail", user.email,
-                    "assignedWithName", user.name,
-                    "status", "Asignado")
-                    .addOnSuccessListener {
-                        showProgressBar(holder, false)
-                        Toast.makeText(context, "Libro asignado a ${user.name}", Toast.LENGTH_SHORT).show()
-                        holder.bookUserSearch.setText("")
-                        updateBookList(context)
-                    }
-                    .addOnFailureListener { e ->
-                        showProgressBar(holder, false)
-                        Toast.makeText(context, "Error al asignar libro: $e", Toast.LENGTH_LONG).show()
-                    }
-            } else {
-                showProgressBar(holder, false)
-                Toast.makeText(context, "Usuario no encontrado.", Toast.LENGTH_SHORT).show()
-            }
-        } else {
+
+        // Validar que el nombre del usuario no esté en blanco
+        if (userName.isBlank()) {
             showProgressBar(holder, false)
-            Toast.makeText(context, "Por favor, ingrese un nombre de usuario.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Por favor, selecciona un usuario para asignar el libro.", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        // Buscar el usuario en la lista por su nombre
+        val user = userList.find { it.name.equals(userName, ignoreCase = true) }
+        if (user == null) {
+            showProgressBar(holder, false)
+            Toast.makeText(context, "Usuario no encontrado. Intenta de nuevo.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Verificar si el usuario ya tiene asignado este libro
+        if (book.assignedTo?.contains(user.uid) == true) {
+            showProgressBar(holder, false)
+            holder.bookUserSearch.setText("")
+            Toast.makeText(context, "El usuario ya tiene asignado este libro.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Verificar si hay cantidad suficiente para asignar
+        if (book.quantity <= 0) {
+            showProgressBar(holder, false)
+            Toast.makeText(context, "No hay más copias disponibles de este libro.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Preparar los nuevos valores para actualizar
+        val updatedQuantity = book.quantity - 1
+        val updatedStatus = if (updatedQuantity == 0) "No disponible" else "Disponible"
+        val updatedAssignedTo = (book.assignedTo ?: mutableListOf()).toMutableList()
+        val updatedAssignedWithNames = (book.assignedWithNames ?: mutableListOf()).toMutableList()
+        val updatedAssignedToEmails = (book.assignedToEmails ?: mutableListOf()).toMutableList()
+
+        // Agregar el usuario al arreglo
+        updatedAssignedTo.add(user.uid)
+        updatedAssignedWithNames.add(user.name)
+        updatedAssignedToEmails.add(user.email)
+
+        // Referencia del libro en Firestore
+        val bookRef = firestore.collection("books").document(book.id)
+
+        // Realizar la actualización en Firestore
+        val updates = mapOf(
+            "quantity" to updatedQuantity,
+            "status" to updatedStatus,
+            "assignedTo" to updatedAssignedTo,
+            "assignedWithNames" to updatedAssignedWithNames,
+            "assignedToEmails" to updatedAssignedToEmails
+        )
+
+        bookRef.update(updates)
+            .addOnSuccessListener {
+                showProgressBar(holder, false)
+                holder.bookUserSearch.setText("")
+                Toast.makeText(
+                    context,
+                    "El libro '${book.title}' ha sido asignado a ${user.name}.",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                // Actualizar la lista local de libros y notificar el adaptador
+                val updatedBook = book.copy(
+                    quantity = updatedQuantity,
+                    status = updatedStatus,
+                    assignedTo = updatedAssignedTo,
+                    assignedWithNames = updatedAssignedWithNames,
+                    assignedToEmails = updatedAssignedToEmails
+                )
+                books = books.map { if (it.id == book.id) updatedBook else it }
+                notifyDataSetChanged()
+            }
+            .addOnFailureListener { e ->
+                showProgressBar(holder, false)
+                Toast.makeText(context, "Error al asignar el libro: $e", Toast.LENGTH_LONG).show()
+            }
     }
 
     // Nueva función para recuperar libros de Firestore
@@ -211,15 +269,10 @@ class BookAdapter(
             }
     }
 
+    // Método auxiliar para mostrar u ocultar el ProgressBar
     private fun showProgressBar(holder: BookViewHolder, show: Boolean) {
-        if (show) {
-            holder.progressBar.visibility = View.VISIBLE
-            holder.assignUserButton.isEnabled = false
-            holder.deleteBookButton.isEnabled = false
-        } else {
-            holder.progressBar.visibility = View.GONE
-            holder.assignUserButton.isEnabled = true
-            holder.deleteBookButton.isEnabled = true
-        }
+        holder.progressBar.visibility = if (show) View.VISIBLE else View.GONE
+        holder.assignUserButton.isEnabled = !show
+        holder.bookUserSearch.isEnabled = !show
     }
 }

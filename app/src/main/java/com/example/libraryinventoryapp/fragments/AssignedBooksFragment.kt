@@ -72,7 +72,7 @@ class AssignedBooksFragment : Fragment() {
         progressBar.visibility = View.VISIBLE
 
         firestore.collection("books")
-            .whereEqualTo("assignedTo", currentUser.uid)
+            .whereArrayContains("assignedTo", currentUser.uid)
             .get()
             .addOnSuccessListener { result ->
                 assignedBooksList.clear()
@@ -82,12 +82,9 @@ class AssignedBooksFragment : Fragment() {
                     assignedBooksList.add(book)
                 }
 
-                // Copia la lista original para el filtrado
                 filteredAssignedBooksList = assignedBooksList.toMutableList()
-
                 assignedBooksAdapter = AssignedBooksAdapter(filteredAssignedBooksList)
                 recyclerView.adapter = assignedBooksAdapter
-
                 progressBar.visibility = View.GONE
             }
             .addOnFailureListener { exception ->
@@ -103,12 +100,15 @@ class AssignedBooksFragment : Fragment() {
         filteredAssignedBooksList.clear()
         filteredAssignedBooksList.addAll(
             assignedBooksList.filter {
-                val normalizedTitle = removeAccents(it.title?.toLowerCase() ?: "")
-                normalizedTitle.contains(normalizedQuery)
+                val normalizedTitle = removeAccents(it.title.toLowerCase())
+                val normalizedAuthor = removeAccents(it.author.toLowerCase())
+                val normalizedDescription = removeAccents(it.description.toLowerCase())
+                normalizedTitle.contains(normalizedQuery) ||
+                        normalizedAuthor.contains(normalizedQuery) ||
+                        normalizedDescription.contains(normalizedQuery)
             }
         )
 
-        // Notifica al adaptador para actualizar la lista
         assignedBooksAdapter.notifyDataSetChanged()
     }
 

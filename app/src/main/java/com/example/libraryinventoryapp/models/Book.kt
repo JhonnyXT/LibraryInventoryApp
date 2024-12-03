@@ -8,9 +8,9 @@ data class Book(
     val isbn: String = "",
     val categories: List<String> = emptyList(),
     val imageUrl: String? = null,
-    val status: String = "",
-    val assignedTo: String? = null,
-    val assignedToEmail: String? = null,
-    val assignedWithName: String? = null,
-    val quantity: Int = 0
+    val quantity: Int = 0,
+    val status: String = "Disponible",
+    val assignedTo: List<String>? = null,  // Arreglo de IDs de usuarios
+    val assignedWithNames: List<String>? = null, // Arreglo de nombres de usuarios
+    val assignedToEmails: List<String>? = null // Arreglo de correos electrónicos
 )
