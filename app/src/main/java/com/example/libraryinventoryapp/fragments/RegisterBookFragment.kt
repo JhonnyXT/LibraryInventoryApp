@@ -62,6 +62,8 @@ class RegisterBookFragment : Fragment() {
     private lateinit var selectCategoryButton: Button
     private lateinit var selectedCategoriesTextView: TextView
     private lateinit var bookQuantittyInput: EditText
+    private lateinit var bookCode: EditText
+
     private var selectedCategories = mutableListOf<String>()
     private val categoriesArray by lazy { resources.getStringArray(R.array.book_categories) }
 
@@ -85,6 +87,7 @@ class RegisterBookFragment : Fragment() {
         selectCategoryButton = view.findViewById(R.id.selectCategoryButton)
         selectedCategoriesTextView = view.findViewById(R.id.selectedCategoriesTextView)
         bookQuantittyInput = view.findViewById(R.id.book_quantity_input)
+        bookCode = view.findViewById(R.id.book_code_input)
 
         // Initialize Firebase instances
         auth = FirebaseAuth.getInstance()
@@ -127,10 +130,11 @@ class RegisterBookFragment : Fragment() {
             val isbn = bookIsbnInput.text.toString().trim()
             val description = bookDescriptionInput.text.toString().trim()
             val quantity = bookQuantittyInput.text.toString()
+            val code = bookCode.text.toString()
 
             if (title.isNotEmpty() && author.isNotEmpty() && isbn.isNotEmpty() && imageUri != null && selectedCategories.isNotEmpty() && description.isNotEmpty()) {
                 showProgressBar()
-                uploadBookToFirebase(title, author, isbn, description, selectedCategories, quantity)
+                uploadBookToFirebase(title, author, isbn, description, selectedCategories, quantity, code)
             } else {
                 Toast.makeText(context, "Todos los campos son obligatorios y debe capturar una imagen", Toast.LENGTH_SHORT).show()
             }
@@ -259,7 +263,8 @@ class RegisterBookFragment : Fragment() {
         isbn: String,
         description: String,
         categories: List<String>,
-        quantity: String
+        quantity: String,
+        code: String
     ) {
         val finalQuantity = if (quantity.isBlank()) 1 else quantity.toIntOrNull() ?: 1
 
@@ -279,7 +284,8 @@ class RegisterBookFragment : Fragment() {
                         "imageUrl" to uri.toString(),
                         "assignedTo" to null,
                         "status" to "Disponible",
-                        "quantity" to finalQuantity
+                        "quantity" to finalQuantity,
+                        "code" to code
                     )
                     firestore.collection("books").add(book)
                         .addOnSuccessListener {
@@ -309,7 +315,8 @@ class RegisterBookFragment : Fragment() {
                 "imageUrl" to null,
                 "assignedTo" to null,
                 "status" to "Disponible",
-                "quantity" to finalQuantity
+                "quantity" to finalQuantity,
+                "code" to code
             )
             firestore.collection("books").add(book)
                 .addOnSuccessListener {
@@ -337,6 +344,7 @@ class RegisterBookFragment : Fragment() {
         selectedCategories.clear() // Limpiar las categorías seleccionadas
         selectedCategoriesTextView.text = "Categorías seleccionadas: Ninguna" // Actualizar el TextView
         bookQuantittyInput.text.clear()
+        bookCode.text.clear()
     }
 
     private fun showProgressBar() {
