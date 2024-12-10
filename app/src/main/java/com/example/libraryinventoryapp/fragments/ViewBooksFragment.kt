@@ -1,9 +1,11 @@
 package com.example.libraryinventoryapp.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -22,9 +24,13 @@ class ViewBooksFragment : Fragment() {
     private lateinit var booksRecyclerView: RecyclerView
     private lateinit var booksAdapter: BookAdapter
     private lateinit var searchView: SearchView
+    private lateinit var filterButton: ImageButton
+
     private var booksList: MutableList<Book> = mutableListOf()
     private var userNamesList: MutableList<String> = mutableListOf()
     private var userList: MutableList<User> = mutableListOf()
+    private var filteredBooksList: MutableList<Book> = mutableListOf()
+    private var selectedCategoriesState: BooleanArray? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,6 +40,7 @@ class ViewBooksFragment : Fragment() {
 
         booksRecyclerView = view.findViewById(R.id.recyclerViewBookList)
         searchView = view.findViewById(R.id.searchView)
+        filterButton = view.findViewById(R.id.filterButton)
 
         booksRecyclerView.layoutManager = LinearLayoutManager(context)
         firestore = FirebaseFirestore.getInstance()
@@ -42,6 +49,7 @@ class ViewBooksFragment : Fragment() {
         booksAdapter = BookAdapter(booksList, userNamesList, userList)
         booksRecyclerView.adapter = booksAdapter
 
+        filterButton.setOnClickListener { showCategoryFilterDialog() }
         loadUsers()
         loadBooks()
 
@@ -141,5 +149,40 @@ class ViewBooksFragment : Fragment() {
 
         // Actualizar el adaptador con la lista filtrada y ordenada
         booksAdapter.updateBooks(sortedList)
+    }
+
+    private fun showCategoryFilterDialog() {
+        val categories = resources.getStringArray(R.array.book_categories)
+        if (selectedCategoriesState == null) {
+            selectedCategoriesState = BooleanArray(categories.size)
+        }
+
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Filtrar por categorías")
+        builder.setMultiChoiceItems(categories, selectedCategoriesState) { _, which, isChecked ->
+            selectedCategoriesState!![which] = isChecked
+        }
+        builder.setPositiveButton("Aplicar") { _, _ ->
+            val selected = categories.filterIndexed { index, _ -> selectedCategoriesState!![index] }
+            filterBooksByCategories(selected)
+        }
+        builder.setNegativeButton("Cancelar", null)
+        builder.setNeutralButton("Limpiar filtros") { _, _ ->
+            selectedCategoriesState = BooleanArray(categories.size)
+            filterBooksByCategories(emptyList())
+        }
+        builder.show()
+    }
+
+    private fun filterBooksByCategories(selectedCategories: List<String>) {
+        filteredBooksList = if (selectedCategories.isEmpty()) {
+            booksList
+        } else {
+            booksList.filter { book ->
+                book.categories.any { it in selectedCategories }
+            }
+        }.toMutableList()
+
+        booksAdapter.updateBooks(filteredBooksList)
     }
 }

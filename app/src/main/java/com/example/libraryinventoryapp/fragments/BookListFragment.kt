@@ -1,10 +1,12 @@
 package com.example.libraryinventoryapp.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
@@ -26,8 +28,11 @@ class BookListFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var progressBar: ProgressBar
     private lateinit var searchView: SearchView
+    private lateinit var filterButton: ImageButton
+
     private var booksList: MutableList<Book> = mutableListOf()
     private var filteredBooksList: MutableList<Book> = mutableListOf()
+    private var selectedCategoriesState: BooleanArray? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,6 +47,7 @@ class BookListFragment : Fragment() {
         recyclerView = view.findViewById(R.id.books_recycler_view)
         progressBar = view.findViewById(R.id.progress_bar)
         searchView = view.findViewById(R.id.searchView)
+        filterButton = view.findViewById(R.id.filter_button)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
 
@@ -49,6 +55,8 @@ class BookListFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
 
         fetchBooks()
+
+        filterButton.setOnClickListener { showCategoryFilterDialog() }
 
         // Configuración del SearchView para filtrar libros
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -72,7 +80,11 @@ class BookListFragment : Fragment() {
                 for (document in result) {
                     val book = document.toObject(Book::class.java)
                     book.id = document.id
-                    booksList.add(book)
+
+                    // Filtrar libros con quantity > 0
+                    if (book.quantity > 0) {
+                        booksList.add(book)
+                    }
                 }
 
                 // Ordena la lista de libros alfabéticamente por el título
@@ -91,6 +103,52 @@ class BookListFragment : Fragment() {
                 progressBar.visibility = View.GONE
                 Toast.makeText(context, "Error al cargar los libros: ${exception.message}", Toast.LENGTH_LONG).show()
             }
+    }
+
+    private fun showCategoryFilterDialog() {
+        val categories = resources.getStringArray(R.array.book_categories)
+        if (selectedCategoriesState == null) {
+            selectedCategoriesState = BooleanArray(categories.size) // Inicializa si es la primera vez
+        }
+
+        // Mostrar el diálogo
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Filtrar por categorías")
+        builder.setMultiChoiceItems(categories, selectedCategoriesState) { _, which, isChecked ->
+            selectedCategoriesState!![which] = isChecked
+        }
+
+        builder.setPositiveButton("Aplicar") { _, _ ->
+            val selected = categories.filterIndexed { index, _ -> selectedCategoriesState!![index] }
+            filterBooksByCategories(selected)
+        }
+
+        builder.setNegativeButton("Cancelar", null)
+        builder.setNeutralButton("Limpiar filtros") { _, _ ->
+            selectedCategoriesState = BooleanArray(categories.size) // Reinicia el estado
+            filterBooksByCategories(emptyList())
+        }
+
+        builder.show()
+    }
+
+    private fun filterBooksByCategories(selectedCategories: List<String>) {
+        if (selectedCategories.isEmpty()) {
+            // Si no hay categorías seleccionadas, mostrar todos los libros
+            filteredBooksList.clear()
+            filteredBooksList.addAll(booksList)
+        } else {
+            // Filtrar los libros que contengan al menos una categoría seleccionada
+            filteredBooksList.clear()
+            filteredBooksList.addAll(
+                booksList.filter { book ->
+                    book.categories.any { it in selectedCategories }
+                }
+            )
+        }
+
+        // Actualizar el adaptador
+        bookListAdapter.notifyDataSetChanged()
     }
 
     // Filtrar libros según el texto ingresado
