@@ -3,8 +3,10 @@ package com.example.libraryinventoryapp
 import android.content.Intent
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -22,7 +24,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
     private lateinit var registerButton: Button
-    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +36,6 @@ class LoginActivity : AppCompatActivity() {
         passwordEditText = findViewById(R.id.passwordEditText)
         loginButton = findViewById(R.id.loginButton)
         registerButton = findViewById(R.id.registerButton)
-        progressBar = findViewById(R.id.progressBarLogin)
 
         // Verificar si el usuario ya está autenticado
         val currentUser = auth.currentUser
@@ -86,12 +86,12 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            progressBar.visibility = ProgressBar.VISIBLE
+            findViewById<FrameLayout>(R.id.progress_container).visibility = View.VISIBLE
 
             // Autenticación con Firebase
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
-                    progressBar.visibility = ProgressBar.GONE // Ocultar la barra de progreso
+                    findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
 
                     if (task.isSuccessful) {
                         // Autenticación exitosa
@@ -118,7 +118,7 @@ class LoginActivity : AppCompatActivity() {
     private fun navigateToAppropriateScreen(user: FirebaseUser?) {
         if (user == null) {
             // Handle user not logged in
-            progressBar.visibility = ProgressBar.GONE
+            findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
             Toast.makeText(this, "Usuario no autenticado.", Toast.LENGTH_SHORT).show()
             return
         }
@@ -134,17 +134,17 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     Intent(this, UserActivity::class.java)
                 }
-                progressBar.visibility = ProgressBar.GONE
+                findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
                 startActivity(intent)
                 finish()
             } else {
                 // Handle the case where the document does not exist
-                progressBar.visibility = ProgressBar.GONE
+                findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
                 Toast.makeText(this, "El documento del usuario no existe.", Toast.LENGTH_SHORT).show()
             }
         }.addOnFailureListener { exception ->
             // Handle errors
-            progressBar.visibility = ProgressBar.GONE
+            findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
             Toast.makeText(this, "Error al obtener los datos del usuario: ${exception.message}", Toast.LENGTH_LONG).show()
         }
     }

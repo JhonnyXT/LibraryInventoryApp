@@ -34,9 +34,31 @@ class UserActivity : AppCompatActivity() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        // Manejar el botón atrás de forma segura
+        try {
+            // Si hay fragmentos en el stack, navegar hacia atrás
+            if (supportFragmentManager.backStackEntryCount > 0) {
+                supportFragmentManager.popBackStack()
+            } else {
+                // Si no hay fragmentos en el stack, cerrar la app de forma segura
+                finishAffinity()
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("UserActivity", "Error handling back press: ${e.message}", e)
+            super.onBackPressed()
+        }
+    }
+
     private fun loadFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.admin_fragment_container, fragment)
-            .commit()
+        try {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.admin_fragment_container, fragment)
+                .commit()
+        } catch (e: Exception) {
+            // Log del error en caso de que falle la transacción
+            android.util.Log.e("UserActivity", "Error loading fragment: ${e.message}", e)
+        }
     }
 }

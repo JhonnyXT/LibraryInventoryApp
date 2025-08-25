@@ -2,8 +2,10 @@ package com.example.libraryinventoryapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -37,7 +39,7 @@ class RegisterActivity : AppCompatActivity() {
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val etPassword = findViewById<EditText>(R.id.etPassword)
         val btnRegister = findViewById<Button>(R.id.btnRegister)
-        val progressBar = findViewById<ProgressBar>(R.id.progressBarRegister)
+        // Progress bar ahora está dentro de progress_container
 
         btnRegister.setOnClickListener {
             val name = etName.text.toString().trim()
@@ -49,30 +51,30 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            progressBar.visibility = android.view.View.VISIBLE
-            registerUser(name, email, password, progressBar)
+            registerUser(name, email, password)
         }
     }
 
-    private fun registerUser(name: String, email: String, password: String, progressBar: ProgressBar) {
+    private fun registerUser(name: String, email: String, password: String) {
+        findViewById<FrameLayout>(R.id.progress_container).visibility = View.VISIBLE
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val userId = auth.currentUser?.uid
                     if (userId != null) {
-                        saveUserToFirestore(name, email, userId, progressBar)
+                        saveUserToFirestore(name, email, userId)
                     } else {
-                        progressBar.visibility = android.view.View.GONE
+                        findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
                         Toast.makeText(this, "Error al obtener el UID del usuario.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    progressBar.visibility = android.view.View.GONE
+                    findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
                     Toast.makeText(this, "Error al registrar el usuario: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
     }
 
-    private fun saveUserToFirestore(name: String, email: String, uid: String, progressBar: ProgressBar) {
+    private fun saveUserToFirestore(name: String, email: String, uid: String) {
         val userMap = hashMapOf(
             "name" to name,
             "email" to email,
@@ -83,7 +85,7 @@ class RegisterActivity : AppCompatActivity() {
         firestore.collection("users").document(uid)
             .set(userMap)
             .addOnSuccessListener {
-                progressBar.visibility = android.view.View.GONE
+                findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
                 Toast.makeText(this, "Usuario registrado con éxito.", Toast.LENGTH_SHORT).show()
                 // Redirigir a LoginActivity
                 val intent = Intent(this, LoginActivity::class.java)
@@ -91,7 +93,7 @@ class RegisterActivity : AppCompatActivity() {
                 finish() // Cierra la actividad actual
             }
             .addOnFailureListener { exception ->
-                progressBar.visibility = android.view.View.GONE
+                findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
                 Toast.makeText(this, "Error al guardar el usuario: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
