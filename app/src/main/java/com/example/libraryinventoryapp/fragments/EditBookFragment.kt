@@ -232,7 +232,7 @@ class EditBookFragment : Fragment() {
         scanCodeButton.setOnClickListener { scanBarcode() }
         captureImageButton.setOnClickListener { captureImage() }
         selectCategoryButton.setOnClickListener { showCategorySelectionDialog() }
-        updateBookButton.setOnClickListener { updateBook() }
+        updateBookButton.setOnClickListener { showUpdateConfirmationDialog() }
         cancelButton.setOnClickListener { 
             parentFragmentManager.popBackStack()
         }
@@ -472,6 +472,10 @@ class EditBookFragment : Fragment() {
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DAY_OF_YEAR, 15) // Sugerir 15 días por defecto
 
+        // Calcular fecha máxima: 1 mes (30 días) desde hoy
+        val maxCalendar = Calendar.getInstance()
+        maxCalendar.add(Calendar.DAY_OF_YEAR, 30)
+
         DatePickerDialog(
             requireContext(),
             { _, year, month, dayOfMonth ->
@@ -484,7 +488,8 @@ class EditBookFragment : Fragment() {
             calendar.get(Calendar.DAY_OF_MONTH)
         ).apply {
             datePicker.minDate = System.currentTimeMillis()
-            setTitle("📅 Fecha de devolución para ${user.name}")
+            datePicker.maxDate = maxCalendar.timeInMillis // MÁXIMO 30 DÍAS
+            setTitle("📅 Fecha de devolución para ${user.name} (máx. 30 días)")
             show()
         }
     }
@@ -547,9 +552,20 @@ class EditBookFragment : Fragment() {
         val currentExpirationDate = book.loanExpirationDates?.getOrNull(userIndex)
         if (currentExpirationDate != null) {
             calendar.time = currentExpirationDate.toDate()
+            // Si la fecha actual está más allá de 30 días, ajustar a 15 días desde hoy
+            val maxAllowedDate = Calendar.getInstance()
+            maxAllowedDate.add(Calendar.DAY_OF_YEAR, 30)
+            if (calendar.timeInMillis > maxAllowedDate.timeInMillis) {
+                calendar.time = Date()
+                calendar.add(Calendar.DAY_OF_YEAR, 15)
+            }
         } else {
             calendar.add(Calendar.DAY_OF_YEAR, 15)
         }
+
+        // Calcular fecha máxima: 1 mes (30 días) desde hoy
+        val maxCalendar = Calendar.getInstance()
+        maxCalendar.add(Calendar.DAY_OF_YEAR, 30)
 
         DatePickerDialog(
             requireContext(),
@@ -563,7 +579,8 @@ class EditBookFragment : Fragment() {
             calendar.get(Calendar.DAY_OF_MONTH)
         ).apply {
             datePicker.minDate = System.currentTimeMillis()
-            setTitle("📅 Nueva Fecha para $userName")
+            datePicker.maxDate = maxCalendar.timeInMillis // MÁXIMO 30 DÍAS
+            setTitle("📅 Nueva Fecha para $userName (máx. 30 días)")
             show()
         }
     }
@@ -730,6 +747,20 @@ class EditBookFragment : Fragment() {
             Log.e("EditBookFragment", "Error launching camera", e)
             Toast.makeText(context, "❌ Error al abrir cámara: ${e.message}", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun showUpdateConfirmationDialog() {
+        val book = editingBook ?: return
+        
+        AlertDialog.Builder(requireContext())
+            .setTitle("Confirmar Actualización")
+            .setMessage("¿Estás seguro de que quieres actualizar la información del libro '${book.title}'?")
+            .setIcon(android.R.drawable.ic_dialog_info)
+            .setPositiveButton("✅ SÍ, ACTUALIZAR") { _, _ ->
+                updateBook()
+            }
+            .setNegativeButton("❌ CANCELAR", null)
+            .show()
     }
 
     private fun updateBook() {

@@ -192,7 +192,7 @@ class AssignedBooksAdapter(
         } else {
             "Sin categoría"
         }
-        bsBookQuantity.text = "${book.quantity} ejemplares totales"
+        bsBookQuantity.text = "${book.quantity} libros totales"
         bsBookIsbn.text = book.isbn
         bsBookDescription.text = book.description.ifEmpty { "Sin descripción disponible" }
         

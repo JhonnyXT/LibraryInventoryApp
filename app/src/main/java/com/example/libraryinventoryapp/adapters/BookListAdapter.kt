@@ -129,7 +129,7 @@ class BookListAdapter(
         
         when {
             totalCopies == 0 -> {
-                bsBookStatus.text = "❌ No disponible - Sin ejemplares"
+                bsBookStatus.text = "❌ No disponible - Sin libros"
             }
             availableCopies <= 0 -> {
                 bsBookStatus.text = "❌ No disponible - Todos asignados"
@@ -144,7 +144,7 @@ class BookListAdapter(
         } else {
             "Sin categoría"
         }
-        bsBookQuantity.text = "$totalCopies ejemplares (📖 $assignedCopies asignados, 📗 $availableCopies libres)"
+        bsBookQuantity.text = "$totalCopies libros (📖 $assignedCopies asignados, 📗 $availableCopies libres)"
         bsBookIsbn.text = book.isbn
         bsBookDescription.text = book.description.ifEmpty { "Sin descripción disponible" }
         

@@ -76,35 +76,74 @@ class OverdueBooksAdapter(
             holder.loanDate.text = "No disponible"
         }
         
-        // Días de retraso con énfasis según gravedad
-        val daysText = if (overdueItem.daysOverdue == 1) {
-            "${overdueItem.daysOverdue} día"
-        } else {
-            "${overdueItem.daysOverdue} días"
+        // Días de retraso/próximo vencimiento con énfasis según gravedad
+        val daysText = when {
+            overdueItem.daysOverdue > 0 -> {
+                // Libro vencido
+                if (overdueItem.daysOverdue == 1) {
+                    "Vencido hace ${overdueItem.daysOverdue} día"
+                } else {
+                    "Vencido hace ${overdueItem.daysOverdue} días"
+                }
+            }
+            overdueItem.daysOverdue == 0 -> {
+                "Vence HOY"
+            }
+            else -> {
+                // Libro próximo a vencer (daysOverdue negativo)
+                val daysUntilDue = kotlin.math.abs(overdueItem.daysOverdue)
+                if (daysUntilDue == 1) {
+                    "Vence MAÑANA"
+                } else {
+                    "Vence en $daysUntilDue días"
+                }
+            }
         }
         holder.daysOverdue.text = daysText
 
-        // Color de urgencia según días de retraso
+        // Color de urgencia según días de retraso/vencimiento
         when {
             overdueItem.daysOverdue >= 30 -> {
+                // Muy vencido
                 holder.urgencyBadge.text = "🚨 CRÍTICO"
                 holder.urgencyBadge.setBackgroundColor(holder.itemView.context.getColor(android.R.color.holo_red_dark))
                 holder.daysOverdue.setTextColor(holder.itemView.context.getColor(android.R.color.holo_red_dark))
             }
             overdueItem.daysOverdue >= 14 -> {
+                // Bastante vencido
                 holder.urgencyBadge.text = "⚠️ URGENTE"
                 holder.urgencyBadge.setBackgroundColor(holder.itemView.context.getColor(android.R.color.holo_orange_dark))
                 holder.daysOverdue.setTextColor(holder.itemView.context.getColor(android.R.color.holo_orange_dark))
             }
             overdueItem.daysOverdue >= 7 -> {
+                // Una semana vencido
                 holder.urgencyBadge.text = "⏰ TARDE"
                 holder.urgencyBadge.setBackgroundColor(holder.itemView.context.getColor(android.R.color.holo_orange_light))
                 holder.daysOverdue.setTextColor(holder.itemView.context.getColor(android.R.color.holo_orange_light))
             }
-            else -> {
+            overdueItem.daysOverdue >= 1 -> {
+                // Recién vencido
                 holder.urgencyBadge.text = "📋 VENCIDO"
                 holder.urgencyBadge.setBackgroundColor(holder.itemView.context.getColor(android.R.color.holo_red_light))
                 holder.daysOverdue.setTextColor(holder.itemView.context.getColor(android.R.color.holo_red_light))
+            }
+            overdueItem.daysOverdue == 0 -> {
+                // Vence hoy
+                holder.urgencyBadge.text = "🔥 VENCE HOY"
+                holder.urgencyBadge.setBackgroundColor(holder.itemView.context.getColor(android.R.color.holo_orange_dark))
+                holder.daysOverdue.setTextColor(holder.itemView.context.getColor(android.R.color.holo_orange_dark))
+            }
+            overdueItem.daysOverdue == -1 -> {
+                // Vence mañana
+                holder.urgencyBadge.text = "⚡ MAÑANA"
+                holder.urgencyBadge.setBackgroundColor(holder.itemView.context.getColor(android.R.color.holo_orange_light))
+                holder.daysOverdue.setTextColor(holder.itemView.context.getColor(android.R.color.holo_orange_light))
+            }
+            else -> {
+                // Próximo a vencer (2-5 días)
+                holder.urgencyBadge.text = "⏳ PRÓXIMO"
+                holder.urgencyBadge.setBackgroundColor(holder.itemView.context.getColor(android.R.color.holo_blue_light))
+                holder.daysOverdue.setTextColor(holder.itemView.context.getColor(android.R.color.holo_blue_light))
             }
         }
 
@@ -123,13 +162,30 @@ class OverdueBooksAdapter(
     override fun getItemCount(): Int = overdueBooks.size
 
     private fun OverdueViewHolder.showMarkAsReturnedDialog(overdueItem: OverdueBookItem) {
+        // Crear mensaje personalizado según el estado del préstamo
+        val statusMessage = when {
+            overdueItem.daysOverdue > 0 -> {
+                val daysText = if (overdueItem.daysOverdue == 1) "1 día" else "${overdueItem.daysOverdue} días"
+                "Este libro está vencido hace $daysText."
+            }
+            overdueItem.daysOverdue == 0 -> {
+                "Este libro vence HOY."
+            }
+            else -> {
+                val daysUntil = kotlin.math.abs(overdueItem.daysOverdue)
+                val daysText = if (daysUntil == 1) "mañana" else "en $daysUntil días"
+                "Este libro vence $daysText."
+            }
+        }
+        
         AlertDialog.Builder(itemView.context)
             .setTitle("Marcar como Devuelto")
-            .setMessage("¿Confirmas que ${overdueItem.userName} devolvió el libro '${overdueItem.book.title}'?\n\nEsta acción removerá la asignación del libro.")
-            .setPositiveButton("CONFIRMAR") { _, _ ->
+            .setMessage("¿Confirmas que ${overdueItem.userName} devolvió el libro '${overdueItem.book.title}'?\n\n$statusMessage\n\nEsta acción removerá la asignación del libro.")
+            .setIcon(android.R.drawable.ic_dialog_info)
+            .setPositiveButton("✅ SÍ, DEVUELTO") { _, _ ->
                 markBookAsReturned(overdueItem)
             }
-            .setNegativeButton("CANCELAR", null)
+            .setNegativeButton("❌ CANCELAR", null)
             .show()
     }
 
@@ -146,19 +202,27 @@ class OverdueBooksAdapter(
         val updatedAssignedDates = book.assignedDates?.toMutableList()?.apply { removeAt(userIndex) } ?: mutableListOf()
         val updatedLoanExpirationDates = book.loanExpirationDates?.toMutableList()?.apply { removeAt(userIndex) } ?: mutableListOf()
 
-        // Actualizar cantidad y estado
-        val updatedQuantity = book.quantity + 1
-        val updatedStatus = "Disponible"
+        // Convertir listas vacías a null para limpieza en Firestore
+        val finalAssignedTo = if (updatedAssignedTo.isEmpty()) null else updatedAssignedTo
+        val finalAssignedWithNames = if (updatedAssignedWithNames.isEmpty()) null else updatedAssignedWithNames
+        val finalAssignedToEmails = if (updatedAssignedToEmails.isEmpty()) null else updatedAssignedToEmails
+        val finalAssignedDates = if (updatedAssignedDates.isEmpty()) null else updatedAssignedDates
+        val finalLoanExpirationDates = if (updatedLoanExpirationDates.isEmpty()) null else updatedLoanExpirationDates
 
-        // Actualizar en Firestore
+        // Calcular status basado en disponibilidad real (NO cambiar quantity física)
+        val totalCopies = book.quantity // Mantener cantidad física original
+        val remainingAssignedCopies = finalAssignedTo?.size ?: 0
+        val updatedStatus = if (remainingAssignedCopies >= totalCopies) "No disponible" else "Disponible"
+
+        // Actualizar en Firestore (SIN cambiar quantity)
         val updates = mapOf(
-            "quantity" to updatedQuantity,
             "status" to updatedStatus,
-            "assignedTo" to updatedAssignedTo,
-            "assignedWithNames" to updatedAssignedWithNames,
-            "assignedToEmails" to updatedAssignedToEmails,
-            "assignedDates" to updatedAssignedDates,
-            "loanExpirationDates" to updatedLoanExpirationDates
+            "assignedTo" to finalAssignedTo,
+            "assignedWithNames" to finalAssignedWithNames,
+            "assignedToEmails" to finalAssignedToEmails,
+            "assignedDates" to finalAssignedDates,
+            "loanExpirationDates" to finalLoanExpirationDates,
+            "lastEditedDate" to com.google.firebase.Timestamp.now()
         )
 
         firestore.collection("books").document(book.id)

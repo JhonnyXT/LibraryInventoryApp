@@ -247,6 +247,181 @@ class EmailService {
     }
     
     /**
+     * Envío REAL de correos de recordatorio para libros vencidos/próximos a vencer
+     */
+    suspend fun sendBookExpirationReminderEmail(
+        adminEmail: String,
+        userEmail: String,
+        userName: String,
+        bookTitle: String,
+        bookAuthor: String,
+        adminName: String,
+        expirationDate: String,
+        daysOverdue: String
+    ): Result<String> {
+        Log.i("EmailService", """
+            🚀 INICIANDO ENVÍO REAL DE RECORDATORIO 🚀
+            Usuario: $userName ($userEmail)
+            Libro: $bookTitle por $bookAuthor
+            Vencimiento: $expirationDate
+            Estado: $daysOverdue
+            Admin: $adminName ($adminEmail)
+        """.trimIndent())
+
+        return withContext(Dispatchers.IO) {
+            try {
+                // Enviar email al usuario
+                Log.d("EmailService", "📧 Enviando recordatorio al usuario...")
+                val userResult = sendReminderToUser(userEmail, userName, bookTitle, bookAuthor, expirationDate, daysOverdue)
+                
+                // Enviar confirmación al admin
+                Log.d("EmailService", "📧 Enviando confirmación al admin...")
+                val adminResult = sendReminderConfirmationToAdmin(adminEmail, adminName, userName, userEmail, bookTitle, bookAuthor, expirationDate, daysOverdue)
+                
+                if (userResult.isSuccess && adminResult.isSuccess) {
+                    Log.i("EmailService", "✅ Recordatorios enviados exitosamente a usuario y admin")
+                    Result.success("Recordatorios enviados exitosamente")
+                } else {
+                    val errors = listOfNotNull(
+                        userResult.exceptionOrNull()?.message,
+                        adminResult.exceptionOrNull()?.message
+                    )
+                    Log.e("EmailService", "❌ Error enviando recordatorios: ${errors.joinToString(", ")}")
+                    Result.failure(Exception("Error enviando recordatorios: ${errors.joinToString(", ")}"))
+                }
+            } catch (e: Exception) {
+                Log.e("EmailService", "❌ Excepción general enviando recordatorios: ${e.message}", e)
+                Result.failure(e)
+            }
+        }
+    }
+
+    private suspend fun sendReminderToUser(
+        userEmail: String,
+        userName: String,
+        bookTitle: String,
+        bookAuthor: String,
+        expirationDate: String,
+        daysOverdue: String
+    ): Result<String> {
+        Log.d("EmailService", "📤 Preparando email de recordatorio para usuario: $userEmail")
+        
+        val subject = "📚 Recordatorio: Devolución de libro - $bookTitle"
+        val htmlContent = """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+                    .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                    .header { text-align: center; color: #2c3e50; margin-bottom: 30px; }
+                    .book-info { background-color: #ecf0f1; padding: 20px; border-radius: 8px; margin: 20px 0; }
+                    .warning { background-color: #e74c3c; color: white; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0; }
+                    .footer { text-align: center; color: #7f8c8d; margin-top: 30px; font-size: 14px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>📚 Recordatorio de Devolución</h1>
+                        <h2>$FROM_NAME</h2>
+                    </div>
+                    
+                    <p>Hola <strong>$userName</strong>,</p>
+                    
+                    <p>Te recordamos sobre la devolución del siguiente libro:</p>
+                    
+                    <div class="book-info">
+                        <h3>📖 $bookTitle</h3>
+                        <p><strong>Autor:</strong> $bookAuthor</p>
+                        <p><strong>Fecha de devolución:</strong> $expirationDate</p>
+                    </div>
+                    
+                    <div class="warning">
+                        <h3>⚠️ Estado: $daysOverdue</h3>
+                    </div>
+                    
+                    <p>Por favor, devuelve el libro a la mayor brevedad posible.</p>
+                    
+                    <p>Si ya lo devolviste, puedes ignorar este mensaje.</p>
+                    
+                    <div class="footer">
+                        <p>Gracias por tu colaboración</p>
+                        <p><strong>$FROM_NAME</strong></p>
+                    </div>
+                </div>
+            </body>
+            </html>
+        """.trimIndent()
+
+        return sendSendGridEmail(userEmail, userName, subject, htmlContent)
+    }
+
+    private suspend fun sendReminderConfirmationToAdmin(
+        adminEmail: String,
+        adminName: String,
+        userName: String,
+        userEmail: String,
+        bookTitle: String,
+        bookAuthor: String,
+        expirationDate: String,
+        daysOverdue: String
+    ): Result<String> {
+        Log.d("EmailService", "📤 Preparando confirmación de recordatorio para admin: $adminEmail")
+        
+        val subject = "✅ Recordatorio enviado: $bookTitle - $userName"
+        val htmlContent = """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+                    .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                    .header { text-align: center; color: #2c3e50; margin-bottom: 30px; }
+                    .info { background-color: #3498db; color: white; padding: 15px; border-radius: 8px; margin: 20px 0; }
+                    .details { background-color: #ecf0f1; padding: 20px; border-radius: 8px; margin: 20px 0; }
+                    .footer { text-align: center; color: #7f8c8d; margin-top: 30px; font-size: 14px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>✅ Recordatorio Enviado</h1>
+                        <h2>$FROM_NAME</h2>
+                    </div>
+                    
+                    <p>Hola <strong>$adminName</strong>,</p>
+                    
+                    <div class="info">
+                        <h3>📧 Recordatorio enviado exitosamente</h3>
+                    </div>
+                    
+                    <div class="details">
+                        <h3>📋 Detalles del recordatorio:</h3>
+                        <p><strong>Usuario:</strong> $userName ($userEmail)</p>
+                        <p><strong>Libro:</strong> $bookTitle</p>
+                        <p><strong>Autor:</strong> $bookAuthor</p>
+                        <p><strong>Fecha de vencimiento:</strong> $expirationDate</p>
+                        <p><strong>Estado:</strong> $daysOverdue</p>
+                    </div>
+                    
+                    <p>El usuario ha sido notificado sobre la devolución del libro.</p>
+                    
+                    <div class="footer">
+                        <p>Sistema de Gestión de Biblioteca</p>
+                        <p><strong>$FROM_NAME</strong></p>
+                    </div>
+                </div>
+            </body>
+            </html>
+        """.trimIndent()
+
+        return sendSendGridEmail(adminEmail, adminName, subject, htmlContent)
+    }
+
+    /**
      * Versión demo para recordatorios de libros vencidos - solo registra en el log
      */
     fun sendBookExpirationReminderEmailDemo(

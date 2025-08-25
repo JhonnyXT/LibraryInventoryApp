@@ -82,7 +82,7 @@ class BookAdapter(
 
             editBookButton.setOnClickListener {
                 val book = books[adapterPosition]
-                showEditConfirmationDialog(book, itemView.context)
+                editBook(book, itemView.context)
             }
 
             deleteBookButton.setOnClickListener {
@@ -120,7 +120,7 @@ class BookAdapter(
         val availableCopies = totalCopies - assignedCopies
         
         holder.bookStatus.text = when {
-            totalCopies == 0 -> "Estado: ❌ Sin ejemplares"
+            totalCopies == 0 -> "Estado: ❌ Sin libros"
             availableCopies <= 0 -> "Estado: ❌ Todos asignados"
             else -> "Estado: ✅ $availableCopies disponibles"
         }
@@ -363,16 +363,7 @@ class BookAdapter(
         datePickerDialog.show()
     }
 
-    private fun showEditConfirmationDialog(book: Book, context: Context) {
-        AlertDialog.Builder(context)
-            .setTitle("Confirmar Edición")
-            .setMessage("¿Estás seguro de que quieres editar el libro '${book.title}'?")
-            .setPositiveButton("ACEPTAR") { _, _ ->
-                editBook(book, context)
-            }
-            .setNegativeButton("CANCELAR", null)
-            .show()
-    }
+
 
     private fun showDeleteConfirmationDialog(book: Book, holder: BookViewHolder, context: Context) {
         AlertDialog.Builder(context)
@@ -859,7 +850,7 @@ class BookAdapter(
         
         when {
             totalCopies == 0 -> {
-                bsBookStatus.text = "❌ No disponible - Sin ejemplares"
+                bsBookStatus.text = "❌ No disponible - Sin libros"
             }
             availableCopies <= 0 -> {
                 bsBookStatus.text = "❌ No disponible - Todos asignados"
@@ -874,7 +865,7 @@ class BookAdapter(
         } else {
             "Sin categoría"
         }
-        bsBookQuantity.text = "$totalCopies ejemplares (📖 $assignedCopies asignados, 📗 $availableCopies libres)"
+        bsBookQuantity.text = "$totalCopies libros (📖 $assignedCopies asignados, 📗 $availableCopies libres)"
         bsBookIsbn.text = book.isbn
         bsBookDescription.text = book.description.ifEmpty { "Sin descripción disponible" }
         
@@ -916,7 +907,7 @@ class BookAdapter(
     ) {
         bsEditButton.setOnClickListener {
             bottomSheetDialog.dismiss()
-            showEditConfirmationDialog(book, context)
+            editBook(book, context)
         }
 
         bsDeleteButton.setOnClickListener {
