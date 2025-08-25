@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- BottomSheet optimizado y compacto con scroll -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:maxHeight="500dp"
+    android:background="@drawable/bg_bottom_sheet">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Handle del BottomSheet -->
+    <View
+        android:layout_width="48dp"
+        android:layout_height="5dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_handle"
+        android:layout_marginTop="-12dp" />
+
+    <!-- Header compacto -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <!-- Imagen compacta -->
+        <ImageView
+            android:id="@+id/bs_book_image"
+            android:layout_width="80dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            android:background="#F5F5F5"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <!-- Info básica -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <!-- Título -->
+            <TextView
+                android:id="@+id/bs_book_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Título del libro"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/bottom_sheet_title"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="1"
+                android:shadowRadius="2" />
+
+            <!-- Autor -->
+            <TextView
+                android:id="@+id/bs_book_author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="👤 por Autor"
+                android:textSize="14sp"
+                android:textColor="@color/bottom_sheet_secondary" />
+
+            <!-- Estado y cantidad en línea -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/bs_book_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="✅ Disponible"
+                    android:textSize="12sp"
+                    android:textColor="#2E7D32"
+                    android:textStyle="bold"
+                    android:background="#E8F5E8"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp" />
+
+                <TextView
+                    android:id="@+id/bs_book_quantity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="📚 Cantidad: 1"
+                    android:textSize="12sp"
+                    android:textColor="@color/bottom_sheet_text" />
+            </LinearLayout>
+
+            <!-- Alerta compacta -->
+            <TextView
+                android:id="@+id/bs_expiration_alert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="⚠️ VENCIDO"
+                android:textColor="#C62828"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Alerta container (ahora oculto, usamos el TextView arriba) -->
+    <View
+        android:id="@+id/bs_alert_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+
+    <!-- Info compacta en líneas -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="12dp">
+
+        <!-- Categoría e ISBN -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="6dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🏷️ Categoría:"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="@color/bottom_sheet_label" />
+
+            <TextView
+                android:id="@+id/bs_book_category"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="Liderazgo"
+                android:textSize="13sp"
+                android:textColor="@color/bottom_sheet_text" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="6dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🔢 ISBN:"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="@color/bottom_sheet_label" />
+
+            <TextView
+                android:id="@+id/bs_book_isbn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="1234567890"
+                android:textSize="13sp"
+                android:textColor="@color/bottom_sheet_text" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="6dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="👥 Asignado:"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="@color/bottom_sheet_label" />
+
+            <TextView
+                android:id="@+id/bs_book_assigned_to"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="Nadie"
+                android:textSize="13sp"
+                android:textColor="@color/bottom_sheet_text"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Descripción completa y visible (sin limitaciones) -->
+    <TextView
+        android:id="@+id/bs_book_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="📝 Descripción del libro..."
+        android:textSize="13sp"
+        android:textColor="@color/bottom_sheet_text"
+        android:lineSpacingExtra="2dp"
+        android:layout_marginBottom="16dp"
+        android:scrollbars="vertical" />
+
+    <!-- Sección de usuarios asignados (solo visible si hay usuarios) -->
+    <LinearLayout
+        android:id="@+id/bs_assigned_users_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        android:background="@drawable/bg_admin_card"
+        android:elevation="2dp"
+        android:padding="16dp">
+
+        <!-- Header de la sección -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="👥 Usuarios Asignados"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/bottom_sheet_title"
+            android:layout_marginBottom="12dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <!-- Contenedor dinámico para usuarios -->
+        <LinearLayout
+            android:id="@+id/bs_users_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </LinearLayout>
+
+    <!-- Sección de asignación eliminada - gestión completa ahora en EditBook -->
+
+    <!-- Botones libres sin contenedor -->
+    <LinearLayout
+        android:id="@+id/bs_buttons_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:paddingVertical="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bs_editBookButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="✏️ Editar"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-medium"
+            style="@style/Widget.MaterialComponents.Button"
+            android:backgroundTint="#FF9800"
+            android:elevation="3dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bs_deleteBookButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="🗑️ Eliminar"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-medium"
+            style="@style/Widget.MaterialComponents.Button"
+            android:backgroundTint="#F44336"
+            android:elevation="3dp" />
+    </LinearLayout>
+
+    <!-- ProgressBar compacto -->
+    <LinearLayout
+        android:id="@+id/bs_progress_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:padding="8dp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/bs_progressBarAssignBook"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:indeterminateTint="#1976D2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Procesando..."
+            android:textSize="12sp"
+            android:textColor="#424242" />
+    </LinearLayout>
+</LinearLayout>
+</ScrollView>

@@ -4,4 +4,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="nav_item_color">#FF6200EE</color>
     <color name="color_primary">#5EC9FF</color>
+    
+    <!-- Colores adaptativos modernos -->
+    <color name="bottom_sheet_title">#1A202C</color>
+    <color name="bottom_sheet_label">#2B6CB0</color>
+    <color name="bottom_sheet_text">#4A5568</color>
+    <color name="bottom_sheet_secondary">#718096</color>
 </resources>

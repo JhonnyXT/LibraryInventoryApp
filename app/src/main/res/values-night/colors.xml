@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colores adaptativos para modo oscuro -->
+    <color name="bottom_sheet_title">#F7FAFC</color>
+    <color name="bottom_sheet_label">#90CDF4</color>
+    <color name="bottom_sheet_text">#E2E8F0</color>
+    <color name="bottom_sheet_secondary">#A0AEC0</color>
+</resources>

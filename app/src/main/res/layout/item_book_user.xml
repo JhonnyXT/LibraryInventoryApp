@@ -1,99 +1,133 @@
-<!-- item_book_card.xml -->
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Diseño adaptativo con fondo cross-theme para catálogo de usuario -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    android:background="@drawable/bg_admin_card"
+    android:elevation="3dp"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+        <!-- Imagen del libro pequeña -->
         <ImageView
             android:id="@+id/book_image"
-            android:layout_width="90dp"
-            android:layout_height="120dp"
+            android:layout_width="60dp"
+            android:layout_height="80dp"
             android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="@+id/book_quantity"
+            android:background="#F5F5F5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/book_title"
+            app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@tools:sample/avatars" />
 
+        <!-- Indicador verde para usuario -->
+        <View
+            android:id="@+id/status_indicator"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            android:background="#4CAF50"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Título del libro -->
         <TextView
             android:id="@+id/book_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Titulo libro"
+            android:text="Título del libro"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/book_image"
+            android:textColor="@color/bottom_sheet_title"
+            android:fontFamily="sans-serif-medium"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_constraintEnd_toStartOf="@id/status_indicator"
+            app:layout_constraintStart_toEndOf="@id/book_image"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/book_description"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Descripción"
-            app:layout_constraintEnd_toEndOf="@+id/book_quantity"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/book_quantity" />
-
+        <!-- Autor del libro -->
         <TextView
             android:id="@+id/book_author"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:text="por Nombre del Autor"
+            android:textSize="14sp"
+            android:textColor="@color/bottom_sheet_secondary"
+            android:fontFamily="sans-serif"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintEnd_toStartOf="@id/status_indicator"
+            app:layout_constraintStart_toEndOf="@id/book_image"
+            app:layout_constraintTop_toBottomOf="@id/book_title" />
+
+        <!-- Estado disponible -->
+        <TextView
+            android:id="@+id/book_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="Autor"
-            app:layout_constraintEnd_toEndOf="@+id/book_title"
-            app:layout_constraintStart_toStartOf="@+id/book_title"
-            app:layout_constraintTop_toBottomOf="@+id/book_title" />
+            android:text="Disponible"
+            android:textSize="12sp"
+            android:textColor="#2E7D32"
+            android:textStyle="bold"
+            android:background="#E8F5E8"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:fontFamily="sans-serif-medium"
+            app:layout_constraintStart_toEndOf="@id/book_image"
+            app:layout_constraintTop_toBottomOf="@id/book_author" />
+
+        <!-- Click para ver detalles -->
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:alpha="0.8"
+            android:fontFamily="sans-serif"
+            android:text="👆 Toca para ver detalles"
+            android:textColor="@color/bottom_sheet_secondary"
+            android:textSize="11sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/status_indicator"
+            app:layout_constraintStart_toEndOf="@id/book_image"
+            app:layout_constraintTop_toBottomOf="@+id/book_status" />
+
+        <!-- Datos ocultos para el BottomSheet -->
+        <TextView
+            android:id="@+id/book_description"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/book_categories"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Categoría"
-            app:layout_constraintEnd_toEndOf="@+id/book_author"
-            app:layout_constraintStart_toStartOf="@+id/book_author"
-            app:layout_constraintTop_toBottomOf="@+id/book_author" />
-
-        <TextView
-            android:id="@+id/book_status"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Estado"
-            app:layout_constraintEnd_toEndOf="@+id/book_categories"
-            app:layout_constraintStart_toStartOf="@+id/book_categories"
-            app:layout_constraintTop_toBottomOf="@+id/book_categories" />
+            android:layout_height="0dp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/book_quantity"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Cantidad"
-            app:layout_constraintEnd_toEndOf="@+id/book_status"
-            app:layout_constraintStart_toStartOf="@+id/book_status"
-            app:layout_constraintTop_toBottomOf="@+id/book_status" />
+            android:layout_height="0dp"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/assign_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Asignar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/book_image"
-            app:layout_constraintTop_toBottomOf="@+id/book_description" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+</FrameLayout>

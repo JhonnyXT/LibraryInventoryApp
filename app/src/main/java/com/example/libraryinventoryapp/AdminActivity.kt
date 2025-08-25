@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.libraryinventoryapp.fragments.RegisterBookFragment
 import com.example.libraryinventoryapp.fragments.ViewBooksFragment
+import com.example.libraryinventoryapp.fragments.OverdueBooksFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class AdminActivity : AppCompatActivity() {
@@ -24,6 +25,7 @@ class AdminActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_register_book -> loadFragment(RegisterBookFragment())
                 R.id.nav_view_books -> loadFragment(ViewBooksFragment())
+                R.id.nav_overdue_books -> loadFragment(OverdueBooksFragment())
             }
             true
         }

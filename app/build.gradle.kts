@@ -67,6 +67,9 @@ dependencies {
     implementation(libs.glide)
     kapt(libs.glide.compiler)
 
+    // HTTP requests para envío de correos
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    
+    <!-- Degradado gris más visible y elegante -->
+    <gradient
+        android:startColor="#F8F9FA"
+        android:centerColor="#F1F3F4"
+        android:endColor="#E9ECEF"
+        android:angle="135"
+        android:type="linear" />
+    
+    <!-- Borde elegante -->
+    <stroke
+        android:width="1dp"
+        android:color="#DEE2E6" />
+    
+    <!-- Bordes redondeados -->
+    <corners android:radius="12dp" />
+    
+</shape>

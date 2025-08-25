@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <!-- Estado presionado -->
+    <item android:state_pressed="true">
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <gradient
+                        android:startColor="#FEF2F2"
+                        android:centerColor="#FEE2E2"
+                        android:endColor="#FECACA"
+                        android:angle="135" />
+                    <corners android:radius="16dp" />
+                    <stroke
+                        android:width="2dp"
+                        android:color="#F87171" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+    
+    <!-- Estado normal -->
+    <item>
+        <layer-list>
+            <!-- Sombra con toque rojizo -->
+            <item
+                android:left="0dp"
+                android:top="0dp"
+                android:right="2dp"
+                android:bottom="4dp">
+                <shape android:shape="rectangle">
+                    <solid android:color="#20DC2626" />
+                    <corners android:radius="18dp" />
+                </shape>
+            </item>
+            
+            <!-- Fondo principal con gradiente cálido -->
+            <item
+                android:left="0dp"
+                android:top="0dp"
+                android:right="2dp"
+                android:bottom="4dp">
+                <shape android:shape="rectangle">
+                    <gradient
+                        android:startColor="#FFFBFB"
+                        android:centerColor="#FEF7F7"
+                        android:endColor="#FEF2F2"
+                        android:angle="135" />
+                    <corners android:radius="16dp" />
+                    <stroke
+                        android:width="1dp"
+                        android:color="#F3E8E8" />
+                </shape>
+            </item>
+            
+            <!-- Borde izquierdo de alerta -->
+            <item
+                android:left="0dp"
+                android:top="0dp"
+                android:right="2dp"
+                android:bottom="4dp">
+                <shape android:shape="rectangle">
+                    <corners android:radius="16dp" />
+                </shape>
+            </item>
+            
+            <!-- Línea de alerta lateral -->
+            <item
+                android:left="0dp"
+                android:top="8dp"
+                android:right="2dp"
+                android:bottom="12dp">
+                <shape android:shape="rectangle">
+                    <solid android:color="#F87171" />
+                    <corners android:topLeftRadius="8dp"
+                            android:bottomLeftRadius="8dp" />
+                </shape>
+            </item>
+            
+        </layer-list>
+    </item>
+    
+</selector>

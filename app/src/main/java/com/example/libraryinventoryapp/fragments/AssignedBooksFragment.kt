@@ -12,6 +12,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.libraryinventoryapp.R
 import com.example.libraryinventoryapp.adapters.AssignedBooksAdapter
 import com.example.libraryinventoryapp.models.Book
@@ -28,6 +29,7 @@ class AssignedBooksFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private lateinit var searchView: SearchView
     private lateinit var filterButton: ImageButton
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private var assignedBooksList: MutableList<Book> = mutableListOf()
     private var filteredAssignedBooksList: MutableList<Book> = mutableListOf()
@@ -48,8 +50,14 @@ class AssignedBooksFragment : Fragment() {
         progressBar = view.findViewById(R.id.progress_bar)
         searchView = view.findViewById(R.id.searchView)
         filterButton = view.findViewById(R.id.filter_button)
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
+        
+        // Configurar SwipeRefreshLayout
+        swipeRefreshLayout.setOnRefreshListener {
+            fetchAssignedBooks()
+        }
 
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
@@ -91,13 +99,18 @@ class AssignedBooksFragment : Fragment() {
                     assignedBooksList.add(book)
                 }
 
+                // Ordenar la lista de libros alfabéticamente por el título sin acentos
+                assignedBooksList.sortBy { normalizeText(it.title ?: "") }
+
                 filteredAssignedBooksList = assignedBooksList.toMutableList()
                 assignedBooksAdapter = AssignedBooksAdapter(filteredAssignedBooksList)
                 recyclerView.adapter = assignedBooksAdapter
                 progressBar.visibility = View.GONE
+                swipeRefreshLayout.isRefreshing = false
             }
             .addOnFailureListener { exception ->
                 progressBar.visibility = View.GONE
+                swipeRefreshLayout.isRefreshing = false
                 Toast.makeText(context, "Error al cargar los libros: ${exception.message}", Toast.LENGTH_LONG).show()
             }
     }
@@ -151,14 +164,14 @@ class AssignedBooksFragment : Fragment() {
 
     // Método para filtrar libros asignados
     private fun filterAssignedBooks(query: String) {
-        val normalizedQuery = removeAccents(query.toLowerCase())
+        val normalizedQuery = normalizeText(query)
 
         filteredAssignedBooksList.clear()
         filteredAssignedBooksList.addAll(
             assignedBooksList.filter { book ->
-                val normalizedTitle = removeAccents(book.title.toLowerCase())
-                val normalizedAuthor = removeAccents(book.author.toLowerCase())
-                val normalizedDescription = removeAccents(book.description.toLowerCase())
+                val normalizedTitle = normalizeText(book.title)
+                val normalizedAuthor = normalizeText(book.author)
+                val normalizedDescription = normalizeText(book.description)
                 val matchesQuery = normalizedTitle.contains(normalizedQuery) ||
                         normalizedAuthor.contains(normalizedQuery) ||
                         normalizedDescription.contains(normalizedQuery)
@@ -172,9 +185,9 @@ class AssignedBooksFragment : Fragment() {
         assignedBooksAdapter.notifyDataSetChanged()
     }
 
-    // Método para eliminar tildes y otros signos diacríticos
-    private fun removeAccents(text: String): String {
-        return Normalizer.normalize(text, Normalizer.Form.NFD)
-            .replace(Regex("\\p{InCombiningDiacriticalMarks}+"), "")
+    // Método para normalizar texto (eliminar acentos, convertir a minúsculas)
+    private fun normalizeText(text: String): String {
+        return Normalizer.normalize(text.lowercase().trim(), Normalizer.Form.NFD)
+            .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
     }
 }

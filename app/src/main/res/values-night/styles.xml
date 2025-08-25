@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Override estilo para modo oscuro - Visibilidad mejorada -->
+    <style name="SearchFieldLightTheme" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">#F7FAFC</item>
+        <item name="boxStrokeColor">#90CDF4</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="hintTextColor">#4A5568</item>
+        <item name="android:textColorHint">#4A5568</item>
+        <item name="colorControlNormal">#90CDF4</item>
+        <item name="colorControlActivated">#2196F3</item>
+    </style>
+</resources>

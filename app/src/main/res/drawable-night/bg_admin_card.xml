@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    
+    <!-- Gradiente moderno modo oscuro (igual al BottomSheet) -->
+    <gradient
+        android:type="linear"
+        android:angle="160"
+        android:startColor="#2D3748"
+        android:centerColor="#374151" 
+        android:endColor="#4A5568" />
+    
+    <!-- Bordes redondeados -->
+    <corners android:radius="12dp" />
+        
+    <!-- Borde sutil modo oscuro -->
+    <stroke 
+        android:width="1dp"
+        android:color="#4A5568" />
+        
+</shape>

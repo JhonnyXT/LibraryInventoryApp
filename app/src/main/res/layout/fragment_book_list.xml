@@ -31,17 +31,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/searchView" />
 
-    <!-- RecyclerView para la lista de libros -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/books_recycler_view"
+    <!-- SwipeRefreshLayout para recargar la lista -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView"
-        tools:listitem="@layout/item_book_user" />
+        app:layout_constraintTop_toBottomOf="@+id/searchView">
+
+        <!-- RecyclerView para la lista de libros -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/books_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/item_book_user" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <!-- ProgressBar para indicar carga -->
     <ProgressBar

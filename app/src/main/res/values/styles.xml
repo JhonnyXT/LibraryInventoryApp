@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Estilo para campo de búsqueda en modo claro - Visibilidad mejorada -->
+    <style name="SearchFieldLightTheme" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">#2B6CB0</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="hintTextColor">#4A5568</item>
+        <item name="android:textColorHint">#718096</item>
+        <item name="colorControlNormal">#CBD5E0</item>
+        <item name="colorControlActivated">#2196F3</item>
+    </style>
+</resources>

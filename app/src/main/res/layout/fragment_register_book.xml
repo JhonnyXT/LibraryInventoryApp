@@ -1,211 +1,397 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Diseño moderno y profesional para registro de libros -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_admin_card">
 
-    tools:context=".fragments.RegisterBookFragment"
-    android:fillViewport="true">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- QR/Barcode scanner button -->
-        <Button
-            android:id="@+id/scan_code_button"
-            android:layout_width="0dp"
+        <!-- Header Premium -->
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="80dp"
-            android:text="Escanear Código QR/Barra"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_admin_card"
+            android:elevation="4dp"
+            android:layout_marginTop="32dp">
 
-        <!-- ISBN input -->
-        <EditText
-            android:id="@+id/book_isbn_input"
-            android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📚 Registrar Nuevo Libro"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/bottom_sheet_title"
+                    android:fontFamily="sans-serif-medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Añade un nuevo libro al inventario"
+                    android:textSize="14sp"
+                    android:textColor="@color/bottom_sheet_secondary"
+                    android:fontFamily="sans-serif" />
+
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Sección: Escanear Código -->
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="8dp"
-            android:hint="ISBN del libro"
-            android:inputType="number"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/captured_image_view" />
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_admin_card"
+            android:elevation="3dp">
 
-        <!-- Author input -->
-        <EditText
-            android:id="@+id/book_author_input"
-            android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Header de sección -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📷 Escanear Código"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/bottom_sheet_title"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="sans-serif-medium" />
+
+                <!-- Botón de escaneo -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/scan_code_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginBottom="12dp"
+                    android:text="📱 Escanear Código QR/Barras"
+                    android:textSize="16sp"
+                    android:backgroundTint="@color/bottom_sheet_secondary"
+                    style="@style/Widget.MaterialComponents.Button" />
+
+                <!-- ISBN manual -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="🔢 ISBN (o ingresa manualmente)"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/book_isbn_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Sección: Información del Libro -->
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="8dp"
-            android:hint="Autor del libro"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/book_isbn_input" />
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_admin_card"
+            android:elevation="3dp">
 
-        <!-- Title input -->
-        <EditText
-            android:id="@+id/book_title_input"
-            android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Header de sección -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📖 Información del Libro"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/bottom_sheet_title"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="sans-serif-medium" />
+
+                <!-- Título del libro -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:hint="📚 Título del libro"
+                    app:startIconDrawable="@drawable/ic_book_default"
+                    app:startIconTint="@color/bottom_sheet_secondary"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/book_title_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="2" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Autor del libro -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:hint="👤 Autor del libro"
+                    app:startIconDrawable="@drawable/ic_book_default"
+                    app:startIconTint="@color/bottom_sheet_secondary"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/book_author_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Descripción -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:hint="📝 Descripción del libro"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/book_description_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
+                        android:minLines="3"
+                        android:gravity="top" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Sección: Categorías y Stock -->
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="8dp"
-            android:hint="Título del libro"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/book_author_input" />
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_admin_card"
+            android:elevation="3dp">
 
-        <!-- Description input -->
-        <EditText
-            android:id="@+id/book_description_input"
-            android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Header de sección -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🏷️ Clasificación y Stock"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/bottom_sheet_title"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="sans-serif-medium" />
+
+                <!-- Botón de categorías -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/selectCategoryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="🏷️ Seleccionar Categorías"
+                    android:textSize="16sp"
+                    android:backgroundTint="@color/bottom_sheet_secondary"
+                    style="@style/Widget.MaterialComponents.Button" />
+
+                <!-- Categorías seleccionadas -->
+                <TextView
+                    android:id="@+id/selectedCategoriesTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Categorías: Ninguna seleccionada"
+                    android:textSize="14sp"
+                    android:textColor="@color/bottom_sheet_text"
+                    android:background="@drawable/bg_admin_card"
+                    android:padding="12dp"
+                    android:fontFamily="sans-serif"
+                    android:elevation="2dp" />
+
+                <!-- Cantidad y Código en fila -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:hint="📦 Cantidad"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/book_quantity_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:text="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:hint="🏷️ Código (opcional)"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/book_code_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Sección: Imagen del Libro -->
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="8dp"
-            android:hint="Descripción del libro"
-            android:inputType="textMultiLine"
-            android:maxLines="5"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/book_title_input" />
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_admin_card"
+            android:elevation="3dp">
 
-        <!-- Categorías del libro -->
-        <Button
-            android:id="@+id/selectCategoryButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:text="Seleccionar Categorías"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/book_description_input" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        <TextView
-            android:id="@+id/selectedCategoriesTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="Categorías seleccionadas: Ninguna"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/selectCategoryButton" />
+                <!-- Header de sección -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📸 Imagen del Libro"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/bottom_sheet_title"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="sans-serif-medium" />
 
-        <!-- Upload book image button -->
-        <Button
-            android:id="@+id/capture_image_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="8dp"
-            android:text="Capturar Imagen"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scan_code_button" />
+                <!-- Botón de imagen -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/capture_image_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="📷 Capturar Imagen del Libro"
+                    android:textSize="16sp"
+                    android:backgroundTint="@color/bottom_sheet_title"
+                    style="@style/Widget.MaterialComponents.Button" />
 
-        <!-- Previsualización de la imagen cargada -->
-        <ImageView
-            android:id="@+id/captured_image_view"
-            android:layout_width="200dp"
-            android:layout_height="250dp"
-            android:scaleType="centerCrop"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/capture_image_button"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+                <!-- Vista de imagen -->
+                <ImageView
+                    android:id="@+id/captured_image_view"
+                    android:layout_width="200dp"
+                    android:layout_height="280dp"
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/bg_admin_card"
+                    android:visibility="gone"
+                    tools:src="@drawable/ic_book_default" />
 
-        <!-- Register book button -->
-        <Button
-            android:id="@+id/register_book_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:text="Registrar Libro"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+            </LinearLayout>
+        </FrameLayout>
 
+        <!-- Botones de acción finales -->
         <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/selectedCategoriesTextView">
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
 
-            <!-- book quantity -->
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Cantidad: "
-                app:layout_constraintStart_toStartOf="@+id/selectedCategoriesTextView" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/logout_button"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="🚪 Cerrar Sesión"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="#757575"
+                style="@style/Widget.MaterialComponents.Button" />
 
-            <EditText
-                android:id="@+id/book_quantity_input"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/register_book_button"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:hint="0"
-                android:inputType="number"
-                app:layout_constraintBottom_toBottomOf="@+id/textView2"
-                app:layout_constraintStart_toEndOf="@+id/textView2"
-                app:layout_constraintTop_toTopOf="@+id/textView2" />
+                android:text="💾 Registrar Libro"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="#4CAF50"
+                style="@style/Widget.MaterialComponents.Button" />
 
-            <!-- book code -->
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="80dp"
-                android:text="Código: "
-                app:layout_constraintStart_toStartOf="@+id/selectedCategoriesTextView" />
-
-            <EditText
-                android:id="@+id/book_code_input"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:hint="M101"
-                app:layout_constraintBottom_toBottomOf="@+id/textView2"
-                app:layout_constraintStart_toEndOf="@+id/textView2"
-                app:layout_constraintTop_toTopOf="@+id/textView2" />
         </LinearLayout>
 
-        <!-- Logout button -->
-        <Button
-            android:id="@+id/logout_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="8dp"
-            android:text="Cerrar Sesión"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/register_book_button" />
-
-        <!-- Progress Bar -->
-        <ProgressBar
-            android:id="@+id/progress_bar"
+        <!-- ProgressBar elegante -->
+        <FrameLayout
+            android:id="@+id/progress_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:background="@drawable/bg_admin_card"
+            android:elevation="8dp">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:gravity="center">
 
-</androidx.core.widget.NestedScrollView>
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="16dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Registrando libro..."
+                    android:textSize="16sp"
+                    android:textColor="@color/bottom_sheet_title"
+                    android:fontFamily="sans-serif-medium" />
+
+            </LinearLayout>
+        </FrameLayout>
+
+    </LinearLayout>
+</ScrollView>

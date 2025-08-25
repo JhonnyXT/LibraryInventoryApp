@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Item individual para usuario asignado en BottomSheet -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/bg_admin_card"
+    android:elevation="1dp"
+    android:padding="12dp">
+
+    <!-- Información del usuario -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+
+        <!-- Información principal -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Nombre del usuario -->
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Juan Pérez"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/bottom_sheet_title"
+                android:fontFamily="sans-serif-medium" />
+
+            <!-- Fecha de vencimiento -->
+            <TextView
+                android:id="@+id/expiration_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="📅 Vence: 15/01/2025"
+                android:textSize="12sp"
+                android:textColor="@color/bottom_sheet_secondary"
+                android:fontFamily="sans-serif" />
+
+            <!-- Estado/alerta de vencimiento -->
+            <TextView
+                android:id="@+id/expiration_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="⚠️ Vencido hace 3 días"
+                android:textSize="11sp"
+                android:textColor="#D32F2F"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <!-- Indicador visual de estado -->
+        <View
+            android:id="@+id/status_indicator"
+            android:layout_width="4dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:background="#4CAF50" />
+
+    </LinearLayout>
+
+    <!-- Botones de acción -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <!-- Botón cambiar fecha -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/change_date_button"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginEnd="8dp"
+            android:text="📅 Cambiar Fecha"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#2196F3"
+            android:paddingHorizontal="12dp"
+            style="@style/Widget.MaterialComponents.Button" />
+
+        <!-- Botón desasignar -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/unassign_button"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="❌ Desasignar"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#F44336"
+            android:paddingHorizontal="12dp"
+            style="@style/Widget.MaterialComponents.Button" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -13,11 +13,17 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.libraryinventoryapp.R
 import com.example.libraryinventoryapp.adapters.BookListAdapter
 import com.example.libraryinventoryapp.models.Book
+import com.example.libraryinventoryapp.utils.EmailService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.Timestamp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.Normalizer
 
 class BookListFragment : Fragment() {
@@ -29,6 +35,8 @@ class BookListFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private lateinit var searchView: SearchView
     private lateinit var filterButton: ImageButton
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private val emailService = EmailService()
 
     private var booksList: MutableList<Book> = mutableListOf()
     private var filteredBooksList: MutableList<Book> = mutableListOf()
@@ -48,8 +56,14 @@ class BookListFragment : Fragment() {
         progressBar = view.findViewById(R.id.progress_bar)
         searchView = view.findViewById(R.id.searchView)
         filterButton = view.findViewById(R.id.filter_button)
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
+        
+        // Configurar SwipeRefreshLayout
+        swipeRefreshLayout.setOnRefreshListener {
+            fetchBooks()
+        }
 
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
@@ -87,20 +101,23 @@ class BookListFragment : Fragment() {
                     }
                 }
 
-                // Ordena la lista de libros alfabéticamente por el título
-                booksList.sortBy { it.title?.lowercase() }
+                // Ordena la lista de libros alfabéticamente por el título sin acentos
+                booksList.sortBy { normalizeText(it.title ?: "") }
 
                 // Copia la lista original para usar en el filtrado
                 filteredBooksList = booksList.toMutableList()
 
                 bookListAdapter = BookListAdapter(filteredBooksList) { book ->
-                    assignBook(book)
+                    // Ya no se permite auto-asignación de usuarios
+                    // El botón está oculto, pero mantenemos este callback por compatibilidad
                 }
                 recyclerView.adapter = bookListAdapter
                 progressBar.visibility = View.GONE
+                swipeRefreshLayout.isRefreshing = false
             }
             .addOnFailureListener { exception ->
                 progressBar.visibility = View.GONE
+                swipeRefreshLayout.isRefreshing = false
                 Toast.makeText(context, "Error al cargar los libros: ${exception.message}", Toast.LENGTH_LONG).show()
             }
     }
@@ -153,12 +170,12 @@ class BookListFragment : Fragment() {
 
     // Filtrar libros según el texto ingresado
     private fun filterBooks(query: String) {
-        val normalizedQuery = removeAccents(query.lowercase())
+        val normalizedQuery = normalizeText(query)
 
         filteredBooksList.clear()
         filteredBooksList.addAll(
             booksList.filter {
-                val normalizedTitle = removeAccents(it.title?.lowercase() ?: "")
+                val normalizedTitle = normalizeText(it.title ?: "")
                 normalizedTitle.contains(normalizedQuery)
             }
         )
@@ -194,10 +211,12 @@ class BookListFragment : Fragment() {
                     val updatedAssignedTo = (book.assignedTo ?: mutableListOf()).toMutableList()
                     val updatedAssignedWithNames = (book.assignedWithNames ?: mutableListOf()).toMutableList()
                     val updatedAssignedToEmails = (book.assignedToEmails ?: mutableListOf()).toMutableList()
+                    val updatedAssignedDates = (book.assignedDates ?: mutableListOf()).toMutableList()
 
                     updatedAssignedTo.add(userId)
                     updatedAssignedWithNames.add(userName)
                     updatedAssignedToEmails.add(userEmail)
+                    updatedAssignedDates.add(Timestamp.now())
 
                     val newQuantity = book.quantity - 1
                     val updateMap = mapOf(
@@ -205,13 +224,17 @@ class BookListFragment : Fragment() {
                         "quantity" to newQuantity,
                         "assignedTo" to updatedAssignedTo,
                         "assignedWithNames" to updatedAssignedWithNames,
-                        "assignedToEmails" to updatedAssignedToEmails
+                        "assignedToEmails" to updatedAssignedToEmails,
+                        "assignedDates" to updatedAssignedDates
                     )
 
                     firestore.collection("books").document(book.id).update(updateMap)
                         .addOnSuccessListener {
                             Toast.makeText(context, "Libro asignado exitosamente.", Toast.LENGTH_SHORT).show()
                             fetchBooks() // Actualizar la lista de libros
+                            
+                            // Enviar notificaciones por correo
+                            sendSelfAssignmentNotificationEmails(book, userName, userEmail)
                         }
                         .addOnFailureListener { exception ->
                             Toast.makeText(context, "Error al asignar el libro: ${exception.message}", Toast.LENGTH_LONG).show()
@@ -230,9 +253,53 @@ class BookListFragment : Fragment() {
             }
     }
 
-    // Método para eliminar tildes y otros signos diacríticos
-    private fun removeAccents(text: String): String {
-        return Normalizer.normalize(text, Normalizer.Form.NFD)
-            .replace(Regex("\\p{InCombiningDiacriticalMarks}+"), "")
+    private fun sendSelfAssignmentNotificationEmails(book: Book, userName: String, userEmail: String) {
+        // Obtener la lista de administradores para notificarles
+        firestore.collection("users")
+            .whereEqualTo("role", "admin")
+            .get()
+            .addOnSuccessListener { adminDocuments ->
+                for (adminDoc in adminDocuments) {
+                    val adminName = adminDoc.getString("name") ?: "Administrador"
+                    val adminEmail = adminDoc.getString("email") ?: continue
+
+                    // Enviar correos REALES con SendGrid
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val result = emailService.sendBookAssignmentEmail(
+                            adminEmail = adminEmail,
+                            userEmail = userEmail,
+                            userName = userName,
+                            bookTitle = book.title,
+                            bookAuthor = book.author,
+                            adminName = adminName
+                        )
+                        
+                        if (result.isSuccess) {
+                            Log.d("EmailService", "✅ SendGrid: Correos de auto-asignación enviados exitosamente")
+                        } else {
+                            Log.e("EmailService", "❌ SendGrid Error: ${result.exceptionOrNull()?.message}")
+                        }
+                    }
+                }
+                
+                Toast.makeText(
+                    context, 
+                    "Notificaciones enviadas por correo ✉️", 
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(
+                    context, 
+                    "Error obteniendo administradores: ${e.message}", 
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+    }
+
+    // Método para normalizar texto (eliminar acentos, convertir a minúsculas)
+    private fun normalizeText(text: String): String {
+        return Normalizer.normalize(text.lowercase().trim(), Normalizer.Form.NFD)
+            .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
     }
 }

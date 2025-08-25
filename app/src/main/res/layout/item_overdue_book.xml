@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Diseño premium con fondo adaptativo para devoluciones pendientes -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    android:background="@drawable/bg_admin_card"
+    android:elevation="6dp"
+    android:foreground="?android:attr/selectableItemBackground">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Imagen del libro -->
+        <ImageView
+            android:id="@+id/book_image"
+            android:layout_width="80dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <!-- Indicador de urgencia -->
+        <TextView
+            android:id="@+id/urgency_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_book_default"
+            android:backgroundTint="#F44336"
+            android:text="🚨 VENCIDO"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Título del libro -->
+        <TextView
+            android:id="@+id/book_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:text="Título del libro"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/bottom_sheet_title"
+            android:maxLines="2"
+            android:ellipsize="end"
+            app:layout_constraintEnd_toStartOf="@id/urgency_badge"
+            app:layout_constraintStart_toEndOf="@id/book_image"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Autor del libro -->
+        <TextView
+            android:id="@+id/book_author"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:text="Autor del libro"
+            android:textSize="14sp"
+            android:textColor="@color/bottom_sheet_secondary"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/book_image"
+            app:layout_constraintTop_toBottomOf="@id/book_title" />
+
+        <!-- Separador -->
+        <View
+            android:id="@+id/separator"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/bottom_sheet_secondary"
+            android:alpha="0.3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/book_image" />
+
+        <!-- Usuario que debe devolver -->
+        <TextView
+            android:id="@+id/user_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="👤 Usuario:"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/bottom_sheet_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/separator" />
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Nombre del usuario"
+            android:textSize="14sp"
+            android:textColor="@color/bottom_sheet_secondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/user_label"
+            app:layout_constraintTop_toTopOf="@id/user_label" />
+
+        <!-- Fecha de vencimiento -->
+        <TextView
+            android:id="@+id/expiration_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="📅 Venció el:"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/bottom_sheet_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/user_label" />
+
+        <TextView
+            android:id="@+id/expiration_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="01/01/2024"
+            android:textSize="14sp"
+            android:textColor="@color/bottom_sheet_secondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/expiration_label"
+            app:layout_constraintTop_toTopOf="@id/expiration_label" />
+
+        <!-- Fecha de préstamo -->
+        <TextView
+            android:id="@+id/loan_date_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="📅 Prestado el:"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/bottom_sheet_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/expiration_label" />
+
+        <TextView
+            android:id="@+id/loan_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="01/01/2024"
+            android:textSize="14sp"
+            android:textColor="@color/bottom_sheet_secondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/loan_date_label"
+            app:layout_constraintTop_toTopOf="@id/loan_date_label" />
+
+        <!-- Días de retraso -->
+        <TextView
+            android:id="@+id/days_overdue_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="⏰ Días de retraso:"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/bottom_sheet_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/loan_date_label" />
+
+        <TextView
+            android:id="@+id/days_overdue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="5 días"
+            android:textSize="16sp"
+            android:textColor="@color/bottom_sheet_secondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/days_overdue_label"
+            app:layout_constraintTop_toTopOf="@id/days_overdue_label" />
+
+        <!-- Botones de acción -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:gravity="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/days_overdue_label">
+
+            <Button
+                android:id="@+id/send_reminder_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#FF9800"
+                android:text="📧 Recordar"
+                android:textSize="12sp"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/mark_returned_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#4CAF50"
+                android:text="✅ Devuelto"
+                android:textSize="12sp"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

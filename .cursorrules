@@ -1,0 +1,504 @@
+# LibraryInventoryApp - Documentación Completa del Proyecto
+
+## 📋 INFORMACIÓN GENERAL
+
+### Descripción
+LibraryInventoryApp es una aplicación móvil Android desarrollada en Kotlin para la gestión de inventario de bibliotecas. Permite a los administradores registrar, editar y gestionar libros, mientras que los usuarios pueden explorar el catálogo y solicitar libros.
+
+### Datos del Proyecto
+- **Nombre**: LibraryInventoryApp
+- **Versión**: 1.0.5 (ACTUALIZADA CON SISTEMA DE PRÉSTAMOS PROFESIONAL)
+- **Platform**: Android
+- **Lenguaje**: Kotlin
+- **SDK Mínimo**: 24 (Android 7.0)
+- **SDK Objetivo**: 34 (Android 14)
+- **ID de Aplicación**: com.example.libraryinventoryapp
+- **Última Actualización**: Sistema completo de préstamos con fechas de vencimiento, pantalla dedicada para libros vencidos, puntos suspensivos en UI y correos de recordatorio
+
+## 🏗️ ARQUITECTURA Y TECNOLOGÍAS
+
+### Arquitectura Principal
+- **Patrón**: Arquitectura basada en Activities y Fragments
+- **Backend**: Firebase (Authentication, Firestore, Storage)
+- **Navegación**: Bottom Navigation con Fragments
+- **UI**: Material Design Components
+
+### Stack Tecnológico
+- **Firebase Auth**: Autenticación de usuarios
+- **Cloud Firestore**: Base de datos NoSQL en tiempo real
+- **Firebase Storage**: Almacenamiento de imágenes de libros
+- **ZXing**: Escaneo de códigos de barras/QR
+- **CameraX**: Captura de imágenes y cámara
+- **ML Kit**: Reconocimiento de códigos de barras
+- **Glide**: Carga y gestión de imágenes
+- **SendGrid**: Servicio de correos electrónicos para notificaciones
+- **OkHttp**: Cliente HTTP para comunicación con APIs
+- **Material Design**: Componentes UI modernos
+
+### Dependencias Principales
+```kotlin
+// Firebase
+implementation(libs.firebase.auth.ktx)
+implementation(libs.firebase.firestore)
+implementation(libs.firebase.storage)
+
+// Escaneo de códigos
+implementation(libs.zxing.core)
+implementation(libs.zxing.android.embedded)
+implementation(libs.play.services.mlkit.barcode.scanning)
+
+// Cámara
+implementation(libs.camerax.core)
+implementation(libs.camerax.camera2)
+implementation(libs.camerax.lifecycle)
+implementation(libs.camerax.view)
+
+// Imágenes
+implementation(libs.glide)
+kapt(libs.glide.compiler)
+
+// NUEVAS DEPENDENCIAS v1.0.2
+// HTTP requests para envío de correos (SendGrid)
+implementation("com.squareup.okhttp3:okhttp:4.12.0")
+```
+
+## 📁 ESTRUCTURA DEL PROYECTO
+
+### Estructura de Directorios
+```
+LibraryInventoryApp/
+├── app/
+│   ├── build.gradle.kts
+│   ├── google-services.json
+│   ├── proguard-rules.pro
+│   └── src/
+│       ├── main/
+│       │   ├── AndroidManifest.xml
+│       │   ├── java/com/example/libraryinventoryapp/
+│       │   │   ├── activities/
+│       │   │   │   ├── LoginActivity.kt
+│       │   │   │   ├── RegisterActivity.kt
+│       │   │   │   ├── AdminActivity.kt
+│       │   │   │   └── UserActivity.kt
+│       │   │   ├── fragments/
+│       │   │   │   ├── RegisterBookFragment.kt
+│       │   │   │   ├── ViewBooksFragment.kt
+│       │   │   │   ├── EditBookFragment.kt  # NUEVO
+│       │   │   │   ├── OverdueBooksFragment.kt  # NUEVO v1.0.5
+│       │   │   │   ├── BookListFragment.kt
+│       │   │   │   ├── AssignedBooksFragment.kt
+│       │   │   │   └── ProfileFragment.kt
+│       │   │   ├── adapters/
+│       │   │   │   ├── BookAdapter.kt
+│       │   │   │   ├── BookListAdapter.kt
+│       │   │   │   ├── AssignedBooksAdapter.kt
+│       │   │   │   └── OverdueBooksAdapter.kt  # NUEVO v1.0.5
+│       │   │   ├── models/
+│       │   │   │   ├── Book.kt
+│       │   │   │   ├── User.kt
+│       │   │   │   └── OverdueBookItem.kt  # NUEVO v1.0.5
+│       │   │   └── utils/
+│       │   │       └── EmailService.kt  # NUEVO
+│       │   └── res/
+│       │       ├── layout/ (17 archivos XML)  # +5 fragment_edit_book.xml, dialog_user_search.xml, fragment_overdue_books.xml, item_overdue_book.xml
+│       │       ├── values/ (strings, colors, themes)
+│       │       ├── drawable/ (iconos y assets)
+│       │       └── menu/ (navegación inferior)
+│       ├── androidTest/
+│       └── test/
+├── gradle/
+│   ├── libs.versions.toml
+│   └── wrapper/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── gradle.properties
+```
+
+### Organización del Código
+- **activities/**: Actividades principales (Login, Register, Admin, User)
+- **fragments/**: Fragmentos para diferentes funcionalidades
+- **adapters/**: Adaptadores para RecyclerViews
+- **models/**: Data classes (Book, User)
+
+## 🎯 FUNCIONALIDADES PRINCIPALES
+
+### 🔐 Sistema de Autenticación
+- **Registro de usuarios** con validación de campos
+- **Login** con Firebase Authentication
+- **Gestión de sesiones** persistentes
+- **Roles de usuario**: Admin y Usuario regular
+- **Logout** con redirección a login
+
+### 👥 Gestión de Usuarios
+#### Administrador
+- Registrar nuevos libros con imagen
+- Escanear códigos de barras/ISBN
+- Asignar libros a usuarios específicos
+- **NUEVO**: Desasignar libros de usuarios específicos
+- **NUEVO**: Editar información completa de libros existentes
+- Ver todos los libros del inventario
+- Eliminar libros del sistema
+- Gestionar cantidad de ejemplares
+- **NUEVO**: Filtros avanzados (por usuario, fecha, categoría)
+- **NUEVO**: Notificaciones automáticas por correo electrónico
+
+#### Usuario Regular
+- Explorar catálogo de libros disponibles
+- Buscar libros por título o ISBN
+- Filtrar por categorías
+- Solicitar asignación de libros
+- Ver libros asignados personalmente
+- Gestionar perfil personal
+- **NUEVO**: Recibir notificaciones por correo al ser asignado un libro
+
+### 📚 Gestión de Libros
+#### Campos del Libro
+```kotlin
+data class Book(
+    var id: String = "",
+    val title: String = "",
+    val description: String = "",
+    val author: String = "",
+    val isbn: String = "",
+    val categories: List<String> = emptyList(),
+    val imageUrl: String? = null,
+    val quantity: Int = 0,
+    val status: String = "Disponible",
+    val assignedTo: List<String>? = null,
+    val assignedWithNames: List<String>? = null,
+    val assignedToEmails: List<String>? = null,
+    val assignedDates: List<Timestamp>? = null,  // Fechas de asignación
+    val createdDate: Timestamp? = null,  // NUEVO: Fecha de creación del libro
+    val lastEditedDate: Timestamp? = null  // NUEVO: Fecha de última edición
+)
+```
+
+#### Categorías Disponibles
+- Biblia, Liderazgo, Jóvenes, Mujeres
+- Profecía bíblica, Familia, Matrimonio
+- Finanzas, Estudio bíblico, Evangelismo
+- Navidad, Emaus, Misiones, Devocionales
+- Curso vida, Iglesia, Vida cristiana
+- Libros de la Biblia, Enciclopedia
+- Religiones, Inglés, Infantil
+
+### 🔍 Funcionalidades de Búsqueda y Filtrado
+- **Búsqueda por texto**: Título e ISBN con normalización de acentos
+- **Filtro por categorías**: Selección múltiple
+- **Ordenamiento alfabético**: Sin considerar acentos
+- **Búsqueda en tiempo real**: Actualización inmediata
+
+### 📱 Funcionalidades de Cámara
+- **Captura de imágenes** para libros
+- **Escaneo de códigos de barras** para ISBN
+- **Procesamiento con ML Kit** para reconocimiento automático
+- **Almacenamiento en Firebase Storage**
+
+## 🆕 NUEVAS FUNCIONALIDADES (v1.0.2)
+
+### 📋 Gestión Avanzada de Asignaciones (Admin)
+- **Desasignar libros**: Los admins pueden quitar libros asignados a usuarios específicos
+  - Interfaz clickeable en la vista de libros asignados
+  - Diálogo de selección de usuario para desasignar
+  - Actualización automática de cantidad disponible
+  - Confirmación visual del proceso
+
+### ✏️ Edición de Libros (Admin)
+- **EditBookFragment**: Nuevo fragmento para editar libros existentes
+- **Campos editables**: Título, autor, ISBN, descripción, categorías, cantidad, código e imagen
+- **Pre-carga de datos**: Los campos se llenan automáticamente con la información actual
+- **Navegación**: Acceso desde botón "Editar" en cada libro
+- **Validaciones**: Mismas validaciones que el registro de libros
+
+### 📧 Sistema de Notificaciones por Correo
+- **Servicio EmailService**: Clase utility para gestión de correos electrónicos
+- **Doble notificación**: Correos tanto al usuario asignado como al administrador
+- **Modo demo**: Implementación de logs detallados para pruebas
+- **Integración SendGrid**: API nativa para apps móviles (reemplaza EmailJS)
+- **Templates HTML**: Diseños de email profesionales integrados en código
+- **Sin restricciones de navegador**: Funciona perfectamente desde apps Android
+
+### 🔍 Filtros Avanzados (Admin)
+- **Filtro por usuario**: Ver libros asignados a un usuario específico
+- **Filtro por fecha**: Libros asignados en períodos específicos (24h, semana, mes, 3 meses)
+- **Filtro por categorías**: Funcionalidad existente mejorada
+- **Interfaz unificada**: Menú de opciones de filtrado centralizado
+- **Limpieza de filtros**: Opción para resetear todos los filtros aplicados
+
+### 📊 Mejoras en Seguimiento de Datos
+- **Timestamps de asignación**: Registro automático de fechas de asignación
+- **Historial detallado**: Seguimiento de cuándo se asignó cada libro
+- **Consistencia de datos**: Mantenimiento de sincronización entre listas de usuarios y fechas
+
+## 🆕 FUNCIONALIDADES ADICIONALES (v1.0.3)
+
+### 📅 Sistema de Fechas de Auditoría
+- **Fecha de creación**: Se registra automáticamente al crear un libro nuevo
+- **Fecha de edición**: Se actualiza automáticamente cada vez que se edita un libro
+- **Trazabilidad completa**: Seguimiento temporal de todas las modificaciones
+- **Campos en Firestore**: `createdDate` y `lastEditedDate` con timestamps
+
+### ⚠️ Diálogos de Confirmación
+- **Confirmación de asignación**: Dialog antes de asignar libro (admin y usuario)
+  - Título: "Confirmar Asignación"
+  - Mensaje personalizado con nombre del libro y usuario
+  - Botones: "ACEPTAR" / "CANCELAR"
+- **Confirmación de edición**: Dialog antes de editar libro
+  - Título: "Confirmar Edición"
+  - Previene ediciones accidentales
+- **Confirmación de eliminación**: Dialog antes de eliminar libro
+  - Título: "Confirmar Eliminación"
+  - Mensaje de advertencia sobre acción irreversible
+  - Implementado en todos los puntos de asignación/edición/eliminación
+
+## 🆕 NUEVAS MEJORAS UX/UI (v1.0.4)
+
+### 🔍 Filtro Avanzado por Usuario con Búsqueda
+- **Interface mejorada**: Dialog dedicado con SearchView + RecyclerView
+- **Búsqueda en tiempo real**: Filtro de usuarios por nombre con normalización
+- **Lista interactiva**: Click en usuario para aplicar filtro inmediatamente
+- **Búsqueda sin acentos**: Normalización de texto para mejor experiencia
+- **Layout personalizado**: `dialog_user_search.xml` para mejor UX
+
+### 🚫 Restricción de Auto-Asignación (Usuarios)
+- **Botón oculto**: Los usuarios ya no pueden auto-asignarse libros
+- **Política de seguridad**: Solo administradores pueden asignar libros
+- **UI limpia**: Interfaz simplificada sin opciones no disponibles
+- **Callback deshabilitado**: Funcionalidad completamente removida
+
+### 🔄 Pull-to-Refresh en todas las listas
+- **SwipeRefreshLayout**: Implementado en BookListFragment, ViewBooksFragment y AssignedBooksFragment
+- **Recarga completa**: Actualiza datos desde Firebase con gesto de deslizar hacia abajo
+- **Feedback visual**: Indicador de carga durante la actualización
+- **UX mejorada**: Patrón estándar de Android para actualizar contenido
+
+### 📅 DatePicker para Filtro de Fechas (Admin)
+- **DatePicker nativo**: Reemplaza opciones predefinidas (24h, semana, mes)
+- **Selección específica**: El admin puede elegir cualquier fecha como punto de inicio
+- **Filtro "desde fecha"**: Muestra libros asignados desde la fecha seleccionada (inclusive)
+- **Formato localizado**: Fechas mostradas en formato dd/MM/yyyy
+- **Toast informativo**: Retroalimentación clara sobre el filtro aplicado
+
+## 🆕 SISTEMA DE PRÉSTAMOS PROFESIONAL (v1.0.5)
+
+### 📚 Sistema de Préstamos con Fechas de Vencimiento
+- **DatePicker de devolución**: Al asignar un libro, el admin selecciona fecha límite de devolución
+- **Campo `loanExpirationDates`**: Array de fechas de vencimiento por cada usuario asignado
+- **Fecha sugerida**: 15 días por defecto (personalizable en DatePicker)
+- **Validación de fechas**: No se permite seleccionar fechas del pasado
+- **Toast informativo**: Confirmación con fecha de devolución seleccionada
+
+### 🎯 Optimización de UI: Puntos Suspensivos + Contador
+- **"Asignado a" mejorado**: Sistema inteligente de visualización
+  - 1 usuario: "Asignado a: Juan Pérez"
+  - 2 usuarios: "Asignado a: Juan P., María G."
+  - 3+ usuarios: "Asignado a: Juan P., María G... (+3 más)"
+- **Espacio eficiente**: No satura la UI con listas largas
+- **Click para detalles**: Al hacer click se despliegan opciones de desasignación
+
+### 📋 Pantalla Dedicada: "Libros Vencidos"
+- **Nueva pestaña en Admin**: "Libros Vencidos" en bottom navigation
+- **Dashboard especializado**: Lista exclusiva de préstamos vencidos
+- **Información detallada por préstamo**:
+  - Usuario que debe devolver
+  - Fecha de vencimiento
+  - Días de retraso (con códigos de color por gravedad)
+  - Imagen y detalles del libro
+- **Clasificación por urgencia**:
+  - 🚨 CRÍTICO: +30 días (rojo oscuro)
+  - ⚠️ URGENTE: 14-29 días (naranja oscuro) 
+  - ⏰ TARDE: 7-13 días (naranja claro)
+  - 📋 VENCIDO: 1-6 días (rojo claro)
+- **Acciones directas**:
+  - 📧 **Enviar recordatorio**: Email automático al usuario y admin
+  - ✅ **Marcar como devuelto**: Remueve asignación y restaura disponibilidad
+- **Estado vacío elegante**: Mensaje motivacional cuando no hay vencidos
+- **Pull-to-refresh**: Actualización manual de la lista
+
+### 📧 Sistema de Correos de Recordatorio
+- **Correos duales**: Usuario + Admin reciben notificaciones
+- **Templates especializados**: 
+  - Usuario: Recordatorio amigable con fecha de vencimiento y días de retraso
+  - Admin: Confirmación de recordatorio enviado con datos del préstamo
+- **Integración SendGrid**: Sistema profesional de correos (modo demo incluido)
+- **Información completa**: Título, autor, fecha de vencimiento, días de retraso
+
+### ⚠️ Alertas Visuales Mejoradas
+- **Indicador en lista principal**: Alerta roja cuando hay préstamos vencidos
+- **Fondo destacado**: Items con vencimientos tienen fondo rojo claro
+- **Mensaje específico**: "⚠️ VENCIDO: Usuario debe devolver"
+- **Integración completa**: Alertas conectadas con pantalla dedicada
+
+## 🗄️ MODELOS DE DATOS
+
+### Modelo User
+```kotlin
+data class User(
+    val name: String = "",
+    val email: String = "",
+    val role: String = "",
+    val uid: String = ""
+)
+```
+
+### Estructura en Firestore
+#### Colección "users"
+```json
+{
+  "uid": "user_id",
+  "name": "Nombre Usuario",
+  "email": "usuario@email.com",
+  "role": "admin|usuario"
+}
+```
+
+#### Colección "books"
+```json
+{
+  "id": "book_id",
+  "title": "Título del Libro",
+  "description": "Descripción detallada",
+  "author": "Nombre del Autor",
+  "isbn": "1234567890",
+  "categories": ["Categoría1", "Categoría2"],
+  "imageUrl": "https://firebase-storage-url",
+  "quantity": 5,
+  "status": "Disponible|No disponible",
+  "assignedTo": ["user_id1", "user_id2"],
+  "assignedWithNames": ["Usuario1", "Usuario2"],
+  "assignedToEmails": ["email1@test.com", "email2@test.com"],
+  "assignedDates": ["2024-01-15T10:30:00Z", "2024-01-20T14:45:00Z"],
+  "createdDate": "2024-01-10T08:00:00Z",
+  "lastEditedDate": "2024-01-16T15:22:00Z"
+}
+```
+
+## 🎨 INTERFAZ DE USUARIO
+
+### Actividades Principales
+1. **LoginActivity**: Pantalla de inicio de sesión
+2. **RegisterActivity**: Registro de nuevos usuarios
+3. **AdminActivity**: Panel de administrador
+4. **UserActivity**: Panel de usuario regular
+
+### Fragmentos por Rol
+#### Admin
+- **RegisterBookFragment**: Registro de libros con cámara
+- **ViewBooksFragment**: Vista completa del inventario con filtros avanzados
+- **EditBookFragment**: **NUEVO** - Edición de libros existentes
+- **OverdueBooksFragment**: **NUEVO v1.0.5** - Dashboard de libros vencidos
+
+#### Usuario
+- **BookListFragment**: Catálogo de libros disponibles
+- **AssignedBooksFragment**: Libros asignados al usuario
+- **ProfileFragment**: Gestión del perfil personal
+
+### Navegación
+- **Bottom Navigation**: Navegación principal por tabs
+- **Fragment Navigation**: Gestión de fragmentos
+- **Intent Navigation**: Entre actividades
+
+## ⚙️ CONFIGURACIÓN Y PERMISOS
+
+### Permisos Requeridos
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+<uses-feature android:name="android.hardware.camera" android:required="true" />
+```
+
+### Configuración Firebase
+- **google-services.json**: Configuración de Firebase
+- **FileProvider**: Para compartir archivos de imagen
+- **Proguard**: Configuración para release builds
+
+## 🔒 SEGURIDAD Y VALIDACIONES
+
+### Validaciones de Input
+- **Email**: Formato válido y no vacío
+- **Contraseña**: Mínimo 6 caracteres
+- **Campos obligatorios**: Validación en todos los formularios
+- **Duplicados**: Verificación de libros ya asignados
+
+### Seguridad Firebase
+- **Reglas Firestore**: Control de acceso por roles
+- **Storage Rules**: Restricciones de subida de imágenes
+- **Authentication**: Gestión segura de sesiones
+
+## 🚀 DESPLIEGUE Y CONFIGURACIÓN
+
+### Configuración de Desarrollo
+1. **Firebase Project**: Crear proyecto en Firebase Console
+2. **google-services.json**: Descargar y colocar en app/
+3. **Dependencias**: Sincronizar con Gradle
+4. **Permisos**: Configurar en AndroidManifest.xml
+
+### Build Configuration
+- **Debug**: Configuración para desarrollo
+- **Release**: Configuración optimizada con Proguard
+- **Keystore**: libraryinventorykeystore.jks para signing
+
+### Versioning
+- **Version Code**: 1
+- **Version Name**: 1.0.1
+- **Gradle Version**: 8.6.0
+- **Kotlin Version**: 1.9.0
+
+## 📊 MÉTRICAS Y RENDIMIENTO
+
+### Optimizaciones Implementadas
+- **Glide**: Cache de imágenes eficiente
+- **RecyclerView**: Listas optimizadas para rendimiento
+- **Firebase Offline**: Soporte para modo offline
+- **Proguard**: Minificación de código en release
+
+### Consideraciones de UX
+- **Progress Bars**: Feedback visual durante operaciones
+- **Toast Messages**: Notificaciones de estado
+- **Search in Real-time**: Búsqueda instantánea
+- **Material Design**: Interface moderna y consistente
+
+## 🐛 DEBUGGING Y TESTING
+
+### Testing Setup
+- **Unit Tests**: JUnit configuration
+- **Instrumented Tests**: Android Test framework
+- **Firebase Test Lab**: Cloud testing capabilities
+
+### Logging y Debugging
+- **Firebase Crashlytics**: (Preparado para implementar)
+- **Log.e**: Logging de errores
+- **Toast Messages**: User feedback
+
+## 📝 NOTAS DE DESARROLLO
+
+### Patrones Utilizados
+- **MVP Pattern**: Separación de responsabilidades
+- **Observer Pattern**: LiveData y listeners
+- **Adapter Pattern**: RecyclerView adapters
+- **Singleton Pattern**: Firebase instances
+
+### Mejores Prácticas Implementadas
+- **Kotlin null safety**: Prevención de NullPointerException
+- **Resource management**: Proper cleanup de resources
+- **Error handling**: Manejo comprehensivo de errores
+- **User feedback**: Mensajes claros y útiles
+
+### Areas de Mejora Futura
+- [ ] Implementar offline sync completo
+- [ ] Añadir push notifications
+- [ ] Sistema de reportes y analytics
+- [ ] Dark mode support
+- [ ] Mejores animaciones y transiciones
+- [ ] Sistema de backup automático
+
+## 💡 CONCLUSIÓN
+
+LibraryInventoryApp es una aplicación robusta para gestión de bibliotecas que combina tecnologías modernas de Android con Firebase como backend. Su arquitectura modular permite escalabilidad y mantenimiento eficiente, mientras que su interfaz intuitiva garantiza una excelente experiencia de usuario tanto para administradores como para usuarios finales.
+
+La aplicación está lista para producción con todas las funcionalidades core implementadas y un sistema de seguridad apropiado. El código está bien organizado y documentado, facilitando futuras mejoras y mantenimiento.

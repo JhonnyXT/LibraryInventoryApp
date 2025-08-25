@@ -1,88 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<!-- Tarjeta simple con LinearLayout para libros asignados -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    android:background="@drawable/bg_admin_card"
+    android:elevation="4dp"
+    android:foreground="?android:attr/selectableItemBackground">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:padding="16dp">
 
-        <!-- Image of the book -->
+        <!-- Imagen del libro -->
         <ImageView
             android:id="@+id/book_image"
-            android:layout_width="90dp"
-            android:layout_height="120dp"
-            android:layout_marginStart="8dp"
+            android:layout_width="60dp"
+            android:layout_height="80dp"
             android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="@+id/book_isbn"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/book_title"
+            android:background="#F5F5F5"
             tools:srcCompat="@tools:sample/avatars" />
 
-        <!-- Title of the book -->
-        <TextView
-            android:id="@+id/book_title"
+        <!-- Contenido principal -->
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginStart="16dp"
-            android:text="Título del libro"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/book_image"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:orientation="vertical">
 
-        <!-- Description of the book -->
-        <TextView
-            android:id="@+id/book_description"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            <!-- Título del libro -->
+            <TextView
+                android:id="@+id/book_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Título del libro"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/bottom_sheet_title"
+                android:fontFamily="sans-serif-medium"
+                android:ellipsize="end"
+                android:maxLines="2" />
+
+            <!-- Autor del libro -->
+            <TextView
+                android:id="@+id/book_author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="por Nombre del Autor"
+                android:textSize="14sp"
+                android:textColor="@color/bottom_sheet_secondary"
+                android:fontFamily="sans-serif"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <!-- Alerta de vencimiento -->
+            <TextView
+                android:id="@+id/expiration_alert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="⚠️ Venció hace 3 días"
+                android:textColor="#D32F2F"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <!-- Hint para detalles -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="👆 Toca para ver detalles y fechas"
+                android:textSize="11sp"
+                android:textColor="@color/bottom_sheet_secondary"
+                android:fontFamily="sans-serif"
+                android:alpha="0.8" />
+
+        </LinearLayout>
+
+        <!-- Indicador de estado -->
+        <View
+            android:id="@+id/status_indicator"
+            android:layout_width="4dp"
+            android:layout_height="match_parent"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Descripción"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/book_image" />
+            android:background="#4CAF50" />
 
-        <!-- Author of the book -->
-        <TextView
-            android:id="@+id/book_author"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Autor"
-            app:layout_constraintEnd_toEndOf="@+id/book_title"
-            app:layout_constraintStart_toStartOf="@+id/book_title"
-            app:layout_constraintTop_toBottomOf="@+id/book_title" />
+    </LinearLayout>
 
-        <!-- Categories of the book -->
-        <TextView
-            android:id="@+id/book_cetegories"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Categoría"
-            app:layout_constraintEnd_toEndOf="@+id/book_title"
-            app:layout_constraintStart_toStartOf="@+id/book_title"
-            app:layout_constraintTop_toBottomOf="@+id/book_author" />
+    <!-- Datos ocultos para BottomSheet -->
+    <TextView
+        android:id="@+id/book_description"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
 
-        <!-- ISBN of the book -->
-        <TextView
-            android:id="@+id/book_isbn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="ISBN: 1234567890"
-            app:layout_constraintEnd_toEndOf="@+id/book_title"
-            app:layout_constraintStart_toStartOf="@+id/book_title"
-            app:layout_constraintTop_toBottomOf="@+id/book_cetegories" />
+    <TextView
+        android:id="@+id/book_cetegories"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/book_isbn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
 
-</androidx.cardview.widget.CardView>
+</FrameLayout>

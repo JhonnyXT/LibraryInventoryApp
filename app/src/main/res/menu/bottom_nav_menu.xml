@@ -8,4 +8,8 @@
         android:id="@+id/nav_view_books"
         android:icon="@drawable/ic_view_books"
         android:title="Ver Libros" />
+    <item
+        android:id="@+id/nav_overdue_books"
+        android:icon="@drawable/ic_view_books"
+        android:title="Devoluciones" />
 </menu>
