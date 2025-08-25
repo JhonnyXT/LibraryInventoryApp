@@ -61,9 +61,15 @@ class OverdueBooksFragment : Fragment() {
         }
 
         // Configurar el adaptador
-        overdueAdapter = OverdueBooksAdapter(overdueBooksList) { overdueItem ->
-            sendReminderEmail(overdueItem)
-        }
+        overdueAdapter = OverdueBooksAdapter(
+            overdueBooksList,
+            onSendReminderClick = { overdueItem, hideProgress ->
+                sendReminderEmail(overdueItem, hideProgress)
+            },
+            onBookReturned = { overdueItem ->
+                removeBookFromList(overdueItem)
+            }
+        )
         recyclerView.adapter = overdueAdapter
 
         loadOverdueBooks()
@@ -172,7 +178,7 @@ class OverdueBooksFragment : Fragment() {
         }
     }
 
-    private fun sendReminderEmail(overdueItem: OverdueBookItem) {
+    private fun sendReminderEmail(overdueItem: OverdueBookItem, hideProgress: () -> Unit) {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         
         // Logs detallados del inicio del proceso
@@ -189,6 +195,7 @@ class OverdueBooksFragment : Fragment() {
         // Verificar que el email del usuario no esté vacío
         if (overdueItem.userEmail.isBlank()) {
             Log.e("OverdueBooksFragment", "❌ ERROR: Email del usuario está vacío para ${overdueItem.userName}")
+            hideProgress()
             Toast.makeText(context, "❌ Error: No se encontró email para ${overdueItem.userName}", Toast.LENGTH_LONG).show()
             return
         }
@@ -228,9 +235,10 @@ class OverdueBooksFragment : Fragment() {
                     )
                     
                     if (result.isSuccess) {
+                        hideProgress()
                         Log.i("OverdueBooksFragment", "✅ Recordatorio enviado exitosamente!")
                         
-                        // Toast personalizado según el estado
+                        // Toast personalizado según el estado (sin admin)
                         val toastMessage = when {
                             overdueItem.daysOverdue > 0 -> {
                                 "✅ Recordatorio enviado a ${overdueItem.userName}\n" +
@@ -255,16 +263,58 @@ class OverdueBooksFragment : Fragment() {
                         Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show()
                         
                     } else {
+                        hideProgress()
                         val errorMsg = result.exceptionOrNull()?.message ?: "Error desconocido"
                         Log.e("OverdueBooksFragment", "❌ Error enviando recordatorio: $errorMsg")
                         Toast.makeText(context, "❌ Error enviando recordatorio: $errorMsg", Toast.LENGTH_LONG).show()
                     }
                     
                 } catch (e: Exception) {
+                    hideProgress()
                     Log.e("OverdueBooksFragment", "❌ Excepción enviando recordatorio: ${e.message}", e)
                     Toast.makeText(context, "❌ Error inesperado: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
+        }
+    }
+
+    private fun removeBookFromList(overdueItem: OverdueBookItem) {
+        Log.i("OverdueBooksFragment", """
+            🗑️ REMOVIENDO LIBRO DE LA LISTA:
+            Usuario: ${overdueItem.userName}
+            Libro: ${overdueItem.book.title}
+            Lista antes: ${overdueBooksList.size} items
+        """.trimIndent())
+        
+        // Buscar y remover el item específico de la lista
+        val position = overdueBooksList.indexOfFirst { 
+            it.book.id == overdueItem.book.id && it.userId == overdueItem.userId 
+        }
+        
+        if (position != -1) {
+            overdueBooksList.removeAt(position)
+            overdueAdapter.notifyItemRemoved(position)
+            
+            Log.i("OverdueBooksFragment", """
+                ✅ LIBRO REMOVIDO EXITOSAMENTE:
+                Posición removida: $position
+                Lista después: ${overdueBooksList.size} items
+            """.trimIndent())
+            
+            // Actualizar UI si la lista quedó vacía
+            updateUI()
+            
+            // Log resumen actualizado
+            Log.i("OverdueBooksFragment", """
+                📊 RESUMEN ACTUALIZADO:
+                - Total libros: ${overdueBooksList.size}
+                - Vencidos: ${overdueBooksList.count { it.daysOverdue > 0 }}
+                - Vencen hoy: ${overdueBooksList.count { it.daysOverdue == 0 }}
+                - Próximos a vencer: ${overdueBooksList.count { it.daysOverdue < 0 }}
+            """.trimIndent())
+            
+        } else {
+            Log.w("OverdueBooksFragment", "⚠️ No se encontró el libro para remover de la lista")
         }
     }
 

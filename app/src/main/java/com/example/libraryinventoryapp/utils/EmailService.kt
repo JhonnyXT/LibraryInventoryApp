@@ -270,27 +270,20 @@ class EmailService {
 
         return withContext(Dispatchers.IO) {
             try {
-                // Enviar email al usuario
-                Log.d("EmailService", "📧 Enviando recordatorio al usuario...")
+                // Enviar email solo al usuario (no al admin - ya tiene la pantalla de devoluciones)
+                Log.d("EmailService", "📧 Enviando recordatorio al usuario (sin notificar admin)...")
                 val userResult = sendReminderToUser(userEmail, userName, bookTitle, bookAuthor, expirationDate, daysOverdue)
                 
-                // Enviar confirmación al admin
-                Log.d("EmailService", "📧 Enviando confirmación al admin...")
-                val adminResult = sendReminderConfirmationToAdmin(adminEmail, adminName, userName, userEmail, bookTitle, bookAuthor, expirationDate, daysOverdue)
-                
-                if (userResult.isSuccess && adminResult.isSuccess) {
-                    Log.i("EmailService", "✅ Recordatorios enviados exitosamente a usuario y admin")
-                    Result.success("Recordatorios enviados exitosamente")
+                if (userResult.isSuccess) {
+                    Log.i("EmailService", "✅ Recordatorio enviado exitosamente al usuario")
+                    Result.success("Recordatorio enviado exitosamente")
                 } else {
-                    val errors = listOfNotNull(
-                        userResult.exceptionOrNull()?.message,
-                        adminResult.exceptionOrNull()?.message
-                    )
-                    Log.e("EmailService", "❌ Error enviando recordatorios: ${errors.joinToString(", ")}")
-                    Result.failure(Exception("Error enviando recordatorios: ${errors.joinToString(", ")}"))
+                    val errorMsg = userResult.exceptionOrNull()?.message ?: "Error desconocido"
+                    Log.e("EmailService", "❌ Error enviando recordatorio: $errorMsg")
+                    Result.failure(Exception("Error enviando recordatorio: $errorMsg"))
                 }
             } catch (e: Exception) {
-                Log.e("EmailService", "❌ Excepción general enviando recordatorios: ${e.message}", e)
+                Log.e("EmailService", "❌ Excepción enviando recordatorio: ${e.message}", e)
                 Result.failure(e)
             }
         }

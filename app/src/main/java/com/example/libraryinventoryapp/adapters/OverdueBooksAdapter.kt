@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
@@ -17,8 +18,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class OverdueBooksAdapter(
-    private val overdueBooks: List<OverdueBookItem>,
-    private val onSendReminderClick: (OverdueBookItem) -> Unit
+    private val overdueBooks: MutableList<OverdueBookItem>,
+    private val onSendReminderClick: (OverdueBookItem, () -> Unit) -> Unit,
+    private val onBookReturned: (OverdueBookItem) -> Unit
 ) : RecyclerView.Adapter<OverdueBooksAdapter.OverdueViewHolder>() {
 
     private lateinit var firestore: FirebaseFirestore
@@ -34,19 +36,34 @@ class OverdueBooksAdapter(
         val sendReminderButton: Button = itemView.findViewById(R.id.send_reminder_button)
         val markReturnedButton: Button = itemView.findViewById(R.id.mark_returned_button)
         val urgencyBadge: TextView = itemView.findViewById(R.id.urgency_badge)
+        val buttonsContainer: LinearLayout = itemView.findViewById(R.id.buttons_container)
+        val progressContainer: LinearLayout = itemView.findViewById(R.id.progress_container)
+        val progressText: TextView = itemView.findViewById(R.id.progress_text)
 
         init {
             firestore = FirebaseFirestore.getInstance()
 
             sendReminderButton.setOnClickListener {
                 val overdueItem = overdueBooks[adapterPosition]
-                onSendReminderClick(overdueItem)
+                showProgress("Enviando recordatorio...")
+                onSendReminderClick(overdueItem) { hideProgress() }
             }
 
             markReturnedButton.setOnClickListener {
                 val overdueItem = overdueBooks[adapterPosition]
                 showMarkAsReturnedDialog(overdueItem)
             }
+        }
+
+        fun showProgress(message: String) {
+            buttonsContainer.visibility = View.GONE
+            progressText.text = message
+            progressContainer.visibility = View.VISIBLE
+        }
+
+        fun hideProgress() {
+            progressContainer.visibility = View.GONE
+            buttonsContainer.visibility = View.VISIBLE
         }
     }
 
@@ -183,6 +200,7 @@ class OverdueBooksAdapter(
             .setMessage("¿Confirmas que ${overdueItem.userName} devolvió el libro '${overdueItem.book.title}'?\n\n$statusMessage\n\nEsta acción removerá la asignación del libro.")
             .setIcon(android.R.drawable.ic_dialog_info)
             .setPositiveButton("✅ SÍ, DEVUELTO") { _, _ ->
+                showProgress("Procesando devolución...")
                 markBookAsReturned(overdueItem)
             }
             .setNegativeButton("❌ CANCELAR", null)
@@ -228,16 +246,18 @@ class OverdueBooksAdapter(
         firestore.collection("books").document(book.id)
             .update(updates)
             .addOnSuccessListener {
+                hideProgress()
                 Toast.makeText(
                     itemView.context,
                     "✅ Libro '${book.title}' marcado como devuelto por ${overdueItem.userName}",
                     Toast.LENGTH_LONG
                 ).show()
                 
-                // Notificar al fragmento que debe recargar la lista
-                // (El fragmento detectará automáticamente al hacer swipe to refresh)
+                // Notificar al fragmento para que remueva el item de la lista
+                onBookReturned(overdueItem)
             }
             .addOnFailureListener { e ->
+                hideProgress()
                 Toast.makeText(
                     itemView.context,
                     "❌ Error al marcar como devuelto: ${e.message}",

@@ -87,21 +87,44 @@ class AssignedBooksAdapter(
                         daysDiff < 0 -> {
                             // Préstamo vencido
                             val daysOverdue = (-daysDiff)
+                            val alertText = if (daysOverdue == 1) {
+                                "🚨 Vencido hace $daysOverdue día"
+                            } else {
+                                "🚨 Vencido hace $daysOverdue días"
+                            }
                             expirationAlert.apply {
                                 visibility = View.VISIBLE
-                                text = "⚠️ Vencido hace $daysOverdue días"
+                                text = alertText
                                 setTextColor(itemView.context.getColor(android.R.color.holo_red_dark))
                             }
                             statusIndicator.setBackgroundColor(itemView.context.getColor(android.R.color.holo_red_dark))
                         }
-                        daysDiff <= 5 -> {
-                            // Por vencer (5 días o menos)
+                        daysDiff == 0 -> {
+                            // Vence hoy
                             expirationAlert.apply {
                                 visibility = View.VISIBLE
-                                text = if (daysDiff == 0) "⏰ Vence HOY" else "⏰ Vence en $daysDiff días"
+                                text = "🔥 Vence HOY"
+                                setTextColor(itemView.context.getColor(android.R.color.holo_red_dark))
+                            }
+                            statusIndicator.setBackgroundColor(itemView.context.getColor(android.R.color.holo_red_dark))
+                        }
+                        daysDiff == 1 -> {
+                            // Vence mañana
+                            expirationAlert.apply {
+                                visibility = View.VISIBLE
+                                text = "⏰ Vence MAÑANA"
                                 setTextColor(itemView.context.getColor(android.R.color.holo_orange_dark))
                             }
                             statusIndicator.setBackgroundColor(itemView.context.getColor(android.R.color.holo_orange_dark))
+                        }
+                        daysDiff <= 5 -> {
+                            // Por vencer (2-5 días)
+                            expirationAlert.apply {
+                                visibility = View.VISIBLE
+                                text = "⏳ Vence en $daysDiff días"
+                                setTextColor(itemView.context.getColor(android.R.color.holo_orange_light))
+                            }
+                            statusIndicator.setBackgroundColor(itemView.context.getColor(android.R.color.holo_orange_light))
                         }
                         else -> {
                             // Préstamo vigente sin alertas
@@ -241,37 +264,63 @@ class AssignedBooksAdapter(
             }
         }
 
-        if (userLoanExpired) {
-            bsExpirationAlert.visibility = View.VISIBLE
-            bsExpirationAlert.text = "🔴 PRÉSTAMO VENCIDO\n$expirationDateText"
-            bsExpirationAlert.setTextColor(context.getColor(android.R.color.holo_red_dark))
+        // Mostrar alerta detallada según el estado del préstamo
+        val userIndex = book.assignedTo?.indexOf(currentUserId)
+        
+        if (userIndex != null && userIndex >= 0 && book.loanExpirationDates != null && userIndex < book.loanExpirationDates.size) {
+            val userExpirationDate = book.loanExpirationDates[userIndex]
+            val daysDiff = ((userExpirationDate.toDate().time - currentTime) / (24 * 60 * 60 * 1000)).toInt()
             
-            // Botón "Ya devolví" eliminado - gestión completa ahora en otras pantallas
-        } else if (expirationDateText.isNotEmpty()) {
-            bsExpirationAlert.visibility = View.VISIBLE
-            bsExpirationAlert.text = "📅 $expirationDateText"
-            
-            // Color según proximidad de vencimiento
-            val currentUserId2 = FirebaseAuth.getInstance().currentUser?.uid
-            val userIndex2 = book.assignedTo?.indexOf(currentUserId2)
-            if (userIndex2 != null && userIndex2 >= 0 && book.loanExpirationDates != null && userIndex2 < book.loanExpirationDates.size) {
-                val userExpirationDate2 = book.loanExpirationDates[userIndex2]
-                val daysDiff2 = ((userExpirationDate2.toDate().time - currentTime) / (24 * 60 * 60 * 1000)).toInt()
-                
-                val alertColor = when {
-                    daysDiff2 <= 5 -> android.R.color.holo_orange_dark
-                    else -> android.R.color.holo_blue_dark
+            when {
+                daysDiff < 0 -> {
+                    // Préstamo vencido
+                    val daysOverdue = (-daysDiff)
+                    val daysText = if (daysOverdue == 1) "1 día" else "$daysOverdue días"
+                    bsExpirationAlert.apply {
+                        visibility = View.VISIBLE
+                        text = "🚨 PRÉSTAMO VENCIDO\nVenció hace $daysText\n📅 Fecha límite: $expirationDateText"
+                        setTextColor(context.getColor(android.R.color.holo_red_dark))
+                    }
                 }
-                bsExpirationAlert.setTextColor(context.getColor(alertColor))
-            } else {
-                bsExpirationAlert.setTextColor(context.getColor(android.R.color.holo_blue_dark))
+                daysDiff == 0 -> {
+                    // Vence hoy
+                    bsExpirationAlert.apply {
+                        visibility = View.VISIBLE
+                        text = "🔥 PRÉSTAMO VENCE HOY\n📅 Fecha límite: $expirationDateText\n⚠️ Debes devolver el libro hoy"
+                        setTextColor(context.getColor(android.R.color.holo_red_dark))
+                    }
+                }
+                daysDiff == 1 -> {
+                    // Vence mañana
+                    bsExpirationAlert.apply {
+                        visibility = View.VISIBLE
+                        text = "⏰ PRÉSTAMO VENCE MAÑANA\n📅 Fecha límite: $expirationDateText\n📋 Prepárate para devolver el libro"
+                        setTextColor(context.getColor(android.R.color.holo_orange_dark))
+                    }
+                }
+                daysDiff <= 5 -> {
+                    // Por vencer (2-5 días)
+                    bsExpirationAlert.apply {
+                        visibility = View.VISIBLE
+                        text = "⏳ PRÉSTAMO PRÓXIMO A VENCER\nVence en $daysDiff días\n📅 Fecha límite: $expirationDateText"
+                        setTextColor(context.getColor(android.R.color.holo_orange_light))
+                    }
+                }
+                else -> {
+                    // Préstamo vigente
+                    bsExpirationAlert.apply {
+                        visibility = View.VISIBLE
+                        text = "✅ PRÉSTAMO VIGENTE\n📅 Fecha límite: $expirationDateText\nTienes $daysDiff días restantes"
+                        setTextColor(context.getColor(android.R.color.holo_blue_dark))
+                    }
+                }
             }
-            
-            bsButtonsContainer.visibility = View.GONE
         } else {
             bsExpirationAlert.visibility = View.GONE
-            bsButtonsContainer.visibility = View.GONE
         }
+        
+        // Ocultar botones - gestión completa ahora en otras pantallas
+        bsButtonsContainer.visibility = View.GONE
     }
     
     private fun showReturnConfirmationDialog(book: Book, context: Context) {

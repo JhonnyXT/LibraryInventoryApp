@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
@@ -33,6 +34,7 @@ class ViewBooksFragment : Fragment() {
     private lateinit var searchView: SearchView
     private lateinit var filterButton: ImageButton
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var progressBar: ProgressBar
 
     private var booksList: MutableList<Book> = mutableListOf()
     private var userNamesList: MutableList<String> = mutableListOf()
@@ -50,6 +52,7 @@ class ViewBooksFragment : Fragment() {
         searchView = view.findViewById(R.id.searchView)
         filterButton = view.findViewById(R.id.filterButton)
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout)
+        progressBar = view.findViewById(R.id.progress_bar)
 
         booksRecyclerView.layoutManager = LinearLayoutManager(context)
         
@@ -76,6 +79,8 @@ class ViewBooksFragment : Fragment() {
     }
 
     private fun loadBooks() {
+        progressBar.visibility = View.VISIBLE
+        
         firestore.collection("books")
             .get()
             .addOnSuccessListener { result ->
@@ -94,10 +99,12 @@ class ViewBooksFragment : Fragment() {
                     navigateToEditBook(book)
                 }
                 booksRecyclerView.adapter = booksAdapter
+                progressBar.visibility = View.GONE
                 swipeRefreshLayout.isRefreshing = false
             }
             .addOnFailureListener { e ->
                 // Manejar el error de carga
+                progressBar.visibility = View.GONE
                 swipeRefreshLayout.isRefreshing = false
                 Toast.makeText(context, "Error al cargar los libros: $e", Toast.LENGTH_LONG).show()
             }
