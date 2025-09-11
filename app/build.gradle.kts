@@ -13,20 +13,42 @@ android {
         applicationId = "com.example.libraryinventoryapp"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.1"
+        versionCode = 2
+        versionName = "1.0.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
+    signingConfigs {
+        create("release") {
+            storeFile = file("../libraryinventorykeystore.jks")
+            storePassword = "library123"
+            keyAlias = "librarykey"
+            keyPassword = "library123"
+        }
+    }
 
+    buildTypes {
+        debug {
+            isDebuggable = true
+            isMinifyEnabled = false
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEBUG"
+        }
+        
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            isDebuggable = false
+            proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
+            
+            // Optimizaciones adicionales
+            isJniDebuggable = false
+            isPseudoLocalesEnabled = false
         }
     }
     compileOptions {
