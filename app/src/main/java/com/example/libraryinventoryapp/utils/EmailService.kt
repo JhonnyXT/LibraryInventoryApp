@@ -16,7 +16,7 @@ class EmailService {
         // SendGrid Configuration - Reemplazar con tus credenciales reales
         private const val SENDGRID_API_KEY = "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" // Tu API Key de SendGrid (SG.xxxxx)
         private const val SENDGRID_URL = "https://api.sendgrid.com/v3/mail/send"
-        private const val FROM_EMAIL = "jonathanblandon1017@gmail.com" // Email verificado en SendGrid
+        private const val FROM_EMAIL = "hermanosencristobello@gmail.com" // Email verificado en SendGrid
         private const val FROM_NAME = "Iglesia hermanos en Cristo Bello - Sistema de Biblioteca"
         
         private val client = OkHttpClient.Builder()

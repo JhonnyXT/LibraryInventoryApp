@@ -11,8 +11,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.libraryinventoryapp"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = 26  // Android 8.0+ (Cambiado desde Android 7.0)
+        targetSdk = 34  // Android 14 (última versión)
         versionCode = 2
         versionName = "1.0.5"
 
@@ -32,7 +32,6 @@ android {
         debug {
             isDebuggable = true
             isMinifyEnabled = false
-            applicationIdSuffix = ".debug"
             versionNameSuffix = "-DEBUG"
         }
         
@@ -44,7 +43,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            // signingConfig = signingConfigs.getByName("release") // Temporalmente deshabilitado
             
             // Optimizaciones adicionales
             isJniDebuggable = false
