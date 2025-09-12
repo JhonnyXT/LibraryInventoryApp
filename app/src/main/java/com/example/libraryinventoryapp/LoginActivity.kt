@@ -13,17 +13,22 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.libraryinventoryapp.utils.PermissionHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
+    private lateinit var permissionHelper: PermissionHelper
 
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
     private lateinit var registerButton: Button
+    
+    // Variables para almacenar destino después de permisos
+    private var pendingNavigationRole: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +36,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         auth = FirebaseAuth.getInstance()
+        permissionHelper = PermissionHelper(this)
 
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
@@ -128,15 +134,19 @@ class LoginActivity : AppCompatActivity() {
 
         userRef.get().addOnSuccessListener { document ->
             if (document != null) {
-                val role = document.getString("role")
-                val intent = if (role == "admin") {
-                    Intent(this, AdminActivity::class.java)
-                } else {
-                    Intent(this, UserActivity::class.java)
-                }
+                val role = document.getString("role") ?: "usuario"
+                
                 findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
-                startActivity(intent)
-                finish()
+                
+                // 🔒 Verificar permisos de notificación antes de navegar
+                if (permissionHelper.checkAllNotificationPermissions()) {
+                    // ✅ Todos los permisos están bien, navegar directamente
+                    navigateToRoleScreen(role)
+                } else {
+                    // ❌ Faltan permisos, guardar destino y solicitarlos
+                    pendingNavigationRole = role
+                    permissionHelper.requestAllPermissions()
+                }
             } else {
                 // Handle the case where the document does not exist
                 findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
@@ -146,6 +156,56 @@ class LoginActivity : AppCompatActivity() {
             // Handle errors
             findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
             Toast.makeText(this, "Error al obtener los datos del usuario: ${exception.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+    
+    /**
+     * 🎯 Navegar a la pantalla correspondiente según el rol
+     */
+    private fun navigateToRoleScreen(role: String) {
+        val intent = if (role == "admin") {
+            Intent(this, AdminActivity::class.java)
+        } else {
+            Intent(this, UserActivity::class.java)
+        }
+        startActivity(intent)
+        finish()
+    }
+    
+    /**
+     * 🔄 Navegar después de obtener permisos
+     */
+    fun navigateAfterPermissions() {
+        pendingNavigationRole?.let { role ->
+            navigateToRoleScreen(role)
+            pendingNavigationRole = null
+        }
+    }
+    
+    /**
+     * 🔄 Manejar resultados de permisos
+     */
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        permissionHelper.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+    
+    /**
+     * 🔄 Manejar resultados de actividades (configuración)
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        permissionHelper.onActivityResult(requestCode, resultCode)
+        
+        // Si regresamos de configuración y tenemos un rol pendiente, verificar permisos
+        if (pendingNavigationRole != null && requestCode == PermissionHelper.REQUEST_NOTIFICATION_SETTINGS) {
+            if (permissionHelper.checkAllNotificationPermissions()) {
+                navigateAfterPermissions()
+            }
         }
     }
 }

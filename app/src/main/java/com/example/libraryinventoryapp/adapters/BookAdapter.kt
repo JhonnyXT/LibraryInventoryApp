@@ -23,6 +23,7 @@ import com.example.libraryinventoryapp.R
 import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.User
 import com.example.libraryinventoryapp.utils.EmailService
+import com.example.libraryinventoryapp.utils.LibraryNotificationManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -507,6 +508,34 @@ class BookAdapter(
 
                 // Enviar correos de notificación
                 sendAssignmentNotificationEmails(book, user, context)
+                
+                // 🔔 NUEVA FUNCIONALIDAD: Programar notificaciones push
+                try {
+                    val notificationManager = LibraryNotificationManager(context)
+                    
+                    // 📚 Notificación inmediata de asignación
+                    notificationManager.scheduleBookAssignmentNotification(
+                        bookId = book.id,
+                        bookTitle = book.title,
+                        bookAuthor = book.author,
+                        userId = user.uid,
+                        userName = user.name,
+                        expirationDate = expirationDate
+                    )
+                    
+                    // 📅 Notificaciones programadas según vencimiento
+                    notificationManager.scheduleBookLoanNotifications(
+                        bookId = book.id,
+                        bookTitle = book.title,
+                        bookAuthor = book.author,
+                        userId = user.uid,
+                        userName = user.name,
+                        expirationDate = expirationDate
+                    )
+                    Log.d("BookAdapter", "📱 Notificaciones programadas para ${user.name} - ${book.title}")
+                } catch (e: Exception) {
+                    Log.e("BookAdapter", "❌ Error programando notificaciones: ${e.message}")
+                }
             }
             .addOnFailureListener { e ->
                 showProgressBar(holder, false)

@@ -21,10 +21,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import com.bumptech.glide.Glide
 import com.example.libraryinventoryapp.R
 import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.User
+import com.example.libraryinventoryapp.utils.LibraryNotificationManager
+import com.example.libraryinventoryapp.utils.EmailService
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
@@ -38,6 +43,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.Locale
 
 class EditBookFragment : Fragment() {
 
@@ -57,6 +63,7 @@ class EditBookFragment : Fragment() {
 
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storage: FirebaseStorage
+    private val emailService = EmailService()
     private var imageUri: Uri? = null
     private var originalImageUrl: String? = null
     private var editingBook: Book? = null
@@ -531,6 +538,71 @@ class EditBookFragment : Fragment() {
                     "✅ Usuario \"${user.name}\" asignado hasta ${dateFormat.format(expirationDate.time)}", 
                     Toast.LENGTH_LONG).show()
                     
+                // 🔔 NUEVA FUNCIONALIDAD: Programar notificaciones push
+                try {
+                    val notificationManager = LibraryNotificationManager(requireContext())
+                    
+                    // 📚 Notificación inmediata de asignación
+                    notificationManager.scheduleBookAssignmentNotification(
+                        bookId = book.id,
+                        bookTitle = book.title,
+                        bookAuthor = book.author,
+                        userId = user.uid,
+                        userName = user.name,
+                        expirationDate = com.google.firebase.Timestamp(expirationDate.time)
+                    )
+                    
+                    // 📅 Notificaciones programadas según vencimiento
+                    notificationManager.scheduleBookLoanNotifications(
+                        bookId = book.id,
+                        bookTitle = book.title,
+                        bookAuthor = book.author,
+                        userId = user.uid,
+                        userName = user.name,
+                        expirationDate = com.google.firebase.Timestamp(expirationDate.time)
+                    )
+                    Log.d("EditBookFragment", "📱 Notificaciones programadas para ${user.name} - ${book.title}")
+                } catch (e: Exception) {
+                    Log.e("EditBookFragment", "❌ Error programando notificaciones: ${e.message}")
+                }
+                
+                // 📧 ENVÍO DE CORREO AL USUARIO
+                lifecycleScope.launch(Dispatchers.IO) {
+                    try {
+                        // Obtener información del admin actual
+                        val currentUser = FirebaseAuth.getInstance().currentUser
+                        if (currentUser != null) {
+                            firestore.collection("users").document(currentUser.uid).get()
+                                .addOnSuccessListener { adminDoc ->
+                                    val adminName = adminDoc.getString("name") ?: "Admin"
+                                    val adminEmail = adminDoc.getString("email") ?: currentUser.email ?: "admin@biblioteca.com"
+                                    
+                                    lifecycleScope.launch(Dispatchers.IO) {
+                                        val result = emailService.sendBookAssignmentEmail(
+                                            adminEmail = adminEmail,
+                                            userEmail = user.email,
+                                            userName = user.name,
+                                            bookTitle = book.title,
+                                            bookAuthor = book.author,
+                                            adminName = adminName
+                                        )
+                                        
+                                        if (result.isSuccess) {
+                                            Log.d("EmailService", "✅ SendGrid: Correo enviado exitosamente a ${user.name}")
+                                        } else {
+                                            Log.e("EmailService", "❌ SendGrid Error: ${result.exceptionOrNull()?.message}")
+                                        }
+                                    }
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e("EmailService", "❌ Error obteniendo datos del admin: ${e.message}")
+                                }
+                        }
+                    } catch (e: Exception) {
+                        Log.e("EmailService", "❌ Error enviando correo: ${e.message}")
+                    }
+                }
+                    
                 userSearchAutoComplete.setText("")
                 loadBookData() // Recargar datos para actualizar la vista
             }
@@ -602,6 +674,35 @@ class EditBookFragment : Fragment() {
                 Toast.makeText(requireContext(), 
                     "✅ Fecha actualizada para $userName: ${dateFormat.format(newDate.time)}", 
                     Toast.LENGTH_LONG).show()
+                
+                // 🔔 REPROGRAMAR NOTIFICACIONES: Cancelar viejas y crear nuevas
+                try {
+                    val notificationManager = LibraryNotificationManager(requireContext())
+                    
+                    // 🗑️ Cancelar notificaciones anteriores
+                    notificationManager.cancelBookNotifications(book.id, userId)
+                    Log.d("EditBookFragment", "🗑️ Notificaciones anteriores canceladas para $userName")
+                    
+                    // 📅 Programar nuevas notificaciones con la fecha actualizada
+                    notificationManager.scheduleBookLoanNotifications(
+                        bookId = book.id,
+                        bookTitle = book.title,
+                        bookAuthor = book.author,
+                        userId = userId,
+                        userName = userName,
+                        expirationDate = com.google.firebase.Timestamp(newDate.time)
+                    )
+                    Log.d("EditBookFragment", "📱 Nuevas notificaciones programadas para $userName - ${dateFormat.format(newDate.time)}")
+                    
+                    // 🔔 Mostrar confirmación de reprogramación
+                    Toast.makeText(requireContext(), 
+                        "🔔 Notificaciones reprogramadas para la nueva fecha", 
+                        Toast.LENGTH_SHORT).show()
+                        
+                } catch (e: Exception) {
+                    Log.e("EditBookFragment", "❌ Error reprogramando notificaciones: ${e.message}")
+                }
+                
                 loadBookData() // Recargar datos para actualizar la vista
             }
             .addOnFailureListener { e ->
@@ -669,6 +770,16 @@ class EditBookFragment : Fragment() {
             .update(updates)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "✅ Usuario \"$userName\" desasignado exitosamente", Toast.LENGTH_LONG).show()
+                
+                // 🔔 CANCELAR NOTIFICACIONES: Al desasignar, cancelar todas las notificaciones programadas
+                try {
+                    val notificationManager = LibraryNotificationManager(requireContext())
+                    notificationManager.cancelBookNotifications(book.id, userId)
+                    Log.d("EditBookFragment", "🗑️ Notificaciones canceladas para $userName - ${book.title}")
+                } catch (e: Exception) {
+                    Log.e("EditBookFragment", "❌ Error cancelando notificaciones: ${e.message}")
+                }
+                
                 loadBookData() // Recargar datos para actualizar la vista
             }
             .addOnFailureListener { e ->

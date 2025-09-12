@@ -10,4 +10,27 @@
     <color name="bottom_sheet_label">#2B6CB0</color>
     <color name="bottom_sheet_text">#4A5568</color>
     <color name="bottom_sheet_secondary">#718096</color>
+    
+    <!-- 🎨 Sistema de notificaciones - Material Design 3 -->
+    <color name="primary_color">#5EC9FF</color>
+    <color name="background_color">#FAFAFA</color>
+    <color name="background_light_gray">#F5F5F5</color>
+    <color name="border_light_gray">#E0E0E0</color>
+    
+    <!-- 📝 Colores de texto -->
+    <color name="text_primary_color">#212121</color>
+    <color name="text_secondary_color">#757575</color>
+    
+    <!-- 🔔 Estados de urgencia -->
+    <color name="red_500">#F44336</color>
+    <color name="orange_500">#FF9800</color>
+    <color name="blue_600">#1976D2</color>
+    <color name="green_500">#4CAF50</color>
+    
+    <!-- 🎯 Paleta extendida para notificaciones -->
+    <color name="critical_bg">#FFEBEE</color>
+    <color name="urgent_bg">#FFF3E0</color>
+    <color name="due_today_bg">#E8F5E8</color>
+    <color name="upcoming_bg">#E3F2FD</color>
+    <color name="info_bg">#F5F5F5</color>
 </resources>

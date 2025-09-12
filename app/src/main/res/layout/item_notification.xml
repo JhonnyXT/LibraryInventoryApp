@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Notificación simple y funcional -->
+<com.google.android.material.card.MaterialCardView 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_notification"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:strokeWidth="0dp"
+    android:background="@drawable/bg_admin_card"
+    android:foreground="?attr/selectableItemBackground">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- 🔔 Ícono simple (lo que señalabas) -->
+        <ImageView
+            android:id="@+id/icon_urgency"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/circle_urgency_bg"
+            android:padding="8dp"
+            android:scaleType="centerInside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@android:drawable/ic_menu_recent_history"
+            app:tint="@android:color/white" />
+
+        <!-- 📚 Nombre del libro (PRINCIPAL) - TEXTO COMPLETO -->
+        <TextView
+            android:id="@+id/text_book_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="El Principito"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/bottom_sheet_title"
+            android:fontFamily="sans-serif-medium"
+            app:layout_constraintEnd_toStartOf="@id/btn_mark_read"
+            app:layout_constraintStart_toEndOf="@id/icon_urgency"
+            app:layout_constraintTop_toTopOf="@id/icon_urgency" />
+
+        <!-- 📅 Fecha de entrega (SECUNDARIO) - TEXTO COMPLETO -->
+        <TextView
+            android:id="@+id/text_due_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:text="Debes entregarlo el 15/09/2025"
+            android:textSize="14sp"
+            android:textColor="@color/bottom_sheet_secondary"
+            android:fontFamily="sans-serif"
+            app:layout_constraintEnd_toStartOf="@id/btn_mark_read"
+            app:layout_constraintStart_toEndOf="@id/icon_urgency"
+            app:layout_constraintTop_toBottomOf="@id/text_book_title" />
+
+        <!-- ✅ Botón Marcar (compacto) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_mark_read"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Leído"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
+            app:backgroundTint="@color/primary_color"
+            app:cornerRadius="18dp"
+            app:icon="@android:drawable/ic_menu_save"
+            app:iconSize="14dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/icon_urgency"
+            app:layout_constraintBottom_toBottomOf="@id/text_due_date" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
