@@ -15,9 +15,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.libraryinventoryapp.R
+import com.example.libraryinventoryapp.adapters.CommentsAdapter
 import com.example.libraryinventoryapp.models.Book
+import com.example.libraryinventoryapp.models.Comment
 import com.example.libraryinventoryapp.models.WishlistItem
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.MaterialToolbar
@@ -87,6 +90,15 @@ class BookDetailModernFragment : Fragment() {
     private lateinit var cardAssignedUsers: MaterialCardView
     private lateinit var textAssignedUsersDetail: TextView
     
+    // 💬 Components para comentarios
+    private lateinit var cardAddComment: MaterialCardView
+    private lateinit var editCommentText: com.google.android.material.textfield.TextInputEditText
+    private lateinit var btnSendComment: MaterialButton
+    private lateinit var cardCommentsList: MaterialCardView
+    private lateinit var recyclerComments: androidx.recyclerview.widget.RecyclerView
+    private lateinit var layoutNoComments: LinearLayout
+    private lateinit var commentsAdapter: CommentsAdapter
+    
     private lateinit var layoutOverdueWarning: LinearLayout
     private lateinit var textOverdueMessage: TextView
 
@@ -155,6 +167,14 @@ class BookDetailModernFragment : Fragment() {
         cardAssignedUsers = view.findViewById(R.id.card_assigned_users)
         textAssignedUsersDetail = view.findViewById(R.id.text_assigned_users_detail)
         
+        // 💬 Comments components
+        cardAddComment = view.findViewById(R.id.card_add_comment)
+        editCommentText = view.findViewById(R.id.edit_comment_text)
+        btnSendComment = view.findViewById(R.id.btn_send_comment)
+        cardCommentsList = view.findViewById(R.id.card_comments_list)
+        recyclerComments = view.findViewById(R.id.recycler_comments)
+        layoutNoComments = view.findViewById(R.id.layout_no_comments)
+        
         // Overdue warning
         layoutOverdueWarning = view.findViewById(R.id.layout_overdue_warning)
         textOverdueMessage = view.findViewById(R.id.text_overdue_message)
@@ -173,6 +193,9 @@ class BookDetailModernFragment : Fragment() {
         btnFavoriteToolbar.setOnClickListener {
             toggleFavorite()
         }
+        
+        // 💬 Configurar sistema de comentarios
+        setupCommentsSystem()
         
         // Setup AppBarLayout collapse listener para cambiar colores dinámicamente
         setupAppBarCollapseListener()
@@ -264,6 +287,9 @@ class BookDetailModernFragment : Fragment() {
         
         // Validar alertas de vencimiento
         checkOverdueWarning(book)
+        
+        // 💬 Configurar sistema de comentarios
+        setupCommentsForBook(book)
         
         Log.d(TAG, "✅ Detalles del libro cargados: ${book.title}")
     }
@@ -596,5 +622,234 @@ class BookDetailModernFragment : Fragment() {
      */
     private fun showError(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+    }
+    
+    // ═══════════════════════════════════════════════════════════
+    // 💬 SISTEMA DE COMENTARIOS EN TIEMPO REAL
+    // ═══════════════════════════════════════════════════════════
+    
+    /**
+     * 💬 Configurar sistema de comentarios
+     */
+    private fun setupCommentsSystem() {
+        // Configurar RecyclerView
+        commentsAdapter = CommentsAdapter(mutableListOf())
+        recyclerComments.apply {
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
+            adapter = commentsAdapter
+        }
+        
+        // Configurar listener para enviar comentario
+        btnSendComment.setOnClickListener {
+            val commentText = editCommentText.text.toString().trim()
+            if (commentText.isNotEmpty()) {
+                sendComment(commentText)
+            } else {
+                editCommentText.error = "Escribe algo para comentar"
+            }
+        }
+        
+        // Cargar comentarios en tiempo real
+        loadCommentsRealTime()
+    }
+    
+    /**
+     * 🔍 Verificar si el usuario puede comentar (tiene libro asignado)
+     */
+    private fun checkCanUserComment(book: Book) {
+        val currentUserId = auth.currentUser?.uid
+        val canComment = currentUserId != null && 
+                        book.assignedTo?.contains(currentUserId) == true
+        
+        if (canComment) {
+            cardAddComment.visibility = View.VISIBLE
+            Log.d(TAG, "✅ Usuario puede comentar: tiene libro asignado")
+        } else {
+            cardAddComment.visibility = View.GONE
+            Log.d(TAG, "❌ Usuario NO puede comentar: no tiene libro asignado")
+        }
+    }
+    
+    /**
+     * 📝 Enviar nuevo comentario
+     */
+    private fun sendComment(commentText: String) {
+        val currentUser = auth.currentUser
+        val safeBookId = this.bookId
+        
+        if (currentUser == null) {
+            showError("Error: Usuario no autenticado")
+            return
+        }
+        
+        if (safeBookId == null) {
+            showError("Error: ID de libro no válido")
+            return
+        }
+        
+        // Mostrar loading en el botón
+        btnSendComment.isEnabled = false
+        btnSendComment.text = "Enviando..."
+        
+        // 👤 Obtener nombre real del usuario desde Firestore
+        firestore.collection("users").document(currentUser.uid)
+            .get()
+            .addOnSuccessListener { userDoc ->
+                val userName = if (userDoc.exists()) {
+                    userDoc.getString("name") ?: currentUser.displayName ?: "Usuario Anónimo"
+                } else {
+                    currentUser.displayName ?: "Usuario Anónimo"
+                }
+                
+                // Crear comentario con nombre correcto
+                val commentId = firestore.collection("comments").document().id
+                val comment = Comment(
+                    id = commentId,
+                    bookId = safeBookId,
+                    userId = currentUser.uid,
+                    userName = userName,
+                    userEmail = currentUser.email ?: "",
+                    comment = commentText,
+                    timestamp = com.google.firebase.Timestamp.now()
+                )
+                
+                // Guardar en Firestore
+                firestore.collection("comments")
+                    .document(commentId)
+                    .set(comment)
+                    .addOnSuccessListener {
+                        // Limpiar campo y restaurar botón
+                        editCommentText.text?.clear()
+                        btnSendComment.isEnabled = true
+                        btnSendComment.text = "Enviar comentario"
+                        
+                        Toast.makeText(requireContext(), "✅ Comentario enviado", Toast.LENGTH_SHORT).show()
+                        Log.d(TAG, "✅ Comentario guardado: $commentId")
+                    }
+                    .addOnFailureListener { e ->
+                        btnSendComment.isEnabled = true
+                        btnSendComment.text = "Enviar comentario"
+                        showError("❌ Error al enviar comentario")
+                        Log.e(TAG, "❌ Error al guardar comentario", e)
+                    }
+            }
+            .addOnFailureListener { e ->
+                // Usar nombre por defecto si falla la consulta
+                val userName = currentUser.displayName ?: "Usuario"
+                
+                val commentId = firestore.collection("comments").document().id
+                val comment = Comment(
+                    id = commentId,
+                    bookId = safeBookId,
+                    userId = currentUser.uid,
+                    userName = userName,
+                    userEmail = currentUser.email ?: "",
+                    comment = commentText,
+                    timestamp = com.google.firebase.Timestamp.now()
+                )
+                
+                firestore.collection("comments")
+                    .document(commentId)
+                    .set(comment)
+                    .addOnSuccessListener {
+                        editCommentText.text?.clear()
+                        btnSendComment.isEnabled = true
+                        btnSendComment.text = "Enviar comentario"
+                        Toast.makeText(requireContext(), "✅ Comentario enviado", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { 
+                        btnSendComment.isEnabled = true
+                        btnSendComment.text = "Enviar comentario"
+                        showError("❌ Error al enviar comentario")
+                    }
+                
+                Log.w(TAG, "⚠️ Error al obtener datos de usuario, usando nombre por defecto", e)
+            }
+    }
+    
+    /**
+     * 🔄 Cargar comentarios en tiempo real con listener
+     */
+    private fun loadCommentsRealTime() {
+        val safeBookId = this.bookId
+        if (safeBookId == null) {
+            Log.e(TAG, "❌ No se puede cargar comentarios: bookId es null")
+            return
+        }
+        
+        Log.d(TAG, "🔄 Configurando listener de comentarios para libro: $safeBookId")
+        
+        // 📝 Query simplificado sin orderBy para evitar problemas de índices
+        firestore.collection("comments")
+            .whereEqualTo("bookId", safeBookId)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.e(TAG, "❌ Error en listener de comentarios", e)
+                    return@addSnapshotListener
+                }
+                
+                if (snapshot != null) {
+                    val comments = snapshot.documents.mapNotNull { doc ->
+                        try {
+                            doc.toObject(Comment::class.java)?.copy(id = doc.id)
+                        } catch (ex: Exception) {
+                            Log.e(TAG, "❌ Error al parsear comentario: ${doc.id}", ex)
+                            null
+                        }
+                    }.sortedByDescending { it.timestamp } // Ordenar en el cliente
+                    
+                    Log.d(TAG, "📝 Comentarios recibidos en tiempo real: ${comments.size}")
+                    
+                    // 🔄 Actualizar en el hilo principal
+                    if (isAdded && !isDetached) { // Verificar que el fragmento esté activo
+                        updateCommentsUI(comments)
+                    }
+                }
+            }
+    }
+    
+    /**
+     * 🎨 Actualizar UI de comentarios
+     */
+    private fun updateCommentsUI(comments: List<Comment>) {
+        try {
+            if (comments.isEmpty()) {
+                // Sin comentarios - mostrar estado vacío
+                cardCommentsList.visibility = View.VISIBLE
+                recyclerComments.visibility = View.GONE
+                layoutNoComments.visibility = View.VISIBLE
+                Log.d(TAG, "📄 Mostrar estado vacío de comentarios")
+            } else {
+                // Hay comentarios - mostrar lista
+                cardCommentsList.visibility = View.VISIBLE
+                recyclerComments.visibility = View.VISIBLE
+                layoutNoComments.visibility = View.GONE
+                
+                // 🔄 Actualizar adapter con animación
+                commentsAdapter.updateComments(comments)
+                
+                Log.d(TAG, "📝 Comentarios actualizados en tiempo real: ${comments.size}")
+                
+                // 📜 Opcional: scroll al último comentario si se agregó uno nuevo
+                if (comments.isNotEmpty()) {
+                    recyclerComments.post {
+                        recyclerComments.smoothScrollToPosition(0)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error al actualizar UI de comentarios", e)
+        }
+    }
+    
+    /**
+     * 📋 Configurar comentarios para un libro específico
+     */
+    private fun setupCommentsForBook(book: Book) {
+        // Verificar si usuario puede comentar
+        checkCanUserComment(book)
+        
+        // Los comentarios se cargan automáticamente con el listener en tiempo real
+        Log.d(TAG, "💬 Sistema de comentarios configurado para: ${book.title}")
     }
 }
