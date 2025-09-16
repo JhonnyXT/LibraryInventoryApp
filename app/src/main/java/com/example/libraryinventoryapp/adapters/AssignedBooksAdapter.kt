@@ -72,9 +72,15 @@ class AssignedBooksAdapter(
             val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
             val currentTime = System.currentTimeMillis()
             
-            // Buscar views del nuevo layout
+            // Buscar views del nuevo layout con validación null-safe
             val expirationAlertLayout = itemView.findViewById<LinearLayout>(R.id.expiration_alert_layout)
             val expirationAlert = itemView.findViewById<TextView>(R.id.expiration_alert)
+            
+            // ✅ Validación crítica: Si las vistas no existen, salir silenciosamente
+            if (expirationAlert == null || expirationAlertLayout == null) {
+                android.util.Log.w("AssignedBooksAdapter", "⚠️ Vistas de alerta no encontradas en el layout - saltando validación de vencimiento")
+                return
+            }
 
             if (currentUserId != null) {
                 // Buscar el índice del usuario actual en la lista de asignados
@@ -95,43 +101,35 @@ class AssignedBooksAdapter(
                             } else {
                                 "🚨 Vencido hace $daysOverdue días"
                             }
-                            expirationAlertLayout?.visibility = View.VISIBLE
-                            expirationAlert.apply {
-                                text = alertText
-                            }
+                            expirationAlertLayout.visibility = View.VISIBLE
+                            expirationAlert.text = alertText
                         }
                         daysDiff == 0 -> {
                             // Vence hoy
-                            expirationAlertLayout?.visibility = View.VISIBLE
-                            expirationAlert.apply {
-                                text = "Vence HOY"
-                            }
+                            expirationAlertLayout.visibility = View.VISIBLE
+                            expirationAlert.text = "Vence HOY"
                         }
                         daysDiff == 1 -> {
                             // Vence mañana
-                            expirationAlertLayout?.visibility = View.VISIBLE
-                            expirationAlert.apply {
-                                text = "Vence mañana"
-                            }
+                            expirationAlertLayout.visibility = View.VISIBLE
+                            expirationAlert.text = "Vence mañana"
                         }
                         daysDiff <= 5 -> {
                             // Por vencer (2-5 días)
-                            expirationAlertLayout?.visibility = View.VISIBLE
-                            expirationAlert.apply {
-                                text = "Vence en $daysDiff días"
-                            }
+                            expirationAlertLayout.visibility = View.VISIBLE
+                            expirationAlert.text = "Vence en $daysDiff días"
                         }
                         else -> {
                             // Préstamo vigente sin alertas
-                            expirationAlertLayout?.visibility = View.GONE
+                            expirationAlertLayout.visibility = View.GONE
                         }
                     }
                 } else {
                     // No hay fecha de vencimiento o error
-                    expirationAlertLayout?.visibility = View.GONE
+                    expirationAlertLayout.visibility = View.GONE
                 }
             } else {
-                expirationAlertLayout?.visibility = View.GONE
+                expirationAlertLayout.visibility = View.GONE
             }
         }
     }

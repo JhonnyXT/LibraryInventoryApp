@@ -16,6 +16,9 @@ import com.example.libraryinventoryapp.adapters.OverdueBooksAdapter
 import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.OverdueBookItem
 import com.example.libraryinventoryapp.utils.EmailService
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,8 +37,21 @@ class OverdueBooksFragment : Fragment() {
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var emptyStateText: TextView
     
+    // 🔍 Componentes del filtro
+    private lateinit var cardFilterContainer: MaterialCardView
+    private lateinit var chipGroupFilters: ChipGroup
+    private lateinit var textFilterCount: TextView
+    
     private val emailService = EmailService()
+    
+    // 📊 Estados para filtrado
+    enum class FilterState {
+        ALL, UPCOMING, TODAY, RECENT_OVERDUE, LATE, URGENT, CRITICAL
+    }
+    
     private var overdueBooksList: MutableList<OverdueBookItem> = mutableListOf()
+    private var filteredOverdueBooksList: MutableList<OverdueBookItem> = mutableListOf()
+    private var currentFilter: FilterState = FilterState.ALL
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,10 +63,16 @@ class OverdueBooksFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Inicializar componentes básicos
         recyclerView = view.findViewById(R.id.overdue_books_recycler_view)
         progressBar = view.findViewById(R.id.progress_bar)
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout)
         emptyStateText = view.findViewById(R.id.empty_state_text)
+        
+        // 🔍 Inicializar componentes del filtro
+        cardFilterContainer = view.findViewById(R.id.card_filter_container)
+        chipGroupFilters = view.findViewById(R.id.chip_group_filters)
+        textFilterCount = view.findViewById(R.id.text_filter_count)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
         firestore = FirebaseFirestore.getInstance()
@@ -60,9 +82,9 @@ class OverdueBooksFragment : Fragment() {
             loadOverdueBooks()
         }
 
-        // Configurar el adaptador
+        // ✅ PASO 1: Configurar el adaptador ANTES de los filtros
         overdueAdapter = OverdueBooksAdapter(
-            overdueBooksList,
+            filteredOverdueBooksList,
             onSendReminderClick = { overdueItem, hideProgress ->
                 sendReminderEmail(overdueItem, hideProgress)
             },
@@ -72,7 +94,110 @@ class OverdueBooksFragment : Fragment() {
         )
         recyclerView.adapter = overdueAdapter
 
+        // ✅ PASO 2: Configurar filtros DESPUÉS de inicializar adapter
+        setupFilters()
+
         loadOverdueBooks()
+    }
+
+    /**
+     * 🔍 Configurar sistema de filtros
+     */
+    private fun setupFilters() {
+        // Configurar listeners para cada chip
+        chipGroupFilters.setOnCheckedStateChangeListener { _, checkedIds ->
+            when {
+                checkedIds.contains(R.id.chip_all) -> applyFilter(FilterState.ALL)
+                checkedIds.contains(R.id.chip_upcoming) -> applyFilter(FilterState.UPCOMING)
+                checkedIds.contains(R.id.chip_today) -> applyFilter(FilterState.TODAY)
+                checkedIds.contains(R.id.chip_recent_overdue) -> applyFilter(FilterState.RECENT_OVERDUE)
+                checkedIds.contains(R.id.chip_late) -> applyFilter(FilterState.LATE)
+                checkedIds.contains(R.id.chip_urgent) -> applyFilter(FilterState.URGENT)
+                checkedIds.contains(R.id.chip_critical) -> applyFilter(FilterState.CRITICAL)
+                else -> applyFilter(FilterState.ALL) // Default si no hay selección
+            }
+        }
+        
+        // Aplicar filtro inicial
+        applyFilter(FilterState.ALL)
+        
+        Log.d("OverdueBooksFragment", "🔍 Sistema de filtros configurado")
+    }
+
+    /**
+     * 🎯 Aplicar filtro específico
+     */
+    private fun applyFilter(filterState: FilterState) {
+        currentFilter = filterState
+        filteredOverdueBooksList.clear()
+        
+        val filtered = when (filterState) {
+            FilterState.ALL -> overdueBooksList
+            FilterState.UPCOMING -> overdueBooksList.filter { it.daysOverdue < 0 } // Próximos (valores negativos)
+            FilterState.TODAY -> overdueBooksList.filter { it.daysOverdue == 0 } // Vence hoy
+            FilterState.RECENT_OVERDUE -> overdueBooksList.filter { it.daysOverdue in 1..6 } // Vencidos recientes
+            FilterState.LATE -> overdueBooksList.filter { it.daysOverdue in 7..13 } // Tarde
+            FilterState.URGENT -> overdueBooksList.filter { it.daysOverdue in 14..29 } // Urgente
+            FilterState.CRITICAL -> overdueBooksList.filter { it.daysOverdue >= 30 } // Crítico
+        }
+        
+        filteredOverdueBooksList.addAll(filtered)
+        
+        // ✅ Validación adicional para prevenir crashes futuros
+        if (::overdueAdapter.isInitialized) {
+            overdueAdapter.notifyDataSetChanged()
+        } else {
+            android.util.Log.w("OverdueBooksFragment", "⚠️ overdueAdapter no inicializado - saltando notifyDataSetChanged")
+        }
+        
+        // Actualizar contador
+        updateFilterCount(filterState, filtered.size)
+        
+        // Mostrar/ocultar estado vacío
+        updateEmptyState()
+        
+        Log.d("OverdueBooksFragment", "🎯 Filtro aplicado: $filterState (${filtered.size} resultados)")
+    }
+
+    /**
+     * 📊 Actualizar contador de filtros
+     */
+    private fun updateFilterCount(filterState: FilterState, count: Int) {
+        val filterName = when (filterState) {
+            FilterState.ALL -> "Todos"
+            FilterState.UPCOMING -> "Próximos"
+            FilterState.TODAY -> "Hoy"
+            FilterState.RECENT_OVERDUE -> "Vencidos"
+            FilterState.LATE -> "Tarde"
+            FilterState.URGENT -> "Urgente"
+            FilterState.CRITICAL -> "Crítico"
+        }
+        
+        textFilterCount.text = "$filterName ($count)"
+    }
+
+    /**
+     * 📄 Actualizar estado vacío según filtro
+     */
+    private fun updateEmptyState() {
+        if (filteredOverdueBooksList.isEmpty()) {
+            emptyStateText.visibility = View.VISIBLE
+            recyclerView.visibility = View.GONE
+            
+            val message = when (currentFilter) {
+                FilterState.ALL -> "🎉 ¡Todo al día!\n\nNo hay libros pendientes de devolución."
+                FilterState.UPCOMING -> "✅ Sin libros próximos a vencer"
+                FilterState.TODAY -> "✅ Sin libros que venzan hoy"
+                FilterState.RECENT_OVERDUE -> "✅ Sin libros recién vencidos"
+                FilterState.LATE -> "✅ Sin libros con retraso moderado"
+                FilterState.URGENT -> "✅ Sin libros urgentes"
+                FilterState.CRITICAL -> "✅ Sin libros en estado crítico"
+            }
+            emptyStateText.text = message
+        } else {
+            emptyStateText.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
+        }
     }
 
     private fun loadOverdueBooks() {
@@ -167,15 +292,10 @@ class OverdueBooksFragment : Fragment() {
     }
 
     private fun updateUI() {
-        if (overdueBooksList.isEmpty()) {
-            recyclerView.visibility = View.GONE
-            emptyStateText.visibility = View.VISIBLE
-            emptyStateText.text = "🎉 ¡Todo está al día!\n\nNo hay libros vencidos ni próximos a vencer en los próximos 5 días."
-        } else {
-            recyclerView.visibility = View.VISIBLE
-            emptyStateText.visibility = View.GONE
-            overdueAdapter.notifyDataSetChanged()
-        }
+        // Aplicar el filtro actual con los nuevos datos
+        applyFilter(currentFilter)
+        
+        Log.d("OverdueBooksFragment", "🔄 UI actualizada con ${overdueBooksList.size} libros totales")
     }
 
     private fun sendReminderEmail(overdueItem: OverdueBookItem, hideProgress: () -> Unit) {
@@ -284,25 +404,47 @@ class OverdueBooksFragment : Fragment() {
             Usuario: ${overdueItem.userName}
             Libro: ${overdueItem.book.title}
             Lista antes: ${overdueBooksList.size} items
+            Lista filtrada antes: ${filteredOverdueBooksList.size} items
         """.trimIndent())
         
-        // Buscar y remover el item específico de la lista
-        val position = overdueBooksList.indexOfFirst { 
+        // Buscar y remover de la lista principal
+        val mainPosition = overdueBooksList.indexOfFirst { 
             it.book.id == overdueItem.book.id && it.userId == overdueItem.userId 
         }
         
-        if (position != -1) {
-            overdueBooksList.removeAt(position)
-            overdueAdapter.notifyItemRemoved(position)
+        // Buscar y remover de la lista filtrada
+        val filteredPosition = filteredOverdueBooksList.indexOfFirst { 
+            it.book.id == overdueItem.book.id && it.userId == overdueItem.userId 
+        }
+        
+        if (mainPosition != -1) {
+            overdueBooksList.removeAt(mainPosition)
+            Log.i("OverdueBooksFragment", "✅ Removido de lista principal en posición: $mainPosition")
+        }
+        
+        if (filteredPosition != -1) {
+            filteredOverdueBooksList.removeAt(filteredPosition)
             
+            // ✅ Validación adicional para prevenir crashes
+            if (::overdueAdapter.isInitialized) {
+                overdueAdapter.notifyItemRemoved(filteredPosition)
+            } else {
+                android.util.Log.w("OverdueBooksFragment", "⚠️ overdueAdapter no inicializado - saltando notifyItemRemoved")
+            }
+            
+            Log.i("OverdueBooksFragment", "✅ Removido de lista filtrada en posición: $filteredPosition")
+        }
+        
+        if (mainPosition != -1 || filteredPosition != -1) {
             Log.i("OverdueBooksFragment", """
                 ✅ LIBRO REMOVIDO EXITOSAMENTE:
-                Posición removida: $position
-                Lista después: ${overdueBooksList.size} items
+                Lista principal después: ${overdueBooksList.size} items
+                Lista filtrada después: ${filteredOverdueBooksList.size} items
             """.trimIndent())
             
-            // Actualizar UI si la lista quedó vacía
-            updateUI()
+            // Actualizar contador y UI
+            updateFilterCount(currentFilter, filteredOverdueBooksList.size)
+            updateEmptyState()
             
             // Log resumen actualizado
             Log.i("OverdueBooksFragment", """

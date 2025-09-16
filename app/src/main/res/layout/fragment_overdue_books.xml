@@ -33,6 +33,187 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/screen_title" />
 
+    <!-- 🎨 Filtro horizontal moderno y compacto -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_filter_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/screen_subtitle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingVertical="12dp">
+
+            <!-- 📊 Header compacto -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Filtrar por estado"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textStyle="bold" />
+
+                <!-- 🏷️ Badge contador -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp"
+                    app:cardBackgroundColor="?attr/colorPrimaryContainer">
+
+                    <TextView
+                        android:id="@+id/text_filter_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Todos (0)"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+                        android:textColor="?attr/colorOnPrimaryContainer"
+                        android:textStyle="bold"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <!-- 🎯 Chips horizontales con scroll -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:clipToPadding="false">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_group_filters"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:singleSelection="true"
+                    app:selectionRequired="false"
+                    app:singleLine="true"
+                    app:chipSpacing="8dp">
+
+                    <!-- Todos -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_all"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Todos"
+                        android:checked="true"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                        app:chipBackgroundColor="@color/chip_category_background"
+                        app:chipStrokeWidth="1dp"
+                        app:chipStrokeColor="?attr/colorOutline"
+                        app:chipCornerRadius="20dp" />
+
+                    <!-- Próximos -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_upcoming"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Próximos"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                        app:chipBackgroundColor="@color/chip_category_background"
+                        app:chipStrokeWidth="1dp"
+                        app:chipStrokeColor="?attr/colorOutline"
+                        app:chipCornerRadius="20dp" />
+
+                    <!-- Hoy -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_today"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hoy"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                        app:chipBackgroundColor="@color/chip_category_background"
+                        app:chipStrokeWidth="1dp"
+                        app:chipStrokeColor="?attr/colorOutline"
+                        app:chipCornerRadius="20dp" />
+
+                    <!-- Vencidos -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_recent_overdue"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vencidos"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                        app:chipBackgroundColor="@color/chip_category_background"
+                        app:chipStrokeWidth="1dp"
+                        app:chipStrokeColor="?attr/colorOutline"
+                        app:chipCornerRadius="20dp" />
+
+                    <!-- Tarde -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_late"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tarde"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                        app:chipBackgroundColor="@color/chip_category_background"
+                        app:chipStrokeWidth="1dp"
+                        app:chipStrokeColor="?attr/colorOutline"
+                        app:chipCornerRadius="20dp" />
+
+                    <!-- Urgente -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_urgent"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Urgente"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                        app:chipBackgroundColor="@color/chip_category_background"
+                        app:chipStrokeWidth="1dp"
+                        app:chipStrokeColor="?attr/colorOutline"
+                        app:chipCornerRadius="20dp" />
+
+                    <!-- Crítico -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_critical"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Crítico"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                        app:chipBackgroundColor="@color/chip_category_background"
+                        app:chipStrokeWidth="1dp"
+                        app:chipStrokeColor="?attr/colorOutline"
+                        app:chipCornerRadius="20dp" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+            </HorizontalScrollView>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
     <!-- SwipeRefreshLayout para recargar la lista -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
@@ -42,7 +223,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/screen_subtitle">
+        app:layout_constraintTop_toBottomOf="@id/card_filter_container">
 
         <!-- RecyclerView para la lista de libros vencidos -->
         <androidx.recyclerview.widget.RecyclerView
