@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -19,7 +20,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class AssignedBooksAdapter(
-    private val assignedBooks: List<Book>
+    private val assignedBooks: List<Book>,
+    private val onBookClick: (Book) -> Unit = {}
 ) : RecyclerView.Adapter<AssignedBooksAdapter.AssignedBookViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AssignedBookViewHolder {
@@ -47,7 +49,7 @@ class AssignedBooksAdapter(
             // Click en toda la tarjeta para mostrar detalles
             itemView.setOnClickListener {
                 val book = assignedBooks[adapterPosition]
-                showAssignedBookDetailsBottomSheet(book, itemView.context)
+                onBookClick(book)
             }
         }
 
@@ -69,6 +71,9 @@ class AssignedBooksAdapter(
         private fun checkUserExpirationStatus(book: Book) {
             val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
             val currentTime = System.currentTimeMillis()
+            
+            // Buscar views del nuevo layout
+            val expirationAlertLayout = itemView.findViewById<LinearLayout>(R.id.expiration_alert_layout)
             val expirationAlert = itemView.findViewById<TextView>(R.id.expiration_alert)
 
             if (currentUserId != null) {
@@ -81,8 +86,6 @@ class AssignedBooksAdapter(
                     val expirationTime = userExpirationDate.toDate().time
                     val daysDiff = ((expirationTime - currentTime) / (24 * 60 * 60 * 1000)).toInt()
                     
-                    val statusIndicator = itemView.findViewById<View>(R.id.status_indicator)
-                    
                     when {
                         daysDiff < 0 -> {
                             // Préstamo vencido
@@ -92,52 +95,43 @@ class AssignedBooksAdapter(
                             } else {
                                 "🚨 Vencido hace $daysOverdue días"
                             }
+                            expirationAlertLayout?.visibility = View.VISIBLE
                             expirationAlert.apply {
-                                visibility = View.VISIBLE
                                 text = alertText
-                                setTextColor(itemView.context.getColor(android.R.color.holo_red_dark))
                             }
-                            statusIndicator.setBackgroundColor(itemView.context.getColor(android.R.color.holo_red_dark))
                         }
                         daysDiff == 0 -> {
                             // Vence hoy
+                            expirationAlertLayout?.visibility = View.VISIBLE
                             expirationAlert.apply {
-                                visibility = View.VISIBLE
-                                text = "🔥 Vence HOY"
-                                setTextColor(itemView.context.getColor(android.R.color.holo_red_dark))
+                                text = "Vence HOY"
                             }
-                            statusIndicator.setBackgroundColor(itemView.context.getColor(android.R.color.holo_red_dark))
                         }
                         daysDiff == 1 -> {
                             // Vence mañana
+                            expirationAlertLayout?.visibility = View.VISIBLE
                             expirationAlert.apply {
-                                visibility = View.VISIBLE
-                                text = "⏰ Vence MAÑANA"
-                                setTextColor(itemView.context.getColor(android.R.color.holo_orange_dark))
+                                text = "Vence mañana"
                             }
-                            statusIndicator.setBackgroundColor(itemView.context.getColor(android.R.color.holo_orange_dark))
                         }
                         daysDiff <= 5 -> {
                             // Por vencer (2-5 días)
+                            expirationAlertLayout?.visibility = View.VISIBLE
                             expirationAlert.apply {
-                                visibility = View.VISIBLE
-                                text = "⏳ Vence en $daysDiff días"
-                                setTextColor(itemView.context.getColor(android.R.color.holo_orange_light))
+                                text = "Vence en $daysDiff días"
                             }
-                            statusIndicator.setBackgroundColor(itemView.context.getColor(android.R.color.holo_orange_light))
                         }
                         else -> {
                             // Préstamo vigente sin alertas
-                            expirationAlert.visibility = View.GONE
-                            statusIndicator.setBackgroundColor(itemView.context.getColor(android.R.color.holo_green_dark))
+                            expirationAlertLayout?.visibility = View.GONE
                         }
                     }
                 } else {
                     // No hay fecha de vencimiento o error
-                    expirationAlert.visibility = View.GONE
+                    expirationAlertLayout?.visibility = View.GONE
                 }
             } else {
-                expirationAlert.visibility = View.GONE
+                expirationAlertLayout?.visibility = View.GONE
             }
         }
     }

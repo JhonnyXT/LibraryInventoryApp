@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 🎨 Color state list para chips de categorías -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Estado seleccionado/checked - Color principal -->
+    <item android:state_checked="true" android:color="?attr/colorPrimary" />
+    <!-- Estado normal - Color de fondo claro -->
+    <item android:color="?attr/colorSurfaceContainerHigh" />
+</selector>

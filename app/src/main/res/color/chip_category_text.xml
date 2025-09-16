@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 🎨 Color state list para texto de chips de categorías -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Estado seleccionado/checked - Texto blanco -->
+    <item android:state_checked="true" android:color="?attr/colorOnPrimary" />
+    <!-- Estado normal - Color de texto normal -->
+    <item android:color="?attr/colorOnSurfaceVariant" />
+</selector>

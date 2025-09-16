@@ -33,4 +33,26 @@
     <color name="due_today_bg">#E8F5E8</color>
     <color name="upcoming_bg">#E3F2FD</color>
     <color name="info_bg">#F5F5F5</color>
+    
+    <!-- 🏠 Colores para Home Modern -->
+    <color name="favorite_color">#FFD700</color>
+    <color name="star_color">#FFC107</color>
+    
+    <!-- 📚 Estados de libros -->
+    <color name="available_bg">#4CAF50</color>
+    <color name="available_text">#FFFFFF</color>
+    <color name="not_available_bg">#F44336</color>
+    <color name="not_available_text">#FFFFFF</color>
+    
+    <!-- 🏷️ Chips y categorías -->
+    <color name="chip_category_bg">#E3F2FD</color>
+    <color name="chip_category_stroke">#1976D2</color>
+    
+    <!-- 📖 Placeholders -->
+    <color name="placeholder_book_color">#E0E0E0</color>
+    <color name="placeholder_book_accent">#BDBDBD</color>
+    
+    <!-- 🎨 Material Design 3 adicionales -->
+    <color name="surface_variant">#F3F3F3</color>
+    <color name="on_surface_variant">#49454E</color>
 </resources>

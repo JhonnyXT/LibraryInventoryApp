@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 📚 Placeholder para libros -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/placeholder_book_color"
+        android:pathData="M18,2H6C4.9,2 4,2.9 4,4V20C4,21.1 4.9,22 6,22H18C19.1,22 20,21.1 20,20V4C20,2.9 19.1,2 18,2zM18,20H6V4H18V20z"/>
+    <path
+        android:fillColor="@color/placeholder_book_accent"
+        android:pathData="M7,5H17V7H7V5z"/>
+    <path
+        android:fillColor="@color/placeholder_book_accent"
+        android:pathData="M7,8H17V10H7V8z"/>
+    <path
+        android:fillColor="@color/placeholder_book_accent"
+        android:pathData="M7,11H14V13H7V11z"/>
+</vector>

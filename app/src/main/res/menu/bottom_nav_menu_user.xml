@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 📱 Menú Bottom Navigation - MEJORADO según feedback -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 🏠 Home con ícono Material Design -->
     <item
-        android:id="@+id/nav_books_list"
-        android:icon="@drawable/ic_view_books"
-        android:title="Explorar" />
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="Home" />
+    <!-- ⭐ Lista de Deseos (libros guardados como favoritos) -->
+    <item
+        android:id="@+id/nav_wishlist"
+        android:icon="@android:drawable/btn_star_big_on"
+        android:title="Deseados" />
+    <!-- 📖 Mis Libros Asignados -->
     <item
         android:id="@+id/nav_assigned_books"
         android:icon="@drawable/ic_assigned_books"
         android:title="Mis Libros" />
-    <item
-        android:id="@+id/nav_notifications"
-        android:icon="@android:drawable/ic_dialog_email"
-        android:title="Notificaciones" />
-    <item
-        android:id="@+id/nav_profile"
-        android:icon="@drawable/ic_profile"
-        android:title="Perfil" />
 </menu>

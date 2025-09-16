@@ -8,9 +8,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.libraryinventoryapp.fragments.AssignedBooksFragment
-import com.example.libraryinventoryapp.fragments.BookListFragment
+import com.example.libraryinventoryapp.fragments.HomeModernFragment
 import com.example.libraryinventoryapp.fragments.NotificationsFragment
-import com.example.libraryinventoryapp.fragments.ProfileFragment
+import com.example.libraryinventoryapp.fragments.WishlistModernFragment
 import com.example.libraryinventoryapp.models.Book
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -41,14 +41,8 @@ class UserActivity : AppCompatActivity() {
         initializeComponents()
         setupBottomNavigation()
         
-        // 🔄 Configurar badge de notificaciones
-        setupNotificationBadge()
-        
-        // 📚 Fragmento por defecto
-        loadFragment(BookListFragment())
-        
-        // 🔄 Actualizar badge periódicamente
-        updateNotificationBadge()
+        // 🏠 Fragmento por defecto - NUEVA PANTALLA HOME MODERNA
+        loadFragment(HomeModernFragment())
     }
     
     /**
@@ -62,27 +56,27 @@ class UserActivity : AppCompatActivity() {
     }
     
     /**
-     * 🎯 Configurar navegación inferior
+     * 🎯 Configurar navegación inferior - ACTUALIZADO con Home Moderno
      */
     private fun setupBottomNavigation() {
+        // 🏠 Seleccionar Home por defecto
+        bottomNav.selectedItemId = R.id.nav_home
+        
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_books_list -> {
-                    loadFragment(BookListFragment())
+                R.id.nav_home -> {
+                    // 🏠 Home con todos los libros y categorías
+                    loadFragment(HomeModernFragment())
+                    true
+                }
+                R.id.nav_wishlist -> {
+                    // ⭐ Lista de libros deseados/guardados
+                    loadFragment(WishlistModernFragment())
                     true
                 }
                 R.id.nav_assigned_books -> {
+                    // 📖 Mis libros asignados
                     loadFragment(AssignedBooksFragment())
-                    true
-                }
-                R.id.nav_notifications -> {
-                    loadFragment(NotificationsFragment())
-                    // 🔴 Limpiar badge al abrir notificaciones
-                    clearNotificationBadge()
-                    true
-                }
-                R.id.nav_profile -> {
-                    loadFragment(ProfileFragment())
                     true
                 }
                 else -> false
@@ -191,14 +185,14 @@ class UserActivity : AppCompatActivity() {
     }
     
     /**
-     * 🎯 Función pública para cambiar de tab (usada desde fragments)
+     * 🎯 Función pública para cambiar de tab (usada desde fragments) - NUEVO MENÚ
      */
     fun switchToTab(tabIndex: Int) {
         val menuItem = when (tabIndex) {
-            0 -> bottomNav.menu.findItem(R.id.nav_books_list)
-            1 -> bottomNav.menu.findItem(R.id.nav_assigned_books)
-            2 -> bottomNav.menu.findItem(R.id.nav_notifications)
-            3 -> bottomNav.menu.findItem(R.id.nav_profile)
+            0 -> bottomNav.menu.findItem(R.id.nav_home)           // 🏠 Home
+            1 -> bottomNav.menu.findItem(R.id.nav_wishlist)       // ⭐ Deseados
+            2 -> bottomNav.menu.findItem(R.id.nav_assigned_books) // 📖 Mis Libros
+            3 -> bottomNav.menu.findItem(R.id.nav_notifications)  // 🔔 Notificaciones
             else -> return
         }
         
