@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -33,8 +33,12 @@ class OverdueBooksFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var overdueAdapter: OverdueBooksAdapter
     private lateinit var firestore: FirebaseFirestore
-    private lateinit var progressBar: ProgressBar
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    
+    // 🎨 Componentes de estados modernos
+    private lateinit var loadingState: LinearLayout
+    private lateinit var progressBar: com.google.android.material.progressindicator.CircularProgressIndicator
+    private lateinit var emptyStateLayout: LinearLayout
     private lateinit var emptyStateText: TextView
     
     // 🔍 Componentes del filtro
@@ -65,8 +69,12 @@ class OverdueBooksFragment : Fragment() {
 
         // Inicializar componentes básicos
         recyclerView = view.findViewById(R.id.overdue_books_recycler_view)
-        progressBar = view.findViewById(R.id.progress_bar)
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout)
+        
+        // 🎨 Inicializar estados modernos
+        loadingState = view.findViewById(R.id.loading_state)
+        progressBar = view.findViewById(R.id.progress_bar)
+        emptyStateLayout = view.findViewById(R.id.empty_state_layout)
         emptyStateText = view.findViewById(R.id.empty_state_text)
         
         // 🔍 Inicializar componentes del filtro
@@ -177,32 +185,42 @@ class OverdueBooksFragment : Fragment() {
     }
 
     /**
-     * 📄 Actualizar estado vacío según filtro
+     * 📄 Actualizar estado vacío según filtro - Centrado perfecto
      */
     private fun updateEmptyState() {
         if (filteredOverdueBooksList.isEmpty()) {
-            emptyStateText.visibility = View.VISIBLE
-            recyclerView.visibility = View.GONE
+            // 🎯 Mostrar estado vacío centrado en toda el área de la lista
+            emptyStateLayout.visibility = View.VISIBLE
+            swipeRefreshLayout.visibility = View.GONE
             
             val message = when (currentFilter) {
-                FilterState.ALL -> "🎉 ¡Todo al día!\n\nNo hay libros pendientes de devolución."
-                FilterState.UPCOMING -> "✅ Sin libros próximos a vencer"
-                FilterState.TODAY -> "✅ Sin libros que venzan hoy"
-                FilterState.RECENT_OVERDUE -> "✅ Sin libros recién vencidos"
-                FilterState.LATE -> "✅ Sin libros con retraso moderado"
-                FilterState.URGENT -> "✅ Sin libros urgentes"
-                FilterState.CRITICAL -> "✅ Sin libros en estado crítico"
+                FilterState.ALL -> "No hay libros pendientes de devolución"
+                FilterState.UPCOMING -> "No hay libros próximos a vencer"
+                FilterState.TODAY -> "No hay libros que venzan hoy"
+                FilterState.RECENT_OVERDUE -> "No hay libros recién vencidos"
+                FilterState.LATE -> "No hay libros con retraso moderado"
+                FilterState.URGENT -> "No hay libros urgentes"
+                FilterState.CRITICAL -> "No hay libros en estado crítico"
             }
             emptyStateText.text = message
+            
+            Log.d("OverdueBooksFragment", "📭 Estado vacío mostrado: $message")
         } else {
-            emptyStateText.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
+            // 🎯 Mostrar lista con datos
+            emptyStateLayout.visibility = View.GONE
+            swipeRefreshLayout.visibility = View.VISIBLE
+            
+            Log.d("OverdueBooksFragment", "📋 Lista mostrada con ${filteredOverdueBooksList.size} elementos")
         }
     }
 
     private fun loadOverdueBooks() {
         Log.i("OverdueBooksFragment", "🔄 INICIANDO CARGA DE LIBROS VENCIDOS/PRÓXIMOS A VENCER")
-        progressBar.visibility = View.VISIBLE
+        
+        // 🔄 Mostrar estado de carga elegante
+        loadingState.visibility = View.VISIBLE
+        emptyStateLayout.visibility = View.GONE
+        swipeRefreshLayout.visibility = View.GONE
         
         firestore.collection("books")
             .get()
@@ -277,11 +295,14 @@ class OverdueBooksFragment : Fragment() {
 
                 // Actualizar UI
                 updateUI()
-                progressBar.visibility = View.GONE
+                
+                // 🎯 Ocultar estado de carga
+                loadingState.visibility = View.GONE
                 swipeRefreshLayout.isRefreshing = false
             }
             .addOnFailureListener { exception ->
-                progressBar.visibility = View.GONE
+                // 🚨 Ocultar loading en caso de error
+                loadingState.visibility = View.GONE
                 swipeRefreshLayout.isRefreshing = false
                 Toast.makeText(
                     context, 

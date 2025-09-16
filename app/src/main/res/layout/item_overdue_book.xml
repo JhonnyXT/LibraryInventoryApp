@@ -1,244 +1,268 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Diseño premium con fondo adaptativo para devoluciones pendientes -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- 🎨 Tarjeta profesional Material Design 3 - Devoluciones -->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="12dp"
-    android:background="@drawable/bg_admin_card"
-    android:elevation="6dp"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="1dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+    app:rippleColor="?attr/colorPrimary">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!-- 📱 Layout vertical moderno y eficiente -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <!-- Imagen del libro -->
-        <ImageView
-            android:id="@+id/book_image"
-            android:layout_width="80dp"
-            android:layout_height="100dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@tools:sample/avatars" />
-
-        <!-- Indicador de urgencia -->
-        <TextView
-            android:id="@+id/urgency_badge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_book_default"
-            android:backgroundTint="#F44336"
-            android:text="🚨 VENCIDO"
-            android:textColor="@android:color/white"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- Título del libro -->
-        <TextView
-            android:id="@+id/book_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:text="Título del libro"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/bottom_sheet_title"
-            android:maxLines="2"
-            android:ellipsize="end"
-            app:layout_constraintEnd_toStartOf="@id/urgency_badge"
-            app:layout_constraintStart_toEndOf="@id/book_image"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- Autor del libro -->
-        <TextView
-            android:id="@+id/book_author"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="8dp"
-            android:text="Autor del libro"
-            android:textSize="14sp"
-            android:textColor="@color/bottom_sheet_secondary"
-            android:maxLines="1"
-            android:ellipsize="end"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/book_image"
-            app:layout_constraintTop_toBottomOf="@id/book_title" />
-
-        <!-- Separador -->
-        <View
-            android:id="@+id/separator"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginTop="12dp"
-            android:background="@color/bottom_sheet_secondary"
-            android:alpha="0.3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/book_image" />
-
-        <!-- Usuario que debe devolver -->
-        <TextView
-            android:id="@+id/user_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="👤 Usuario:"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="@color/bottom_sheet_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/separator" />
-
-        <TextView
-            android:id="@+id/user_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Nombre del usuario"
-            android:textSize="14sp"
-            android:textColor="@color/bottom_sheet_secondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/user_label"
-            app:layout_constraintTop_toTopOf="@id/user_label" />
-
-        <!-- Fecha de vencimiento -->
-        <TextView
-            android:id="@+id/expiration_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="📅 Venció el:"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="@color/bottom_sheet_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/user_label" />
-
-        <TextView
-            android:id="@+id/expiration_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="01/01/2024"
-            android:textSize="14sp"
-            android:textColor="@color/bottom_sheet_secondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/expiration_label"
-            app:layout_constraintTop_toTopOf="@id/expiration_label" />
-
-        <!-- Fecha de préstamo -->
-        <TextView
-            android:id="@+id/loan_date_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="📅 Prestado el:"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="@color/bottom_sheet_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/expiration_label" />
-
-        <TextView
-            android:id="@+id/loan_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="01/01/2024"
-            android:textSize="14sp"
-            android:textColor="@color/bottom_sheet_secondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/loan_date_label"
-            app:layout_constraintTop_toTopOf="@id/loan_date_label" />
-
-        <!-- Días de retraso -->
-        <TextView
-            android:id="@+id/days_overdue_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="⏰ Días de retraso:"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="@color/bottom_sheet_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/loan_date_label" />
-
-        <TextView
-            android:id="@+id/days_overdue"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="5 días"
-            android:textSize="16sp"
-            android:textColor="@color/bottom_sheet_secondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/days_overdue_label"
-            app:layout_constraintTop_toTopOf="@id/days_overdue_label" />
-
-        <!-- Botones de acción -->
+        <!-- 🎯 Header Section: Imagen + Título + Badge urgencia -->
         <LinearLayout
-            android:id="@+id/buttons_container"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:orientation="horizontal"
-            android:gravity="end"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/days_overdue_label">
+            android:paddingHorizontal="20dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="16dp">
 
-            <Button
-                android:id="@+id/send_reminder_button"
+            <!-- 📖 Imagen del libro elegante -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="72dp"
+                android:layout_height="96dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <ImageView
+                    android:id="@+id/book_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:background="?attr/colorSurfaceContainerHigh"
+                    tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 📝 Info del libro -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="12dp"
+                android:orientation="vertical">
+
+                <!-- Título profesional -->
+                <TextView
+                    android:id="@+id/book_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Título del libro"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                    android:textColor="?attr/colorOnSurface"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:lineSpacingExtra="2dp" />
+
+                <!-- Autor elegante -->
+                <TextView
+                    android:id="@+id/book_author"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Autor del libro"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+
+            </LinearLayout>
+
+            <!-- 🏷️ Badge de urgencia profesional -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/urgency_badge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="#FF9800"
-                android:text="📧 Recordar"
-                android:textSize="12sp"
-                android:textColor="@android:color/white" />
+                android:layout_gravity="top"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:cardBackgroundColor="?attr/colorErrorContainer"
+                app:strokeColor="?attr/colorError">
 
-            <Button
-                android:id="@+id/mark_returned_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="#4CAF50"
-                android:text="✅ Devuelto"
-                android:textSize="12sp"
-                android:textColor="@android:color/white" />
+                <TextView
+                    android:id="@+id/urgency_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:text="CRÍTICO"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+                    android:textColor="?attr/colorOnErrorContainer"
+                    android:textStyle="bold" />
+
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 
-        <!-- Progress bar para operaciones -->
+        <!-- ➖ Separador sutil -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="?attr/colorOutlineVariant"
+            android:alpha="0.6" />
+
+        <!-- 📊 Content Section: Información clave -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="16dp">
+
+            <!-- Usuario asignado -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Usuario"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:minWidth="80dp" />
+
+                <TextView
+                    android:id="@+id/user_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Nombre del usuario"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Fecha vencimiento -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Vencimiento"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:minWidth="80dp" />
+
+                <TextView
+                    android:id="@+id/expiration_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="01/01/2024"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="?attr/colorError" />
+
+            </LinearLayout>
+
+            <!-- Días de retraso destacado -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Retraso"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:minWidth="80dp" />
+
+                <TextView
+                    android:id="@+id/days_overdue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="5 días"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:textColor="?attr/colorError"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- ⚡ Actions Section: Botones modernos -->
+        <LinearLayout
+            android:id="@+id/buttons_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="20dp"
+            android:gravity="end">
+
+            <!-- Botón recordatorio outline -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/send_reminder_button"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginEnd="12dp"
+                android:text="Recordar"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                app:strokeColor="?attr/colorPrimary"
+                app:icon="@android:drawable/ic_dialog_email"
+                app:iconSize="18dp"
+                app:iconTint="?attr/colorPrimary" />
+
+            <!-- Botón devuelto filled -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/mark_returned_button"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="Devuelto"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                app:backgroundTint="?attr/colorPrimary"
+                app:icon="@android:drawable/ic_menu_save"
+                app:iconSize="18dp"
+                app:iconTint="?attr/colorOnPrimary" />
+
+        </LinearLayout>
+
+        <!-- 🔄 Progress state (inicialmente oculto) -->
         <LinearLayout
             android:id="@+id/progress_container"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:orientation="horizontal"
             android:gravity="center"
-            android:padding="8dp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/days_overdue_label">
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="16dp"
+            android:visibility="gone">
 
             <ProgressBar
                 android:id="@+id/progress_bar"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:indeterminateTint="#FF9800" />
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:indeterminateTint="?attr/colorPrimary" />
 
             <TextView
                 android:id="@+id/progress_text"
@@ -246,11 +270,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:text="Procesando..."
-                android:textSize="14sp"
-                android:textColor="@color/bottom_sheet_title"
-                android:fontFamily="sans-serif-medium" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant" />
 
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</FrameLayout>
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

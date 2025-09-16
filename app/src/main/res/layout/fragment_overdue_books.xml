@@ -1,266 +1,345 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
     tools:context=".fragments.OverdueBooksFragment">
 
-    <!-- Título de la pantalla -->
-    <TextView
-        android:id="@+id/screen_title"
-        android:layout_width="wrap_content"
+    <!-- 🎯 App Bar moderno con Material Design 3 -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="📋 Devoluciones Pendientes"
-        android:textColor="#FF5722"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Subtítulo -->
-    <TextView
-        android:id="@+id/screen_subtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Gestiona los préstamos pendientes de devolución"
-        android:textSize="14sp"
-        android:textColor="#666666"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/screen_title" />
-
-    <!-- 🎨 Filtro horizontal moderno y compacto -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_filter_container"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="12dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="2dp"
-        app:strokeWidth="0dp"
-        app:cardBackgroundColor="?attr/colorSurface"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/screen_subtitle">
+        android:background="?attr/colorSurface"
+        app:elevation="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingVertical="12dp">
+            android:paddingHorizontal="20dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="12dp">
 
-            <!-- 📊 Header compacto -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <!-- 📋 Título principal -->
+            <TextView
+                android:id="@+id/screen_title"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:paddingBottom="8dp">
+                android:text="Devoluciones"
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Filtrar por estado"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textStyle="bold" />
-
-                <!-- 🏷️ Badge contador -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="0dp"
-                    app:strokeWidth="0dp"
-                    app:cardBackgroundColor="?attr/colorPrimaryContainer">
-
-                    <TextView
-                        android:id="@+id/text_filter_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Todos (0)"
-                        android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
-                        android:textColor="?attr/colorOnPrimaryContainer"
-                        android:textStyle="bold"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="4dp" />
-
-                </com.google.android.material.card.MaterialCardView>
-
-            </LinearLayout>
-
-            <!-- 🎯 Chips horizontales con scroll -->
-            <HorizontalScrollView
-                android:layout_width="match_parent"
+            <!-- 📊 Subtítulo elegante -->
+            <TextView
+                android:id="@+id/screen_subtitle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:clipToPadding="false">
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chip_group_filters"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:singleSelection="true"
-                    app:selectionRequired="false"
-                    app:singleLine="true"
-                    app:chipSpacing="8dp">
-
-                    <!-- Todos -->
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_all"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Todos"
-                        android:checked="true"
-                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                        app:chipBackgroundColor="@color/chip_category_background"
-                        app:chipStrokeWidth="1dp"
-                        app:chipStrokeColor="?attr/colorOutline"
-                        app:chipCornerRadius="20dp" />
-
-                    <!-- Próximos -->
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_upcoming"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Próximos"
-                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                        app:chipBackgroundColor="@color/chip_category_background"
-                        app:chipStrokeWidth="1dp"
-                        app:chipStrokeColor="?attr/colorOutline"
-                        app:chipCornerRadius="20dp" />
-
-                    <!-- Hoy -->
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_today"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hoy"
-                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                        app:chipBackgroundColor="@color/chip_category_background"
-                        app:chipStrokeWidth="1dp"
-                        app:chipStrokeColor="?attr/colorOutline"
-                        app:chipCornerRadius="20dp" />
-
-                    <!-- Vencidos -->
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_recent_overdue"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Vencidos"
-                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                        app:chipBackgroundColor="@color/chip_category_background"
-                        app:chipStrokeWidth="1dp"
-                        app:chipStrokeColor="?attr/colorOutline"
-                        app:chipCornerRadius="20dp" />
-
-                    <!-- Tarde -->
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_late"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tarde"
-                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                        app:chipBackgroundColor="@color/chip_category_background"
-                        app:chipStrokeWidth="1dp"
-                        app:chipStrokeColor="?attr/colorOutline"
-                        app:chipCornerRadius="20dp" />
-
-                    <!-- Urgente -->
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_urgent"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Urgente"
-                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                        app:chipBackgroundColor="@color/chip_category_background"
-                        app:chipStrokeWidth="1dp"
-                        app:chipStrokeColor="?attr/colorOutline"
-                        app:chipCornerRadius="20dp" />
-
-                    <!-- Crítico -->
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_critical"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Crítico"
-                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                        app:chipBackgroundColor="@color/chip_category_background"
-                        app:chipStrokeWidth="1dp"
-                        app:chipStrokeColor="?attr/colorOutline"
-                        app:chipCornerRadius="20dp" />
-
-                </com.google.android.material.chip.ChipGroup>
-
-            </HorizontalScrollView>
+                android:text="Gestión de préstamos pendientes"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:alpha="0.8" />
 
         </LinearLayout>
 
-    </com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- SwipeRefreshLayout para recargar la lista -->
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh_layout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/card_filter_container">
+    <!-- 📱 Contenido principal con scroll behavior -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- RecyclerView para la lista de libros vencidos -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/overdue_books_recycler_view"
+        <!-- 🎯 Filtro minimalista y elegante -->
+        <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_filter_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="1dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainerLow">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="16dp">
+
+                    <!-- 🏷️ Header minimalista -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingBottom="12dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Estado"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:alpha="0.9" />
+
+                        <!-- 📊 Badge contador elegante -->
+                        <TextView
+                            android:id="@+id/text_filter_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Todos (0)"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            android:textColor="?attr/colorPrimary"
+                            android:textStyle="bold"
+                            android:background="@drawable/category_chip_bg"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="6dp" />
+
+                    </LinearLayout>
+
+                    <!-- 🎯 Chips elegantes con scroll -->
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="none"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:clipToPadding="false">
+
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/chip_group_filters"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:singleSelection="true"
+                            app:selectionRequired="false"
+                            app:singleLine="true"
+                            app:chipSpacing="10dp">
+
+                            <!-- Todos -->
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_all"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Todos"
+                                android:checked="true"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                                app:chipBackgroundColor="@color/chip_category_background"
+                                app:chipStrokeWidth="0dp"
+                                app:chipCornerRadius="16dp"
+                                app:chipMinHeight="36dp" />
+
+                            <!-- Próximos -->
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_upcoming"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Próximos"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                                app:chipBackgroundColor="@color/chip_category_background"
+                                app:chipStrokeWidth="0dp"
+                                app:chipCornerRadius="16dp"
+                                app:chipMinHeight="36dp" />
+
+                            <!-- Hoy -->
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_today"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hoy"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                                app:chipBackgroundColor="@color/chip_category_background"
+                                app:chipStrokeWidth="0dp"
+                                app:chipCornerRadius="16dp"
+                                app:chipMinHeight="36dp" />
+
+                            <!-- Vencidos -->
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_recent_overdue"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Vencidos"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                                app:chipBackgroundColor="@color/chip_category_background"
+                                app:chipStrokeWidth="0dp"
+                                app:chipCornerRadius="16dp"
+                                app:chipMinHeight="36dp" />
+
+                            <!-- Tarde -->
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_late"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Tarde"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                                app:chipBackgroundColor="@color/chip_category_background"
+                                app:chipStrokeWidth="0dp"
+                                app:chipCornerRadius="16dp"
+                                app:chipMinHeight="36dp" />
+
+                            <!-- Urgente -->
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_urgent"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Urgente"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                                app:chipBackgroundColor="@color/chip_category_background"
+                                app:chipStrokeWidth="0dp"
+                                app:chipCornerRadius="16dp"
+                                app:chipMinHeight="36dp" />
+
+                            <!-- Crítico -->
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_critical"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Crítico"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                                app:chipBackgroundColor="@color/chip_category_background"
+                                app:chipStrokeWidth="0dp"
+                                app:chipCornerRadius="16dp"
+                                app:chipMinHeight="36dp" />
+
+                        </com.google.android.material.chip.ChipGroup>
+
+                    </HorizontalScrollView>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        <!-- 📋 Contenedor principal de contenido -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="8dp"
-            android:clipToPadding="false"
-            tools:listitem="@layout/item_overdue_book" />
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            <!-- 📋 Lista principal rediseñada -->
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipe_refresh_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="4dp">
 
-    <!-- Estado vacío cuando no hay libros vencidos -->
-    <TextView
-        android:id="@+id/empty_state_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="32dp"
-        android:text="🎉 ¡No hay devoluciones pendientes!\n\nTodos los préstamos están al día."
-        android:textAlignment="center"
-        android:textSize="18sp"
-        android:textColor="#4CAF50"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+                <!-- 📚 RecyclerView elegante -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/overdue_books_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:nestedScrollingEnabled="true"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:paddingBottom="24dp"
+                    android:clipToPadding="false"
+                    android:overScrollMode="ifContentScrolls"
+                    tools:listitem="@layout/item_overdue_book" />
 
-    <!-- ProgressBar para indicar carga -->
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- 🔄 Estado de carga elegante -->
+            <LinearLayout
+                android:id="@+id/loading_state"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="48dp"
+                android:background="?attr/colorSurface"
+                android:visibility="gone">
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/progress_bar"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:indeterminate="true"
+                    app:indicatorColor="?attr/colorPrimary"
+                    app:trackColor="?attr/colorSurfaceVariant"
+                    app:trackThickness="4dp"
+                    android:layout_marginBottom="16dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cargando devoluciones..."
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:alpha="0.8" />
+
+            </LinearLayout>
+
+            <!-- ✨ Estado vacío elegante - Centrado perfectamente -->
+            <LinearLayout
+                android:id="@+id/empty_state_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="48dp"
+                android:background="?attr/colorSurface"
+                android:visibility="gone">
+
+                <!-- 🎯 Icono elegante -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    app:cardCornerRadius="40dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp"
+                    app:cardBackgroundColor="?attr/colorPrimaryContainer"
+                    android:layout_marginBottom="24dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:src="@android:drawable/ic_menu_agenda"
+                        app:tint="?attr/colorOnPrimaryContainer" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 📝 Mensaje principal -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Todo al día"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- 📄 Descripción -->
+                <TextView
+                    android:id="@+id/empty_state_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No hay libros pendientes de devolución"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textAlignment="center"
+                    android:alpha="0.8"
+                    android:lineSpacingExtra="4dp" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

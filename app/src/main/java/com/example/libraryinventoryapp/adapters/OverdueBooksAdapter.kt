@@ -31,11 +31,11 @@ class OverdueBooksAdapter(
         val bookAuthor: TextView = itemView.findViewById(R.id.book_author)
         val userName: TextView = itemView.findViewById(R.id.user_name)
         val expirationDate: TextView = itemView.findViewById(R.id.expiration_date)
-        val loanDate: TextView = itemView.findViewById(R.id.loan_date)
         val daysOverdue: TextView = itemView.findViewById(R.id.days_overdue)
-        val sendReminderButton: Button = itemView.findViewById(R.id.send_reminder_button)
-        val markReturnedButton: Button = itemView.findViewById(R.id.mark_returned_button)
-        val urgencyBadge: TextView = itemView.findViewById(R.id.urgency_badge)
+        val sendReminderButton: com.google.android.material.button.MaterialButton = itemView.findViewById(R.id.send_reminder_button)
+        val markReturnedButton: com.google.android.material.button.MaterialButton = itemView.findViewById(R.id.mark_returned_button)
+        val urgencyBadge: com.google.android.material.card.MaterialCardView = itemView.findViewById(R.id.urgency_badge)
+        val urgencyText: TextView = itemView.findViewById(R.id.urgency_text)
         val buttonsContainer: LinearLayout = itemView.findViewById(R.id.buttons_container)
         val progressContainer: LinearLayout = itemView.findViewById(R.id.progress_container)
         val progressText: TextView = itemView.findViewById(R.id.progress_text)
@@ -86,12 +86,8 @@ class OverdueBooksAdapter(
         holder.userName.text = overdueItem.userName
         holder.expirationDate.text = dateFormat.format(overdueItem.expirationDate.toDate())
         
-        // Fecha de préstamo (assigned date)
-        if (overdueItem.assignedDate != null) {
-            holder.loanDate.text = dateFormat.format(overdueItem.assignedDate.toDate())
-        } else {
-            holder.loanDate.text = "No disponible"
-        }
+        // 🎨 Fecha de préstamo eliminada del diseño Material Design 3 por simplicidad
+        // (La información de asignación sigue disponible en el modelo de datos)
         
         // Días de retraso/próximo vencimiento con énfasis según gravedad
         val daysText = when {
@@ -121,46 +117,33 @@ class OverdueBooksAdapter(
         // Color de urgencia según días de retraso/vencimiento
         when {
             overdueItem.daysOverdue >= 30 -> {
-                // Muy vencido
-                holder.urgencyBadge.text = "🚨 CRÍTICO"
-                holder.urgencyBadge.setBackgroundColor(holder.itemView.context.getColor(android.R.color.holo_red_dark))
-                holder.daysOverdue.setTextColor(holder.itemView.context.getColor(android.R.color.holo_red_dark))
+                // Muy vencido - Estado crítico
+                holder.urgencyText.text = "CRÍTICO"
+                // 🎨 Los colores del badge se manejan con el color semántico colorErrorContainer
             }
             overdueItem.daysOverdue >= 14 -> {
                 // Bastante vencido
-                holder.urgencyBadge.text = "⚠️ URGENTE"
-                holder.urgencyBadge.setBackgroundColor(holder.itemView.context.getColor(android.R.color.holo_orange_dark))
-                holder.daysOverdue.setTextColor(holder.itemView.context.getColor(android.R.color.holo_orange_dark))
+                holder.urgencyText.text = "URGENTE"
             }
             overdueItem.daysOverdue >= 7 -> {
-                // Una semana vencido
-                holder.urgencyBadge.text = "⏰ TARDE"
-                holder.urgencyBadge.setBackgroundColor(holder.itemView.context.getColor(android.R.color.holo_orange_light))
-                holder.daysOverdue.setTextColor(holder.itemView.context.getColor(android.R.color.holo_orange_light))
+                // Una semana vencido  
+                holder.urgencyText.text = "TARDE"
             }
             overdueItem.daysOverdue >= 1 -> {
                 // Recién vencido
-                holder.urgencyBadge.text = "📋 VENCIDO"
-                holder.urgencyBadge.setBackgroundColor(holder.itemView.context.getColor(android.R.color.holo_red_light))
-                holder.daysOverdue.setTextColor(holder.itemView.context.getColor(android.R.color.holo_red_light))
+                holder.urgencyText.text = "VENCIDO"
             }
             overdueItem.daysOverdue == 0 -> {
                 // Vence hoy
-                holder.urgencyBadge.text = "🔥 VENCE HOY"
-                holder.urgencyBadge.setBackgroundColor(holder.itemView.context.getColor(android.R.color.holo_orange_dark))
-                holder.daysOverdue.setTextColor(holder.itemView.context.getColor(android.R.color.holo_orange_dark))
+                holder.urgencyText.text = "HOY"
             }
             overdueItem.daysOverdue == -1 -> {
                 // Vence mañana
-                holder.urgencyBadge.text = "⚡ MAÑANA"
-                holder.urgencyBadge.setBackgroundColor(holder.itemView.context.getColor(android.R.color.holo_orange_light))
-                holder.daysOverdue.setTextColor(holder.itemView.context.getColor(android.R.color.holo_orange_light))
+                holder.urgencyText.text = "MAÑANA"
             }
             else -> {
                 // Próximo a vencer (2-5 días)
-                holder.urgencyBadge.text = "⏳ PRÓXIMO"
-                holder.urgencyBadge.setBackgroundColor(holder.itemView.context.getColor(android.R.color.holo_blue_light))
-                holder.daysOverdue.setTextColor(holder.itemView.context.getColor(android.R.color.holo_blue_light))
+                holder.urgencyText.text = "PRÓXIMO"
             }
         }
 
