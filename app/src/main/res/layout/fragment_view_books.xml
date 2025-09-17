@@ -1,65 +1,363 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
     tools:context=".fragments.ViewBooksFragment">
 
-    <!-- SearchView para buscar libros -->
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchView"
-        android:layout_width="0dp"
+    <!-- 🎨 AppBar minimalista y elegante -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="8dp"
-        android:queryHint="Buscar libros por título o ISBN"
-        app:layout_constraintEnd_toStartOf="@+id/filterButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:background="?attr/colorSurface"
+        android:elevation="0dp"
+        app:elevation="0dp"
+        android:fitsSystemWindows="true">
 
-    <!-- Botón para filtrar por categorías -->
-    <ImageButton
-        android:id="@+id/filterButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:contentDescription="Filtrar categorías"
-        android:src="@drawable/baseline_filter"
-        app:layout_constraintBottom_toBottomOf="@+id/searchView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/searchView" />
-
-    <!-- SwipeRefreshLayout para recargar la lista -->
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh_layout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView">
-
-        <!-- RecyclerView for books list -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewBookList"
+        <!-- 📋 Header minimalista estático -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:listitem="@layout/item_book" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp">
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            <!-- 📚 Título principal -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Inventario de Libros"
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            <!-- 📊 Subtítulo informativo -->
+            <TextView
+                android:id="@+id/text_books_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gestionando biblioteca digital"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:alpha="0.8" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- 📋 Contenido principal -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- 🔍 Búsqueda fija -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerHigh">
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@android:color/transparent"
+                app:queryHint="Buscar por título, autor o ISBN..."
+                app:iconifiedByDefault="false"
+                app:closeIcon="@android:drawable/ic_menu_close_clear_cancel"
+                app:searchIcon="@android:drawable/ic_menu_search"
+                app:submitBackground="@android:color/transparent"
+                style="@style/Widget.AppCompat.SearchView" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 🎯 Filtros fijos -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_filter_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerLow">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingVertical="16dp">
+
+                <!-- 🏷️ Header minimalista -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="20dp"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Filtros"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/text_filter_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Todos los libros"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:alpha="0.8" />
+
+                </LinearLayout>
+
+                <!-- 🎯 Chips elegantes con scroll horizontal -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:clipToPadding="false">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/filter_chips_group"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:singleSelection="true"
+                        app:selectionRequired="false"
+                        app:singleLine="true"
+                        app:chipSpacing="10dp">
+
+                        <!-- Todos -->
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_all_books"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Todos"
+                            android:checked="true"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            app:chipStrokeWidth="0dp"
+                            app:chipCornerRadius="16dp"
+                            app:chipMinHeight="36dp" />
+
+                        <!-- Categorías -->
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_categories"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Categorías"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            app:chipIcon="@drawable/ic_category"
+                            app:chipIconTint="?attr/colorOnSurfaceVariant"
+                            app:chipStrokeWidth="0dp"
+                            app:chipCornerRadius="16dp"
+                            app:chipMinHeight="36dp" />
+
+                        <!-- Por Usuario -->
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_users"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Por Usuario"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            app:chipIcon="@drawable/ic_person"
+                            app:chipIconTint="?attr/colorOnSurfaceVariant"
+                            app:chipStrokeWidth="0dp"
+                            app:chipCornerRadius="16dp"
+                            app:chipMinHeight="36dp" />
+
+                        <!-- Por Fecha -->
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_dates"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Por Fecha"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            app:chipIcon="@drawable/ic_calendar"
+                            app:chipIconTint="?attr/colorOnSurfaceVariant"
+                            app:chipStrokeWidth="0dp"
+                            app:chipCornerRadius="16dp"
+                            app:chipMinHeight="36dp" />
+
+                        <!-- Disponibles -->
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_available"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Disponibles"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            app:chipIcon="@drawable/ic_check_circle"
+                            app:chipIconTint="?attr/colorOnSurfaceVariant"
+                            app:chipStrokeWidth="0dp"
+                            app:chipCornerRadius="16dp"
+                            app:chipMinHeight="36dp" />
+
+                        <!-- Asignados -->
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_assigned"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Asignados"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            app:chipIcon="@drawable/ic_assigned_books"
+                            app:chipIconTint="?attr/colorOnSurfaceVariant"
+                            app:chipStrokeWidth="0dp"
+                            app:chipCornerRadius="16dp"
+                            app:chipMinHeight="36dp" />
+
+                    </com.google.android.material.chip.ChipGroup>
+
+                </HorizontalScrollView>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 📋 Lista de libros con scroll independiente -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <!-- 📚 Lista principal con pull-to-refresh -->
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipe_refresh_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="4dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewBookList"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:nestedScrollingEnabled="true"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:paddingBottom="24dp"
+                    android:clipToPadding="false"
+                    android:overScrollMode="ifContentScrolls"
+                    tools:listitem="@layout/item_book" />
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <!-- 🔄 Estado de carga elegante -->
+            <LinearLayout
+                android:id="@+id/loading_state"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="48dp"
+                android:background="?attr/colorSurface"
+                android:visibility="gone">
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/progress_bar"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:indeterminate="true"
+                    app:indicatorColor="?attr/colorPrimary"
+                    app:trackColor="?attr/colorSurfaceVariant"
+                    app:trackThickness="4dp"
+                    android:layout_marginBottom="16dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cargando inventario..."
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:alpha="0.8" />
+
+            </LinearLayout>
+
+            <!-- ✨ Estado vacío elegante -->
+            <LinearLayout
+                android:id="@+id/empty_state_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="48dp"
+                android:background="?attr/colorSurface"
+                android:visibility="gone">
+
+                <!-- 🎯 Icono elegante -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    app:cardCornerRadius="40dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp"
+                    app:cardBackgroundColor="?attr/colorSurfaceContainerHighest"
+                    android:layout_marginBottom="16dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_book_library"
+                        android:contentDescription="Sin libros"
+                        app:tint="?attr/colorOnSurfaceVariant"
+                        android:alpha="0.6" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 📝 Mensaje principal -->
+                <TextView
+                    android:id="@+id/empty_state_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No hay libros"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- 💬 Mensaje descriptivo -->
+                <TextView
+                    android:id="@+id/empty_state_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No se encontraron libros que coincidan con los filtros aplicados"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textAlignment="center"
+                    android:alpha="0.8"
+                    android:lineSpacingExtra="4dp" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

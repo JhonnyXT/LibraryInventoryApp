@@ -39,7 +39,7 @@ class BookAdapter(
     private var books: List<Book>,
     private var userNames: List<String>,
     private var userList: List<User>,
-    private val onEditClick: ((Book) -> Unit)? = null
+    private val onBookClick: ((Book) -> Unit)? = null
 ) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
 
     private lateinit var firestore: FirebaseFirestore
@@ -69,10 +69,10 @@ class BookAdapter(
             auth = FirebaseAuth.getInstance()
             storage = FirebaseStorage.getInstance()
 
-            // Click en toda la tarjeta para mostrar BottomSheet
+            // Click en toda la tarjeta para navegar al detalle
             itemView.setOnClickListener {
                 val book = books[adapterPosition]
-                showBookDetailsBottomSheet(book, itemView.context, this)
+                onBookClick?.invoke(book)
             }
 
             assignUserButton.setOnClickListener {
@@ -378,7 +378,7 @@ class BookAdapter(
     }
 
     private fun editBook(book: Book, context: Context) {
-        onEditClick?.invoke(book)
+        onBookClick?.invoke(book)
     }
 
     private fun deleteBook(book: Book, holder: BookViewHolder, context: Context) {

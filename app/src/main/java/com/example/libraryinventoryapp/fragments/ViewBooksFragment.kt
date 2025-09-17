@@ -3,10 +3,12 @@ package com.example.libraryinventoryapp.fragments
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -19,6 +21,7 @@ import com.example.libraryinventoryapp.R
 import com.example.libraryinventoryapp.adapters.BookAdapter
 import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.User
+import com.google.android.material.chip.Chip
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
 import java.text.Normalizer
@@ -28,62 +31,238 @@ import java.util.concurrent.TimeUnit
 
 class ViewBooksFragment : Fragment() {
 
+    // 🔥 Componentes UI principales
     private lateinit var firestore: FirebaseFirestore
     private lateinit var booksRecyclerView: RecyclerView
     private lateinit var booksAdapter: BookAdapter
     private lateinit var searchView: SearchView
-    private lateinit var filterButton: ImageButton
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private lateinit var progressBar: ProgressBar
+    
+    // 🎯 Estados elegantes
+    private lateinit var loadingState: LinearLayout
+    private lateinit var emptyStateLayout: LinearLayout
+    private lateinit var emptyStateTitle: TextView
+    private lateinit var emptyStateText: TextView
+    
+    // 📊 Contadores y información
+    private lateinit var textBooksCount: TextView
+    private lateinit var textFilterCount: TextView
+    
+    // 🏷️ Filtros con chips
+    private lateinit var chipAllBooks: Chip
+    private lateinit var chipCategories: Chip
+    private lateinit var chipUsers: Chip
+    private lateinit var chipDates: Chip
+    private lateinit var chipAvailable: Chip
+    private lateinit var chipAssigned: Chip
 
+    // 📚 Datos y estado
     private var booksList: MutableList<Book> = mutableListOf()
     private var userNamesList: MutableList<String> = mutableListOf()
     private var userList: MutableList<User> = mutableListOf()
     private var filteredBooksList: MutableList<Book> = mutableListOf()
     private var selectedCategoriesState: BooleanArray? = null
+    private var currentFilterType: FilterType = FilterType.ALL
+    
+    // 🎯 Enum para tipos de filtro
+    private enum class FilterType {
+        ALL, CATEGORIES, USERS, DATES, AVAILABLE, ASSIGNED
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_view_books, container, false)
+        return inflater.inflate(R.layout.fragment_view_books, container, false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // 🔥 Inicializar componentes básicos
+        initializeViews(view)
+        
+        // 🎯 Configurar funcionalidades
+        setupRecyclerView()
+        setupSwipeRefresh()
+        setupSearchView()
+        setupFilterChips()
+        
+        // 📚 Cargar datos
+        firestore = FirebaseFirestore.getInstance()
+        loadUsers()
+        loadBooks()
+        
+        Log.d("ViewBooksFragment", "🎨 Vista inicializada correctamente")
+    }
+
+    /**
+     * 🔧 Inicializar todas las vistas UI
+     */
+    private fun initializeViews(view: View) {
+        // Componentes principales
         booksRecyclerView = view.findViewById(R.id.recyclerViewBookList)
         searchView = view.findViewById(R.id.searchView)
-        filterButton = view.findViewById(R.id.filterButton)
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout)
-        progressBar = view.findViewById(R.id.progress_bar)
+        
+        // Estados elegantes
+        loadingState = view.findViewById(R.id.loading_state)
+        emptyStateLayout = view.findViewById(R.id.empty_state_layout)
+        emptyStateTitle = view.findViewById(R.id.empty_state_title)
+        emptyStateText = view.findViewById(R.id.empty_state_text)
+        
+        // Contadores
+        textBooksCount = view.findViewById(R.id.text_books_count)
+        textFilterCount = view.findViewById(R.id.text_filter_count)
+        
+        // Chips de filtros
+        chipAllBooks = view.findViewById(R.id.chip_all_books)
+        chipCategories = view.findViewById(R.id.chip_categories)
+        chipUsers = view.findViewById(R.id.chip_users)
+        chipDates = view.findViewById(R.id.chip_dates)
+        chipAvailable = view.findViewById(R.id.chip_available)
+        chipAssigned = view.findViewById(R.id.chip_assigned)
+    }
 
+    /**
+     * 📋 Configurar RecyclerView
+     */
+    private fun setupRecyclerView() {
         booksRecyclerView.layoutManager = LinearLayoutManager(context)
         
-        // Configurar SwipeRefreshLayout
+        // Inicializar el adaptador con callback para ir al detalle
+        booksAdapter = BookAdapter(
+            books = booksList, 
+            userNames = userNamesList, 
+            userList = userList, 
+            onBookClick = { book ->
+                navigateToBookDetail(book)
+            }
+        )
+        booksRecyclerView.adapter = booksAdapter
+    }
+
+    /**
+     * 🔄 Configurar SwipeRefresh
+     */
+    private fun setupSwipeRefresh() {
         swipeRefreshLayout.setOnRefreshListener {
             loadBooks()
         }
-        firestore = FirebaseFirestore.getInstance()
+    }
 
-        // Inicializar el adaptador vacío con callback para editar
-        booksAdapter = BookAdapter(booksList, userNamesList, userList) { book ->
-            navigateToEditBook(book)
+    /**
+     * 🏷️ Configurar chips de filtros
+     */
+    private fun setupFilterChips() {
+        // Configurar listeners para cada chip
+        chipAllBooks.setOnClickListener { applyFilter(FilterType.ALL) }
+        chipCategories.setOnClickListener { applyFilter(FilterType.CATEGORIES) }
+        chipUsers.setOnClickListener { applyFilter(FilterType.USERS) }
+        chipDates.setOnClickListener { applyFilter(FilterType.DATES) }
+        chipAvailable.setOnClickListener { applyFilter(FilterType.AVAILABLE) }
+        chipAssigned.setOnClickListener { applyFilter(FilterType.ASSIGNED) }
+        
+        // Establecer el filtro inicial
+        updateFilterUI(FilterType.ALL, booksList.size)
+    }
+
+    /**
+     * 🎯 Aplicar filtro seleccionado - Compatible con singleSelection
+     */
+    private fun applyFilter(filterType: FilterType) {
+        currentFilterType = filterType
+        
+        // Con singleSelection="true", solo necesitamos marcar el chip correspondiente
+        when (filterType) {
+            FilterType.ALL -> {
+                chipAllBooks.isChecked = true
+                showAllBooks()
+            }
+            FilterType.CATEGORIES -> {
+                chipCategories.isChecked = true
+                showCategoryMultiSelectDialog()
+            }
+            FilterType.USERS -> {
+                chipUsers.isChecked = true
+                showUserFilterDialog()
+            }
+            FilterType.DATES -> {
+                chipDates.isChecked = true
+                showDateFilterDialog()
+            }
+            FilterType.AVAILABLE -> {
+                chipAvailable.isChecked = true
+                filterByAvailability(true)
+            }
+            FilterType.ASSIGNED -> {
+                chipAssigned.isChecked = true
+                filterByAvailability(false)
+            }
         }
-        booksRecyclerView.adapter = booksAdapter
+    }
 
-        filterButton.setOnClickListener { showCategoryFilterDialog() }
-        loadUsers()
-        loadBooks()
+    /**
+     * 📊 Mostrar todos los libros
+     */
+    private fun showAllBooks() {
+        filteredBooksList.clear()
+        filteredBooksList.addAll(booksList)
+        booksAdapter.updateBooks(filteredBooksList)
+        updateFilterUI(FilterType.ALL, filteredBooksList.size)
+        updateEmptyState()
+    }
 
-        // Configurar el listener del SearchView
-        setupSearchView()
+    /**
+     * ✅ Filtrar por disponibilidad
+     */
+    private fun filterByAvailability(showAvailable: Boolean) {
+        filteredBooksList = if (showAvailable) {
+            booksList.filter { book ->
+                book.status == "Disponible" && (book.assignedTo?.size ?: 0) < (book.quantity ?: 0)
+            }.toMutableList()
+        } else {
+            booksList.filter { book ->
+                !book.assignedTo.isNullOrEmpty()
+            }.toMutableList()
+        }
+        
+        booksAdapter.updateBooks(filteredBooksList)
+        val filterType = if (showAvailable) FilterType.AVAILABLE else FilterType.ASSIGNED
+        updateFilterUI(filterType, filteredBooksList.size)
+        updateEmptyState()
+    }
 
-        return view
+    /**
+     * 🎨 Actualizar UI de filtros
+     */
+    private fun updateFilterUI(filterType: FilterType, count: Int) {
+        val filterName = when (filterType) {
+            FilterType.ALL -> "Todos los libros"
+            FilterType.CATEGORIES -> "Por categorías"
+            FilterType.USERS -> "Por usuario"
+            FilterType.DATES -> "Por fecha"
+            FilterType.AVAILABLE -> "Disponibles"
+            FilterType.ASSIGNED -> "Asignados"
+        }
+        
+        textFilterCount.text = "$filterName ($count)"
+        textBooksCount.text = "Mostrando $count de ${booksList.size} libros"
     }
 
     private fun loadBooks() {
-        progressBar.visibility = View.VISIBLE
+        Log.i("ViewBooksFragment", "🔄 INICIANDO CARGA DE INVENTARIO")
+        
+        // 🔄 Mostrar estado de carga elegante
+        loadingState.visibility = View.VISIBLE
+        emptyStateLayout.visibility = View.GONE
+        swipeRefreshLayout.visibility = View.GONE
         
         firestore.collection("books")
             .get()
             .addOnSuccessListener { result ->
+                Log.d("ViewBooksFragment", "📚 Obtenidos ${result.size()} libros de Firestore")
+                
                 booksList.clear()
                 for (document in result) {
                     val book = document.toObject(Book::class.java)
@@ -95,19 +274,70 @@ class ViewBooksFragment : Fragment() {
                 booksList.sortBy { normalizeText(it.title ?: "") }
 
                 // Actualizar el adaptador
-                booksAdapter = BookAdapter(booksList, userNamesList, userList) { book ->
-                    navigateToEditBook(book)
-                }
+                booksAdapter = BookAdapter(
+                    books = booksList, 
+                    userNames = userNamesList, 
+                    userList = userList, 
+                    onBookClick = { book ->
+                        navigateToBookDetail(book)
+                    }
+                )
                 booksRecyclerView.adapter = booksAdapter
-                progressBar.visibility = View.GONE
+                
+                // 🎯 Mostrar todos los libros inicialmente
+                filteredBooksList.clear()
+                filteredBooksList.addAll(booksList)
+                booksAdapter.updateBooks(filteredBooksList)
+                
+                // Actualizar UI
+                updateFilterUI(currentFilterType, filteredBooksList.size)
+                updateEmptyState()
+                
+                // 🎯 Ocultar estado de carga
+                loadingState.visibility = View.GONE
                 swipeRefreshLayout.isRefreshing = false
             }
-            .addOnFailureListener { e ->
-                // Manejar el error de carga
-                progressBar.visibility = View.GONE
+            .addOnFailureListener { exception ->
+                // 🚨 Ocultar loading en caso de error
+                loadingState.visibility = View.GONE
                 swipeRefreshLayout.isRefreshing = false
-                Toast.makeText(context, "Error al cargar los libros: $e", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context, 
+                    "Error al cargar inventario: ${exception.message}", 
+                    Toast.LENGTH_LONG
+                ).show()
             }
+    }
+
+    /**
+     * 📄 Actualizar estado vacío según filtros
+     */
+    private fun updateEmptyState() {
+        if (filteredBooksList.isEmpty()) {
+            // 🎯 Mostrar estado vacío centrado
+            emptyStateLayout.visibility = View.VISIBLE
+            swipeRefreshLayout.visibility = View.GONE
+            
+            val (title, message) = when (currentFilterType) {
+                FilterType.ALL -> Pair("No hay libros", "No se han registrado libros en el inventario")
+                FilterType.CATEGORIES -> Pair("Sin resultados", "No hay libros en las categorías seleccionadas")
+                FilterType.USERS -> Pair("Sin asignaciones", "No hay libros asignados al usuario seleccionado")
+                FilterType.DATES -> Pair("Sin coincidencias", "No hay libros asignados en el período seleccionado")
+                FilterType.AVAILABLE -> Pair("Sin disponibles", "Todos los libros están asignados")
+                FilterType.ASSIGNED -> Pair("Sin asignados", "No hay libros asignados actualmente")
+            }
+            
+            emptyStateTitle.text = title
+            emptyStateText.text = message
+            
+            Log.d("ViewBooksFragment", "📭 Estado vacío: $title - $message")
+        } else {
+            // 🎯 Mostrar lista con datos
+            emptyStateLayout.visibility = View.GONE
+            swipeRefreshLayout.visibility = View.VISIBLE
+            
+            Log.d("ViewBooksFragment", "📋 Lista mostrada con ${filteredBooksList.size} libros")
+        }
     }
 
     private fun loadUsers() {
@@ -178,27 +408,6 @@ class ViewBooksFragment : Fragment() {
         booksAdapter.updateBooks(sortedList)
     }
 
-    private fun showCategoryFilterDialog() {
-        val filterOptions = arrayOf(
-            "Filtrar por Categorías",
-            "Filtrar por Usuario Asignado", 
-            "Filtrar por Fecha de Asignación",
-            "Limpiar todos los filtros"
-        )
-
-        AlertDialog.Builder(requireContext())
-            .setTitle("Opciones de Filtrado")
-            .setItems(filterOptions) { _, which ->
-                when (which) {
-                    0 -> showCategoryMultiSelectDialog()
-                    1 -> showUserFilterDialog()
-                    2 -> showDateFilterDialog()
-                    3 -> clearAllFilters()
-                }
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
-    }
 
     private fun showCategoryMultiSelectDialog() {
         val categories = resources.getStringArray(R.array.book_categories)
@@ -372,9 +581,19 @@ class ViewBooksFragment : Fragment() {
 
     private fun clearAllFilters() {
         selectedCategoriesState = BooleanArray(resources.getStringArray(R.array.book_categories).size)
+        currentFilterType = FilterType.ALL
+        
+        // Con singleSelection, solo marcamos "Todos"
+        chipAllBooks.isChecked = true
+        
+        // Mostrar todos los libros
         filteredBooksList.clear()
         filteredBooksList.addAll(booksList)
         booksAdapter.updateBooks(filteredBooksList)
+        
+        updateFilterUI(FilterType.ALL, filteredBooksList.size)
+        updateEmptyState()
+        
         Toast.makeText(context, "Filtros limpiados", Toast.LENGTH_SHORT).show()
     }
 
@@ -388,6 +607,8 @@ class ViewBooksFragment : Fragment() {
         }.toMutableList()
 
         booksAdapter.updateBooks(filteredBooksList)
+        updateFilterUI(FilterType.CATEGORIES, filteredBooksList.size)
+        updateEmptyState()
     }
 
     private fun filterBooksByUser(userName: String) {
@@ -396,6 +617,8 @@ class ViewBooksFragment : Fragment() {
         }.toMutableList()
         
         booksAdapter.updateBooks(filteredBooksList)
+        updateFilterUI(FilterType.USERS, filteredBooksList.size)
+        updateEmptyState()
         
         // Mostrar mensaje informativo
         val count = filteredBooksList.size
@@ -419,6 +642,8 @@ class ViewBooksFragment : Fragment() {
         }.toMutableList()
 
         booksAdapter.updateBooks(filteredBooksList)
+        updateFilterUI(FilterType.DATES, filteredBooksList.size)
+        updateEmptyState()
         
         val resultCount = filteredBooksList.size
         Toast.makeText(
@@ -437,6 +662,8 @@ class ViewBooksFragment : Fragment() {
         }.toMutableList()
 
         booksAdapter.updateBooks(filteredBooksList)
+        updateFilterUI(FilterType.DATES, filteredBooksList.size)
+        updateEmptyState()
         
         val resultCount = filteredBooksList.size
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -447,11 +674,15 @@ class ViewBooksFragment : Fragment() {
         ).show()
     }
 
-    private fun navigateToEditBook(book: Book) {
-        val editBookFragment = EditBookFragment.newInstance(book)
+    /**
+     * 📖 Navegar al detalle del libro (Admin)
+     */
+    private fun navigateToBookDetail(book: Book) {
+        Log.d("ViewBooksFragment", "🔍 Navegando al detalle del libro: ${book.title}")
         
+        val detailFragment = BookDetailAdminFragment.newInstance(book.id)
         parentFragmentManager.beginTransaction()
-            .replace(R.id.admin_fragment_container, editBookFragment)
+            .replace(R.id.admin_fragment_container, detailFragment)
             .addToBackStack(null)
             .commit()
     }
