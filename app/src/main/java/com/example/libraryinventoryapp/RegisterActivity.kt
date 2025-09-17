@@ -5,9 +5,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.FrameLayout
-import android.widget.ProgressBar
 import android.widget.Toast
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -39,7 +38,7 @@ class RegisterActivity : AppCompatActivity() {
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val etPassword = findViewById<EditText>(R.id.etPassword)
         val btnRegister = findViewById<Button>(R.id.btnRegister)
-        // Progress bar ahora está dentro de progress_container
+        // Progress bar se controla directamente
 
         btnRegister.setOnClickListener {
             val name = etName.text.toString().trim()
@@ -56,7 +55,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun registerUser(name: String, email: String, password: String) {
-        findViewById<FrameLayout>(R.id.progress_container).visibility = View.VISIBLE
+        findViewById<CircularProgressIndicator>(R.id.progressBarRegister).visibility = View.VISIBLE
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -64,11 +63,11 @@ class RegisterActivity : AppCompatActivity() {
                     if (userId != null) {
                         saveUserToFirestore(name, email, userId)
                     } else {
-                        findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
+                        findViewById<CircularProgressIndicator>(R.id.progressBarRegister).visibility = View.GONE
                         Toast.makeText(this, "Error al obtener el UID del usuario.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
+                    findViewById<CircularProgressIndicator>(R.id.progressBarRegister).visibility = View.GONE
                     Toast.makeText(this, "Error al registrar el usuario: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -85,7 +84,7 @@ class RegisterActivity : AppCompatActivity() {
         firestore.collection("users").document(uid)
             .set(userMap)
             .addOnSuccessListener {
-                findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
+                findViewById<CircularProgressIndicator>(R.id.progressBarRegister).visibility = View.GONE
                 Toast.makeText(this, "Usuario registrado con éxito.", Toast.LENGTH_SHORT).show()
                 // Redirigir a LoginActivity
                 val intent = Intent(this, LoginActivity::class.java)
@@ -93,7 +92,7 @@ class RegisterActivity : AppCompatActivity() {
                 finish() // Cierra la actividad actual
             }
             .addOnFailureListener { exception ->
-                findViewById<FrameLayout>(R.id.progress_container).visibility = View.GONE
+                findViewById<CircularProgressIndicator>(R.id.progressBarRegister).visibility = View.GONE
                 Toast.makeText(this, "Error al guardar el usuario: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }

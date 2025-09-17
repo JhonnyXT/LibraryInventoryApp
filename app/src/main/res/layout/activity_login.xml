@@ -1,218 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- 🔐 Login Screen - Material Design 3 Simplificado -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
+    android:orientation="vertical"
+    android:background="?attr/colorSurface"
+    android:gravity="center"
     tools:context=".LoginActivity">
 
-    <LinearLayout
+    <!-- 📚 Título principal -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Iniciar Sesión"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+        android:textColor="?attr/colorOnSurface"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp" />
+
+    <!-- 📧 Campo de email -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/emailTextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center">
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="12dp"
+        android:hint="Correo electrónico"
+        app:startIconTint="?attr/colorPrimary"
+        app:hintTextColor="?attr/colorPrimary"
+        app:boxStrokeColor="?attr/colorPrimary"
+        app:errorEnabled="true"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-        <!-- Título Principal -->
-        <FrameLayout
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/emailEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:background="@drawable/bg_admin_card"
-            android:elevation="4dp">
+            android:inputType="textEmailAddress"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:textColor="?attr/colorOnSurface" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp"
-                android:gravity="center">
+    </com.google.android.material.textfield.TextInputLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="📚"
-                    android:textSize="48sp"
-                    android:layout_marginBottom="8dp" />
+    <!-- 🔒 Campo de contraseña -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passwordTextInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="20dp"
+        android:hint="Contraseña"
+        app:startIconTint="?attr/colorPrimary"
+        app:hintTextColor="?attr/colorPrimary"
+        app:boxStrokeColor="?attr/colorPrimary"
+        app:endIconMode="password_toggle"
+        app:errorEnabled="true"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-                <TextView
-                    android:id="@+id/loginTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Iniciar Sesión"
-                    android:textSize="28sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/bottom_sheet_title"
-                    android:fontFamily="sans-serif-medium"
-                    android:layout_marginBottom="4dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sistema de Gestión de Biblioteca"
-                    android:textSize="14sp"
-                    android:textColor="@color/bottom_sheet_secondary"
-                    android:fontFamily="sans-serif" />
-
-            </LinearLayout>
-        </FrameLayout>
-
-        <!-- Formulario de Login -->
-        <FrameLayout
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:background="@drawable/bg_admin_card"
-            android:elevation="2dp">
+            android:inputType="textPassword"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:textColor="?attr/colorOnSurface" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
+    </com.google.android.material.textfield.TextInputLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🔐 Credenciales de Acceso"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/bottom_sheet_title"
-                    android:fontFamily="sans-serif-medium"
-                    android:layout_marginBottom="20dp" />
+    <!-- 🔐 Botón de inicio de sesión -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/loginButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="8dp"
+        android:text="Iniciar sesión"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+        android:textStyle="bold"
+        app:icon="@android:drawable/ic_lock_lock"
+        app:iconGravity="textStart"
+        app:iconTint="?attr/colorOnPrimary"
+        app:backgroundTint="?attr/colorPrimary"
+        app:cornerRadius="16dp"
+        style="@style/Widget.Material3.Button" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/emailTextInputLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="📧 Correo electrónico"
-                    app:errorEnabled="true">
+    <!-- 👤 Botón de registro -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/registerButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="16dp"
+        android:text="Crear cuenta"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+        android:textStyle="bold"
+        app:icon="@drawable/ic_person"
+        app:iconGravity="textStart"
+        app:iconTint="?attr/colorPrimary"
+        app:strokeColor="?attr/colorPrimary"
+        app:cornerRadius="16dp"
+        android:textColor="?attr/colorPrimary"
+        style="@style/Widget.Material3.Button.OutlinedButton" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/emailEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textEmailAddress"
-                        android:textColor="@color/bottom_sheet_text"
-                        android:textColorHint="@color/bottom_sheet_secondary" />
+    <!-- 🌐 Espacio reservado para Google Sign-In -->
+    <!-- Este comentario marca el lugar donde se agregará el botón de Google -->
 
-                </com.google.android.material.textfield.TextInputLayout>
+    <!-- 🔄 Loading indicator compacto -->
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBarLogin"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        app:indicatorColor="?attr/colorPrimary"
+        app:trackColor="?attr/colorOutlineVariant"
+        app:indicatorSize="32dp"
+        app:trackThickness="3dp"
+        android:indeterminate="true" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/passwordTextInputLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="🔒 Contraseña"
-                    app:endIconMode="password_toggle"
-                    app:errorEnabled="true">
+    <!-- 📱 Información de la app -->
+    <TextView
+        android:id="@+id/versionAppTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_version"
+        android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:alpha="0.6"
+        android:layout_marginTop="8dp" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/passwordEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword"
-                        android:textColor="@color/bottom_sheet_text"
-                        android:textColorHint="@color/bottom_sheet_secondary" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-            </LinearLayout>
-        </FrameLayout>
-
-        <!-- Botones de Acción -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:background="@drawable/bg_admin_card"
-            android:elevation="2dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/loginButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:text="🚀 INICIAR SESIÓN"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="12dp"
-                    style="@style/Widget.MaterialComponents.Button"
-                    android:backgroundTint="#1976D2" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/registerButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:text="👤 CREAR CUENTA"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:textColor="@color/bottom_sheet_title" />
-
-            </LinearLayout>
-        </FrameLayout>
-
-        <!-- Progress Bar Moderno -->
-        <FrameLayout
-            android:id="@+id/progress_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:background="@drawable/bg_admin_card"
-            android:elevation="2dp"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="24dp"
-                android:gravity="center">
-
-                <ProgressBar
-                    android:id="@+id/progressBarLogin"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="16dp"
-                    android:indeterminateTint="#1976D2" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Iniciando sesión..."
-                    android:textSize="16sp"
-                    android:textColor="@color/bottom_sheet_title"
-                    android:fontFamily="sans-serif-medium" />
-
-            </LinearLayout>
-        </FrameLayout>
-
-        <!-- Spacer para empujar la versión hacia abajo -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <!-- Información de la App -->
-        <TextView
-            android:id="@+id/versionAppTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_version"
-            android:textSize="12sp"
-            android:textColor="@color/bottom_sheet_secondary"
-            android:fontFamily="sans-serif"
-            android:layout_marginTop="16dp" />
-
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>
