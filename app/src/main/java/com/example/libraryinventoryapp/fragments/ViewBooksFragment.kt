@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.content.Intent
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -17,11 +18,14 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.libraryinventoryapp.LoginActivity
 import com.example.libraryinventoryapp.R
 import com.example.libraryinventoryapp.adapters.BookAdapter
 import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.User
 import com.google.android.material.chip.Chip
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
 import java.text.Normalizer
@@ -55,6 +59,12 @@ class ViewBooksFragment : Fragment() {
     private lateinit var chipDates: Chip
     private lateinit var chipAvailable: Chip
     private lateinit var chipAssigned: Chip
+    
+    // 🎯 FAB para agregar libro
+    private lateinit var fabAddBook: FloatingActionButton
+    
+    // 🚪 Botón de logout
+    private lateinit var btnLogoutHeader: ImageButton
 
     // 📚 Datos y estado
     private var booksList: MutableList<Book> = mutableListOf()
@@ -87,6 +97,8 @@ class ViewBooksFragment : Fragment() {
         setupSwipeRefresh()
         setupSearchView()
         setupFilterChips()
+        setupFAB()
+        setupLogoutButton()
         
         // 📚 Cargar datos
         firestore = FirebaseFirestore.getInstance()
@@ -122,6 +134,12 @@ class ViewBooksFragment : Fragment() {
         chipDates = view.findViewById(R.id.chip_dates)
         chipAvailable = view.findViewById(R.id.chip_available)
         chipAssigned = view.findViewById(R.id.chip_assigned)
+        
+        // 🎯 FAB para agregar libro
+        fabAddBook = view.findViewById(R.id.fab_add_book)
+        
+        // 🚪 Botón de logout
+        btnLogoutHeader = view.findViewById(R.id.btn_logout_header)
     }
 
     /**
@@ -675,6 +693,29 @@ class ViewBooksFragment : Fragment() {
     }
 
     /**
+     * 🎯 Configurar FAB para agregar libro
+     */
+    private fun setupFAB() {
+        fabAddBook.setOnClickListener {
+            Log.d("ViewBooksFragment", "🎯 FAB clicked - Navegando a RegisterBookFragment")
+            navigateToRegisterBook()
+        }
+    }
+    
+    /**
+     * 📝 Navegar a la pantalla de registrar libro
+     */
+    private fun navigateToRegisterBook() {
+        Log.d("ViewBooksFragment", "📝 Navegando a RegisterBookFragment")
+        
+        val registerFragment = RegisterBookFragment()
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.admin_fragment_container, registerFragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    /**
      * 📖 Navegar al detalle del libro (Admin)
      */
     private fun navigateToBookDetail(book: Book) {
@@ -685,6 +726,35 @@ class ViewBooksFragment : Fragment() {
             .replace(R.id.admin_fragment_container, detailFragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    /**
+     * 🚪 Configurar botón de logout
+     */
+    private fun setupLogoutButton() {
+        btnLogoutHeader.setOnClickListener {
+            performLogout()
+        }
+    }
+
+    /**
+     * 🚪 Realizar logout
+     */
+    private fun performLogout() {
+        try {
+            // Cerrar sesión en Firebase
+            FirebaseAuth.getInstance().signOut()
+            
+            // Redirigir al login
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            activity?.finish()
+            
+        } catch (e: Exception) {
+            Log.e("ViewBooksFragment", "Error al cerrar sesión: ${e.message}", e)
+            Toast.makeText(requireContext(), "Error al cerrar sesión", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun normalizeText(text: String): String {

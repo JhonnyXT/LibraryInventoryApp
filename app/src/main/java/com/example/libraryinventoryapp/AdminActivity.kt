@@ -28,18 +28,13 @@ class AdminActivity : AppCompatActivity() {
      * 🔄 Configurar navegación inferior mejorada (igual que UserActivity)
      */
     private fun setupBottomNavigation() {
-        // 📝 Cargar fragmento por defecto y seleccionar tab
-        loadFragment(RegisterBookFragment())
-        bottomNav.selectedItemId = R.id.nav_register_book
+        // 📚 Cargar fragmento por defecto y seleccionar tab
+        loadFragment(ViewBooksFragment())
+        bottomNav.selectedItemId = R.id.nav_view_books
         
         bottomNav.setOnItemSelectedListener { item ->
             try {
                 when (item.itemId) {
-                    R.id.nav_register_book -> {
-                        loadFragment(RegisterBookFragment())
-                        android.util.Log.d("AdminActivity", "📝 Navegando a Registrar Libro")
-                        true
-                    }
                     R.id.nav_view_books -> {
                         loadFragment(ViewBooksFragment())
                         android.util.Log.d("AdminActivity", "📚 Navegando a Ver Libros")
@@ -67,9 +62,8 @@ class AdminActivity : AppCompatActivity() {
      */
     fun switchToTab(tabIndex: Int) {
         val menuItem = when (tabIndex) {
-            0 -> bottomNav.menu.findItem(R.id.nav_register_book)    // 📝 Registrar
-            1 -> bottomNav.menu.findItem(R.id.nav_view_books)       // 📚 Ver Libros  
-            2 -> bottomNav.menu.findItem(R.id.nav_overdue_books)    // ⏰ Devoluciones
+            0 -> bottomNav.menu.findItem(R.id.nav_view_books)       // 📚 Ver Libros  
+            1 -> bottomNav.menu.findItem(R.id.nav_overdue_books)    // ⏰ Devoluciones
             else -> return
         }
         

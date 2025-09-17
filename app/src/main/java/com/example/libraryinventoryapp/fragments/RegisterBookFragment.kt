@@ -48,6 +48,7 @@ class RegisterBookFragment : Fragment() {
     private var imageUri: Uri? = null
 
     // Views principales
+    private lateinit var btnBack: ImageButton
     private lateinit var bookTitleInput: TextInputEditText
     private lateinit var bookAuthorInput: TextInputEditText
     private lateinit var bookIsbnInput: TextInputEditText
@@ -55,7 +56,6 @@ class RegisterBookFragment : Fragment() {
     private lateinit var scanCodeButton: MaterialButton
     private lateinit var captureImageButton: MaterialButton
     private lateinit var registerBookButton: MaterialButton
-    private lateinit var logOutButton: MaterialButton
     private lateinit var progressContainer: FrameLayout
     private lateinit var progressBar: ProgressBar
     private lateinit var capturedImageView: ImageView
@@ -166,6 +166,7 @@ class RegisterBookFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_register_book, container, false)
 
         // Initialize views
+        btnBack = view.findViewById(R.id.btn_back)
         bookTitleInput = view.findViewById(R.id.book_title_input)
         bookAuthorInput = view.findViewById(R.id.book_author_input)
         bookIsbnInput = view.findViewById(R.id.book_isbn_input)
@@ -173,7 +174,6 @@ class RegisterBookFragment : Fragment() {
         scanCodeButton = view.findViewById(R.id.scan_code_button)
         captureImageButton = view.findViewById(R.id.capture_image_button)
         registerBookButton = view.findViewById(R.id.register_book_button)
-        logOutButton = view.findViewById(R.id.logout_button)
         progressContainer = view.findViewById(R.id.progress_container)
         progressBar = view.findViewById(R.id.progress_bar)
         capturedImageView = view.findViewById(R.id.captured_image_view)
@@ -188,6 +188,12 @@ class RegisterBookFragment : Fragment() {
             ActivityCompat.requestPermissions(requireActivity(),
                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                 CAMERA_PERMISSION_REQUEST_CODE)
+        }
+
+        // 🔙 Handle back button navigation
+        btnBack.setOnClickListener {
+            Log.d("RegisterBookFragment", "🔙 Back button clicked - Returning to previous screen")
+            parentFragmentManager.popBackStack()
         }
 
         // Handle QR/barcode scanning
@@ -225,46 +231,6 @@ class RegisterBookFragment : Fragment() {
                 uploadBookToFirebase(title, author, isbn, description, selectedCategories, quantity, code)
             } else {
                 Toast.makeText(context, "Todos los campos son obligatorios y debe capturar una imagen", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        logOutButton.setOnClickListener {
-            try {
-                // Cerrar sesión de Firebase
-                auth.signOut()
-                
-                // Mostrar feedback al usuario
-                Toast.makeText(context, "Sesión cerrada correctamente", Toast.LENGTH_SHORT).show()
-                
-                // Crear intent para ir a LoginActivity
-                val intent = Intent(requireContext(), LoginActivity::class.java).apply {
-                    // Limpiar el stack de actividades y crear una nueva tarea
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    // Asegurar que no se pueda volver atrás
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                }
-                
-                // Iniciar LoginActivity
-                startActivity(intent)
-                
-                // Cerrar la actividad actual de forma segura
-                activity?.let { activity ->
-                    activity.finishAffinity() // Cierra todas las actividades del stack
-                }
-                
-            } catch (e: Exception) {
-                // Manejo de errores en caso de que algo falle
-                Toast.makeText(context, "Error al cerrar sesión: ${e.message}", Toast.LENGTH_SHORT).show()
-                
-                // Fallback: intentar logout básico
-                try {
-                    val intent = Intent(requireContext(), LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    activity?.finish()
-                } catch (fallbackError: Exception) {
-                    Toast.makeText(context, "Error crítico en logout", Toast.LENGTH_LONG).show()
-                }
             }
         }
 

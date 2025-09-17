@@ -7,42 +7,55 @@
     android:background="?attr/colorSurface"
     tools:context=".fragments.OverdueBooksFragment">
 
-    <!-- 🎯 App Bar moderno con Material Design 3 -->
+    <!-- 🏗️ AppBar moderno y minimalista -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorSurface"
-        app:elevation="0dp">
+        android:elevation="0dp"
+        app:elevation="0dp"
+        android:fitsSystemWindows="true">
 
+        <!-- 📋 Header profesional -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="20dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:paddingTop="16dp"
             android:paddingBottom="12dp">
 
-            <!-- 📋 Título principal -->
-            <TextView
-                android:id="@+id/screen_title"
-                android:layout_width="wrap_content"
+            <!-- 🏷️ Sección principal sin navegación -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Devoluciones"
-                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-                android:textColor="?attr/colorOnSurface"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp">
 
-            <!-- 📊 Subtítulo elegante -->
-            <TextView
-                android:id="@+id/screen_subtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Gestión de préstamos pendientes"
-                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:alpha="0.8" />
+                <!-- 📚 Título principal -->
+                <TextView
+                    android:id="@+id/screen_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Devoluciones"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- 📊 Subtítulo informativo -->
+                <TextView
+                    android:id="@+id/screen_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Gestión y seguimiento de préstamos pendientes"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:alpha="0.8" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -55,175 +68,178 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- 🎯 Filtro minimalista y elegante -->
+        <!-- 🎯 Filtros fijos -->
         <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_filter_container"
+            android:id="@+id/card_filter_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerLow">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="1dp"
-                app:strokeWidth="0dp"
-                app:cardBackgroundColor="?attr/colorSurfaceContainerLow">
+                android:orientation="vertical"
+                android:paddingVertical="16dp">
 
+                <!-- 🏷️ Header minimalista -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingVertical="16dp">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="20dp"
+                    android:layout_marginBottom="12dp">
 
-                    <!-- 🏷️ Header minimalista -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="20dp"
-                        android:paddingBottom="12dp">
+                        android:layout_weight="1"
+                        android:text="Filtros"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Estado"
-                            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-                            android:textColor="?attr/colorOnSurfaceVariant"
-                            android:alpha="0.9" />
-
-                        <!-- 📊 Badge contador elegante -->
-                        <TextView
-                            android:id="@+id/text_filter_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Todos (0)"
-                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                            android:textColor="?attr/colorPrimary"
-                            android:textStyle="bold"
-                            android:background="@drawable/category_chip_bg"
-                            android:paddingHorizontal="12dp"
-                            android:paddingVertical="6dp" />
-
-                    </LinearLayout>
-
-                    <!-- 🎯 Chips elegantes con scroll -->
-                    <HorizontalScrollView
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/text_filter_count"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:scrollbars="none"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"
-                        android:clipToPadding="false">
-
-                        <com.google.android.material.chip.ChipGroup
-                            android:id="@+id/chip_group_filters"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:singleSelection="true"
-                            app:selectionRequired="false"
-                            app:singleLine="true"
-                            app:chipSpacing="10dp">
-
-                            <!-- Todos -->
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chip_all"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Todos"
-                                android:checked="true"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                                app:chipBackgroundColor="@color/chip_category_background"
-                                app:chipStrokeWidth="0dp"
-                                app:chipCornerRadius="16dp"
-                                app:chipMinHeight="36dp" />
-
-                            <!-- Próximos -->
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chip_upcoming"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Próximos"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                                app:chipBackgroundColor="@color/chip_category_background"
-                                app:chipStrokeWidth="0dp"
-                                app:chipCornerRadius="16dp"
-                                app:chipMinHeight="36dp" />
-
-                            <!-- Hoy -->
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chip_today"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Hoy"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                                app:chipBackgroundColor="@color/chip_category_background"
-                                app:chipStrokeWidth="0dp"
-                                app:chipCornerRadius="16dp"
-                                app:chipMinHeight="36dp" />
-
-                            <!-- Vencidos -->
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chip_recent_overdue"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Vencidos"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                                app:chipBackgroundColor="@color/chip_category_background"
-                                app:chipStrokeWidth="0dp"
-                                app:chipCornerRadius="16dp"
-                                app:chipMinHeight="36dp" />
-
-                            <!-- Tarde -->
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chip_late"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Tarde"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                                app:chipBackgroundColor="@color/chip_category_background"
-                                app:chipStrokeWidth="0dp"
-                                app:chipCornerRadius="16dp"
-                                app:chipMinHeight="36dp" />
-
-                            <!-- Urgente -->
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chip_urgent"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Urgente"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                                app:chipBackgroundColor="@color/chip_category_background"
-                                app:chipStrokeWidth="0dp"
-                                app:chipCornerRadius="16dp"
-                                app:chipMinHeight="36dp" />
-
-                            <!-- Crítico -->
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chip_critical"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Crítico"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                                app:chipBackgroundColor="@color/chip_category_background"
-                                app:chipStrokeWidth="0dp"
-                                app:chipCornerRadius="16dp"
-                                app:chipMinHeight="36dp" />
-
-                        </com.google.android.material.chip.ChipGroup>
-
-                    </HorizontalScrollView>
+                        android:text="Todos los préstamos"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:alpha="0.8" />
 
                 </LinearLayout>
 
-            </com.google.android.material.card.MaterialCardView>
+                <!-- 🎯 Chips elegantes con scroll horizontal -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:clipToPadding="false">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chip_group_filters"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:singleSelection="true"
+                        app:selectionRequired="false"
+                        app:singleLine="true"
+                        app:chipSpacing="10dp">
+
+                        <!-- Todos -->
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_all"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Todos"
+                            android:checked="true"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            app:chipIcon="@drawable/ic_book_library"
+                            app:chipIconTint="?attr/colorOnSurfaceVariant"
+                            app:chipStrokeWidth="0dp"
+                            app:chipCornerRadius="16dp"
+                            app:chipMinHeight="36dp" />
+
+                        <!-- Próximos -->
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_upcoming"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Próximos"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            app:chipIcon="@drawable/ic_calendar"
+                            app:chipIconTint="?attr/colorOnSurfaceVariant"
+                            app:chipStrokeWidth="0dp"
+                            app:chipCornerRadius="16dp"
+                            app:chipMinHeight="36dp" />
+
+                        <!-- Hoy -->
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_today"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hoy"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            app:chipIcon="@android:drawable/ic_menu_today"
+                            app:chipIconTint="?attr/colorOnSurfaceVariant"
+                            app:chipStrokeWidth="0dp"
+                            app:chipCornerRadius="16dp"
+                            app:chipMinHeight="36dp" />
+
+                        <!-- Vencidos -->
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_recent_overdue"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Vencidos"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            app:chipIcon="@android:drawable/ic_dialog_alert"
+                            app:chipIconTint="?attr/colorOnSurfaceVariant"
+                            app:chipStrokeWidth="0dp"
+                            app:chipCornerRadius="16dp"
+                            app:chipMinHeight="36dp" />
+
+                        <!-- Tarde -->
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_late"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tarde"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            app:chipIcon="@android:drawable/ic_menu_recent_history"
+                            app:chipIconTint="?attr/colorOnSurfaceVariant"
+                            app:chipStrokeWidth="0dp"
+                            app:chipCornerRadius="16dp"
+                            app:chipMinHeight="36dp" />
+
+                        <!-- Urgente -->
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_urgent"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Urgente"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            app:chipIcon="@android:drawable/ic_dialog_info"
+                            app:chipIconTint="?attr/colorOnSurfaceVariant"
+                            app:chipStrokeWidth="0dp"
+                            app:chipCornerRadius="16dp"
+                            app:chipMinHeight="36dp" />
+
+                        <!-- Crítico -->
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_critical"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Crítico"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            app:chipIcon="@android:drawable/ic_delete"
+                            app:chipIconTint="?attr/colorOnSurfaceVariant"
+                            app:chipStrokeWidth="0dp"
+                            app:chipCornerRadius="16dp"
+                            app:chipMinHeight="36dp" />
+
+                    </com.google.android.material.chip.ChipGroup>
+
+                </HorizontalScrollView>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- 📋 Contenedor principal de contenido -->
         <FrameLayout

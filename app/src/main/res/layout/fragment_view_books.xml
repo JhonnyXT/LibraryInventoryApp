@@ -17,7 +17,7 @@
         app:elevation="0dp"
         android:fitsSystemWindows="true">
 
-        <!-- 📋 Header minimalista estático -->
+        <!-- 📋 Header integrado con logout -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,15 +27,36 @@
             android:paddingTop="16dp"
             android:paddingBottom="8dp">
 
-            <!-- 📚 Título principal -->
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- 🔝 Fila superior: Título + Logout -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Inventario de Libros"
-                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-                android:textColor="?attr/colorOnSurface"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="4dp">
+
+                <!-- 📚 Título principal -->
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Inventario de Libros"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textStyle="bold" />
+
+                <!-- 🚪 Botón de Logout - Material Design -->
+                <ImageButton
+                    android:id="@+id/btn_logout_header"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Cerrar sesión"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_logout"
+                    android:scaleType="centerInside" />
+
+            </LinearLayout>
 
             <!-- 📊 Subtítulo informativo -->
             <TextView
@@ -359,5 +380,21 @@
         </FrameLayout>
 
     </LinearLayout>
+
+    <!-- 🎯 FAB para registrar nuevo libro -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_book"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="24dp"
+        android:src="@android:drawable/ic_input_add"
+        android:contentDescription="Registrar nuevo libro"
+        app:backgroundTint="?attr/colorPrimary"
+        app:tint="?attr/colorOnPrimary"
+        app:fabSize="normal"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        app:borderWidth="0dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
