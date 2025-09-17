@@ -1,25 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Item individual para usuario asignado en EditBook - Más espacioso que BottomSheet -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- 👤 Tarjeta moderna de usuario asignado - Material Design 3 -->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:background="@drawable/bg_admin_card"
-    android:elevation="2dp">
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="?attr/colorOutlineVariant"
+    app:cardBackgroundColor="?attr/colorSurfaceContainerLowest"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
-        <!-- Header con nombre y estado -->
+        <!-- 👤 Header moderno con avatar y información del usuario -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <!-- Avatar del usuario -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_marginEnd="16dp"
+                app:cardCornerRadius="26dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="?attr/colorPrimary">
+
+                <TextView
+                    android:id="@+id/user_initial"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:textStyle="bold"
+                    android:includeFontPadding="false"
+                    tools:text="JP" />
+
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Información del usuario -->
             <LinearLayout
@@ -28,87 +59,184 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <!-- Nombre del usuario -->
                 <TextView
                     android:id="@+id/user_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Juan Pérez González"
-                    android:textSize="18sp"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                    android:textColor="?attr/colorOnSurface"
                     android:textStyle="bold"
-                    android:textColor="@color/bottom_sheet_title"
-                    android:fontFamily="sans-serif-medium" />
+                    android:layout_marginBottom="4dp"
+                    tools:text="Juan Pérez González" />
 
-                <!-- Email del usuario -->
-                <TextView
-                    android:id="@+id/user_email"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="📧 juan.perez@email.com"
-                    android:textSize="14sp"
-                    android:textColor="@color/bottom_sheet_secondary"
-                    android:fontFamily="sans-serif" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/user_email"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        tools:text="juan.perez@email.com" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <!-- Indicador visual de estado (más grande) -->
-            <View
-                android:id="@+id/status_indicator"
-                android:layout_width="8dp"
-                android:layout_height="match_parent"
+            <!-- Indicador de estado moderno -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/status_indicator_card"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
                 android:layout_marginStart="12dp"
-                android:background="#4CAF50" />
+                app:cardCornerRadius="6dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="?attr/colorPrimary">
+
+                <View
+                    android:id="@+id/status_indicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 
-        <!-- Información de fechas -->
-        <LinearLayout
+        <!-- 📅 Sección de fechas modernizada -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/bg_admin_card"
-            android:padding="12dp"
-            android:elevation="1dp">
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutlineVariant"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerHigh">
 
-            <!-- Fecha de asignación -->
-            <TextView
-                android:id="@+id/assigned_date"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="📅 Asignado: 01/01/2025"
-                android:textSize="14sp"
-                android:textColor="@color/bottom_sheet_text"
-                android:fontFamily="sans-serif"
-                android:layout_marginBottom="4dp" />
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <!-- Fecha de vencimiento -->
-            <TextView
-                android:id="@+id/expiration_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⏰ Vence: 15/01/2025"
-                android:textSize="14sp"
-                android:textColor="@color/bottom_sheet_text"
-                android:fontFamily="sans-serif" />
+                <!-- Fecha de asignación -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
 
-            <!-- Estado/alerta de vencimiento -->
-            <TextView
-                android:id="@+id/expiration_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="🚨 VENCIDO HACE 3 DÍAS"
-                android:textSize="14sp"
-                android:textColor="#D32F2F"
-                android:textStyle="bold"
-                android:visibility="gone"
-                android:fontFamily="sans-serif-medium" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:src="@android:drawable/ic_menu_today"
+                        app:tint="?attr/colorPrimary" />
 
-        </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-        <!-- Botones de acción (más espaciosos) -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Fecha de asignación"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:layout_marginBottom="2dp" />
+
+                        <TextView
+                            android:id="@+id/assigned_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textStyle="bold"
+                            tools:text="01 de enero, 2025" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Separador -->
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp"
+                    app:dividerColor="?attr/colorOutlineVariant" />
+
+                <!-- Fecha de vencimiento -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:src="@android:drawable/ic_menu_recent_history"
+                        app:tint="?attr/colorSecondary" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Fecha de vencimiento"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:layout_marginBottom="2dp" />
+
+                        <TextView
+                            android:id="@+id/expiration_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textStyle="bold"
+                            tools:text="15 de enero, 2025" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Chip de estado de vencimiento -->
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/expiration_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="VENCIDO HACE 3 DÍAS"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                    android:textColor="?attr/colorOnError"
+                    android:textStyle="bold"
+                    app:chipBackgroundColor="?attr/colorError"
+                    app:chipCornerRadius="8dp"
+                    app:chipIcon="@android:drawable/ic_dialog_alert"
+                    app:chipIconTint="?attr/colorOnError"
+                    app:chipStrokeWidth="0dp"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 🔧 Botones de acción modernos -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -122,12 +250,16 @@
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                android:text="📅 Cambiar Fecha"
-                android:textSize="14sp"
+                android:text="Cambiar fecha"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
                 android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#2196F3"
-                style="@style/Widget.MaterialComponents.Button" />
+                app:icon="@android:drawable/ic_menu_edit"
+                app:iconGravity="textStart"
+                app:iconTint="?attr/colorOnSecondaryContainer"
+                app:backgroundTint="?attr/colorSecondaryContainer"
+                app:cornerRadius="12dp"
+                android:textColor="?attr/colorOnSecondaryContainer"
+                style="@style/Widget.Material3.Button" />
 
             <!-- Botón desasignar -->
             <com.google.android.material.button.MaterialButton
@@ -136,15 +268,19 @@
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:text="❌ Desasignar"
-                android:textSize="14sp"
+                android:text="Desasignar"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
                 android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#F44336"
-                style="@style/Widget.MaterialComponents.Button" />
+                app:icon="@android:drawable/ic_menu_close_clear_cancel"
+                app:iconGravity="textStart"
+                app:iconTint="?attr/colorOnErrorContainer"
+                app:backgroundTint="?attr/colorErrorContainer"
+                app:cornerRadius="12dp"
+                android:textColor="?attr/colorOnErrorContainer"
+                style="@style/Widget.Material3.Button" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-</FrameLayout>
+</com.google.android.material.card.MaterialCardView>

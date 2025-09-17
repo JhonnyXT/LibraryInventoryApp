@@ -343,6 +343,7 @@ class EditBookFragment : Fragment() {
             .inflate(R.layout.item_edit_assigned_user, assignedUsersContainer, false)
         
         // Referencias a los elementos del item
+        val userInitialTextView = userItemView.findViewById<TextView>(R.id.user_initial)
         val userNameTextView = userItemView.findViewById<TextView>(R.id.user_name)
         val userEmailTextView = userItemView.findViewById<TextView>(R.id.user_email)
         val assignedDateTextView = userItemView.findViewById<TextView>(R.id.assigned_date)
@@ -354,8 +355,9 @@ class EditBookFragment : Fragment() {
         
         // Poblar datos del usuario
         userNameTextView.text = userName
+        userInitialTextView.text = getUserInitials(userName)
         if (userEmail.isNotEmpty()) {
-            userEmailTextView.text = "📧 $userEmail"
+            userEmailTextView.text = userEmail
         } else {
             userEmailTextView.visibility = View.GONE
         }
@@ -424,6 +426,30 @@ class EditBookFragment : Fragment() {
         
         // Agregar el item al contenedor
         assignedUsersContainer.addView(userItemView)
+    }
+
+    /**
+     * Extrae las iniciales del nombre del usuario
+     * @param fullName Nombre completo del usuario
+     * @return Iniciales (máximo 2 caracteres)
+     */
+    private fun getUserInitials(fullName: String): String {
+        if (fullName.isBlank()) return "U"
+        
+        val nameParts = fullName.trim().split(" ").filter { it.isNotBlank() }
+        return when {
+            nameParts.isEmpty() -> "U"
+            nameParts.size == 1 -> {
+                // Solo un nombre: tomar la primera letra
+                nameParts[0].first().uppercaseChar().toString()
+            }
+            else -> {
+                // Múltiples nombres: tomar primera letra del primer y segundo nombre
+                val firstInitial = nameParts[0].first().uppercaseChar()
+                val secondInitial = nameParts[1].first().uppercaseChar()
+                "$firstInitial$secondInitial"
+            }
+        }
     }
 
     private fun loadAvailableUsers() {
