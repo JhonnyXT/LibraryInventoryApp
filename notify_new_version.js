@@ -11,9 +11,9 @@
 const admin = require('firebase-admin');
 const sgMail = require('@sendgrid/mail');
 
-// Configuración
-const SENDGRID_API_KEY = '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';
-const FROM_EMAIL = 'hermanosencristobello@gmail.com';
+// Configuración - Variables de entorno requeridas
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || 'TU_SENDGRID_API_KEY_AQUI';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'tu-email@ejemplo.com';
 
 // Inicializar Firebase Admin
 // IMPORTANTE: Descargar serviceAccountKey.json desde Firebase Console

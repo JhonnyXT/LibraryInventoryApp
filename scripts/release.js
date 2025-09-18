@@ -19,9 +19,9 @@ const fs = require('fs');
 const path = require('path');
 const { updateVersion } = require('./update_version');
 
-// Configuración
+// Configuración - Variables de entorno requeridas
 const GITHUB_REPO = 'JhonnyXT/LibraryInventoryApp'; // Tu repo de GitHub
-const GITHUB_TOKEN = 'TU_GITHUB_TOKEN'; // Personal Access Token de GitHub
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || 'TU_GITHUB_TOKEN_AQUI'; // Personal Access Token de GitHub
 const APK_PATH = path.join(__dirname, '../app/build/outputs/apk/release/app-release-unsigned.apk');
 
 async function createRelease(releaseType = 'patch', releaseNotes = '') {
