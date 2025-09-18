@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">LibraryInventoryApp</string>
     <string name="app_version">V 1.0.3</string>
+
+    <string name="default_web_client_id">1:107204537212:web:7ff731f5bcd6576ccd92f9</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

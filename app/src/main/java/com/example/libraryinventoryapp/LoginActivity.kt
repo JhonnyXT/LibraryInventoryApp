@@ -6,6 +6,7 @@ import android.view.inputmethod.InputMethodManager
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import androidx.activity.enableEdgeToEdge
@@ -15,19 +16,51 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.libraryinventoryapp.utils.PermissionHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import androidx.activity.result.contract.ActivityResultContracts
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var permissionHelper: PermissionHelper
+    private lateinit var googleSignInClient: GoogleSignInClient
 
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
-    private lateinit var registerButton: Button
+    private lateinit var registerText: TextView
+    private lateinit var googleSignInButton: Button
     
     // Variables para almacenar destino después de permisos
     private var pendingNavigationRole: String? = null
+    
+    // ActivityResultLauncher para Google Sign-In
+    private val googleSignInLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)!!
+            firebaseAuthWithGoogle(account.idToken!!)
+        } catch (e: ApiException) {
+            findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.GONE
+            // Mostrar error más detallado para debug
+            val errorCode = e.statusCode
+            val errorMessage = when (errorCode) {
+                10 -> "Error de configuración: Verifica Web Client ID en strings.xml"
+                12501 -> "Usuario canceló el login"
+                7 -> "Error de red - Verifica conexión a internet"
+                8 -> "Error interno - Verifica configuración Firebase"
+                else -> "Error Google Sign-In: Código $errorCode - ${e.message}"
+            }
+            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
+            android.util.Log.e("GoogleSignIn", "Error detallado: Código=$errorCode, Mensaje=${e.message}")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,11 +69,19 @@ class LoginActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         permissionHelper = PermissionHelper(this)
+        
+        // Configurar Google Sign-In
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
         loginButton = findViewById(R.id.loginButton)
-        registerButton = findViewById(R.id.registerButton)
+        registerText = findViewById(R.id.registerText)
+        googleSignInButton = findViewById(R.id.googleSignInButton)
 
         // Verificar si el usuario ya está autenticado
         val currentUser = auth.currentUser
@@ -55,10 +96,15 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
 
-        registerButton.setOnClickListener {
+        registerText.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
             finish()
+        }
+        
+        // Listener para Google Sign-In
+        googleSignInButton.setOnClickListener {
+            signInWithGoogle()
         }
 
         loginButton.setOnClickListener {
@@ -206,5 +252,100 @@ class LoginActivity : AppCompatActivity() {
                 navigateAfterPermissions()
             }
         }
+    }
+    
+    // 🌐 GOOGLE SIGN-IN FUNCTIONS
+    
+    private fun signInWithGoogle() {
+        findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.VISIBLE
+        val signInIntent = googleSignInClient.signInIntent
+        googleSignInLauncher.launch(signInIntent)
+    }
+    
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Google Sign-In exitoso
+                    val user = auth.currentUser
+                    user?.let { firebaseUser ->
+                        // Verificar si el usuario ya existe en Firestore
+                        checkAndCreateUserInFirestore(firebaseUser)
+                    }
+                } else {
+                    findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.GONE
+                    Toast.makeText(this, "Error en autenticación con Google: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+    
+    private fun checkAndCreateUserInFirestore(user: FirebaseUser) {
+        val db = FirebaseFirestore.getInstance()
+        val userId = user.uid
+        
+        // Verificar si el usuario ya existe en Firestore
+        db.collection("users").document(userId).get()
+            .addOnCompleteListener { task ->
+                findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.GONE
+                
+                if (task.isSuccessful) {
+                    val document = task.result
+                    if (document != null && document.exists()) {
+                        // Usuario ya existe, navegar según su rol
+                        val role = document.getString("role") ?: "usuario"
+                        navigateBasedOnRole(role)
+                    } else {
+                        // Usuario nuevo, crear registro con rol por defecto "usuario"
+                        createNewGoogleUser(user)
+                    }
+                } else {
+                    Toast.makeText(this, "Error al verificar usuario: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+    
+    private fun createNewGoogleUser(user: FirebaseUser) {
+        val db = FirebaseFirestore.getInstance()
+        val userId = user.uid
+        
+        val userData = hashMapOf(
+            "name" to (user.displayName ?: "Usuario Google"),
+            "email" to (user.email ?: ""),
+            "role" to "usuario", // Rol por defecto para usuarios de Google
+            "uid" to userId
+        )
+        
+        findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.VISIBLE
+        
+        db.collection("users").document(userId).set(userData)
+            .addOnCompleteListener { task ->
+                findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.GONE
+                
+                if (task.isSuccessful) {
+                    Toast.makeText(this, "¡Bienvenido! Tu cuenta ha sido creada exitosamente.", Toast.LENGTH_SHORT).show()
+                    navigateBasedOnRole("usuario")
+                } else {
+                    Toast.makeText(this, "Error al crear usuario: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+    
+    private fun navigateBasedOnRole(role: String) {
+        when (role) {
+            "admin" -> {
+                val intent = Intent(this, AdminActivity::class.java)
+                startActivity(intent)
+            }
+            "usuario" -> {
+                val intent = Intent(this, UserActivity::class.java)
+                startActivity(intent)
+            }
+            else -> {
+                Toast.makeText(this, "Rol de usuario no reconocido", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+        finish()
     }
 }

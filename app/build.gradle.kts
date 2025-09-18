@@ -70,6 +70,9 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
+    
+    // Google Sign-In
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
 
     // ZXing
     implementation(libs.zxing.core)
