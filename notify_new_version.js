@@ -165,10 +165,12 @@ async function notifyNewVersion(version, releaseUrl) {
                 
                 <h3>Novedades en esta version:</h3>
                 <ul>
-                  <li>Sistema de autenticacion mejorado con Google Sign-In</li>
-                  <li>Sistema de notificaciones por email mejorado (9,000 emails/mes gratis)</li>
-                  <li>Interfaz de usuario actualizada y moderna</li>
-                  <li>Correccion de errores y mejoras de rendimiento</li>
+                  <li>🎨 <strong>Sistema UX/UI profesional:</strong> Notificaciones elegantes con Material Design 3</li>
+                  <li>📧 <strong>Templates email responsive:</strong> Diseño HTML5 moderno para todos los dispositivos</li>
+                  <li>🔧 <strong>Google Sign-In 100% funcional:</strong> Autenticación con Google completamente operativa</li>
+                  <li>🚀 <strong>Automatización completa:</strong> Sistema de releases con commit y push automático</li>
+                  <li>📱 <strong>APK firmada de producción:</strong> Instalación sin errores, tamaño optimizado (7.47 MB)</li>
+                  <li>🔧 <strong>Sistema robusto:</strong> GitHub API optimizada con métodos alternativos</li>
                 </ul>
                 
                 <div style="text-align: center; margin: 30px 0;">
@@ -178,7 +180,7 @@ async function notifyNewVersion(version, releaseUrl) {
                 <h3>Instrucciones de instalacion:</h3>
                 <ol>
                   <li><strong>Descarga:</strong> Haz clic en el boton verde "Descargar Nueva Version" arriba</li>
-                  <li><strong>GitHub:</strong> Se abrira GitHub, busca el archivo "app-release-unsigned.apk" y descargalo</li>
+                  <li><strong>GitHub:</strong> Se abrira GitHub, busca el archivo <strong>"LibraryInventoryApp-v${version}.apk"</strong> y descargalo</li>
                   <li><strong>Permisos:</strong> En tu dispositivo Android, ve a Configuracion > Seguridad > "Permitir instalacion de fuentes desconocidas" (activar)</li>
                   <li><strong>Instalar:</strong> Abre el archivo APK descargado desde tus archivos y toca "Instalar"</li>
                   <li><strong>Finalizar:</strong> Una vez instalada, puedes desactivar "fuentes desconocidas" si lo prefieres</li>
