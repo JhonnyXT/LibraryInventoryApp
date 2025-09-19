@@ -23,8 +23,8 @@ android {
         applicationId = "com.example.libraryinventoryapp"
         minSdk = 26  // Android 8.0+ (Cambiado desde Android 7.0)
         targetSdk = 34  // Android 14 (última versión)
-        versionCode = 31
-        versionName = "1.3.11"
+        versionCode = 32
+        versionName = "1.3.12"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
