@@ -23,8 +23,8 @@ android {
         applicationId = "com.example.libraryinventoryapp"
         minSdk = 26  // Android 8.0+ (Cambiado desde Android 7.0)
         targetSdk = 34  // Android 14 (última versión)
-        versionCode = 14
-        versionName = "1.0.17"
+        versionCode = 15
+        versionName = "1.0.18"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
@@ -61,7 +61,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // signingConfig = signingConfigs.getByName("release") // Temporalmente deshabilitado
+            signingConfig = signingConfigs.getByName("release") // APK firmado para instalación
             
             // Optimizaciones adicionales
             isJniDebuggable = false
