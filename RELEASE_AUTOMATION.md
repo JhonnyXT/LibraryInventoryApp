@@ -4,11 +4,13 @@
 
 Automatiza **COMPLETAMENTE** el proceso de distribución de nuevas versiones:
 
-1. ✅ **Actualiza versión** siguiendo estándares Google
-2. ✅ **Compila APK** release optimizado  
-3. ✅ **Sube a GitHub** Releases públicamente
-4. ✅ **Notifica usuarios** automáticamente por email
-5. ✅ **Gestiona versionado** semántico
+1. ✅ **Version bump automático** con commit automático del build.gradle.kts
+2. ✅ **Compila APK firmado** release optimizado (7.47 MB)  
+3. ✅ **Crea GitHub Release** con APK como asset descargable
+4. ✅ **Sube APK** con sistema robusto y método alternativo
+5. ✅ **Notifica usuarios masivamente** por email (templates responsive)
+6. ✅ **Push automático** a GitHub - CERO pasos manuales
+7. ✅ **Gestiona versionado** semántico Google estándar
 
 ---
 
@@ -123,8 +125,8 @@ npm run release:major "Rediseño completo con Material Design 3"
 
 📱 Instrucciones de instalación:
 1. Haz clic en el botón de descarga
-2. Descarga el archivo APK  
-3. Permite "Fuentes desconocidas"
+2. GitHub: Se abrirá GitHub, busca el archivo LibraryInventoryApp-v[versión].apk y descárgalo
+3. Permite "Fuentes desconocidas" si es necesario
 4. Instala la nueva versión
 ```
 
@@ -138,32 +140,39 @@ npm run release:major "Rediseño completo con Material Design 3"
 🚀 Iniciando proceso de release automatizado...
 
 📝 Paso 1: Actualizando versión...
-   ├── Versión actual: 1.0.5 (Code: 2)
-   └── ✅ Nueva versión: 1.0.6 (Code: 3)
+   ├── Versión actual: 1.3.2 (Code: 22)
+   ├── ✅ Nueva versión: 1.3.3 (Code: 23)
+   ├── 🔄 Commit automático de build.gradle.kts
+   └── ✅ Commit completado automáticamente
 
 🏗️ Paso 2: Compilando APK release...
    ├── ⏳ Ejecutando: gradlew assembleRelease
-   ├── ⚡ Aplicando Proguard y optimizaciones
-   └── ✅ APK generado: 6.8 MB
+   ├── ⚡ APK firmado con libraryapp-keystore.jks
+   ├── 🔧 Aplicando Proguard + shrinking + minification
+   └── ✅ APK generado: 7.47 MB
 
 🐙 Paso 3: Creando GitHub Release...
-   ├── 📝 Tag: v1.0.6
+   ├── 📝 Tag: v1.3.3 con GitHub API 2022-11-28
    ├── 📄 Release notes automáticas
-   ├── 📤 Subiendo APK
-   └── ✅ Release público: https://github.com/.../releases/tag/v1.0.6
+   ├── 📤 Subiendo LibraryInventoryApp-v1.3.3.apk
+   └── ✅ Release público: https://github.com/JhonnyXT/LibraryInventoryApp/releases/tag/v1.3.3
 
 📧 Paso 4: Notificando usuarios...
-   ├── 👥 Leyendo usuarios de Firebase: 15 usuarios
-   ├── 📨 Generando emails personalizados
-   ├── 📤 Enviando con SendGrid: Lote 1/1
-   └── ✅ 15 emails enviados exitosamente
+   ├── 👥 Leyendo usuarios de Firebase: 4 usuarios
+   ├── 📨 Templates responsive HTML5 + Material Design 3
+   ├── 📤 Enviando con Brevo (Sendinblue): 4/4 exitoso
+   └── ✅ 4 emails enviados exitosamente
+
+🚀 Paso 5: Push automático...
+   └── ✅ Push completado a GitHub
 
 🎉 ¡RELEASE COMPLETADO EXITOSAMENTE!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📱 Nueva versión: 1.0.6 (Code: 3)
-🔗 GitHub Release: https://github.com/.../releases/tag/v1.0.6  
-📧 Usuarios notificados automáticamente
-📂 APK disponible para descarga pública
+📱 Nueva versión: 1.3.3 (Code: 23)
+🔗 GitHub Release: https://github.com/JhonnyXT/LibraryInventoryApp/releases/tag/v1.3.3
+📧 Usuarios notificados automáticamente  
+📂 APK: LibraryInventoryApp-v1.3.3.apk (7.47 MB)
+🚀 Push automático completado - CERO pasos manuales
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -234,6 +243,36 @@ LibraryInventoryApp/
 
 ---
 
+---
+
+## 🆕 **NOVEDADES Y MEJORAS RECIENTES (v1.3.0 - v1.3.3)**
+
+### 🚀 **SISTEMA 100% AUTOMÁTICO (v1.3.2-1.3.3)**
+- **✅ Commit automático**: build.gradle.kts se commitea automáticamente después del version bump
+- **✅ Push automático**: Se hace push automático al final del proceso 
+- **✅ GitHub API optimizada**: Headers 2022-11-28 para máxima compatibilidad
+- **✅ Upload robusto**: Método alternativo si falla la API principal
+- **✅ CERO pasos manuales**: Un comando hace absolutamente todo
+
+### 🎨 **UX/UI PROFESIONAL (v1.3.0)**
+- **✅ NotificationHelper**: Snackbars animadas Material Design 3
+- **✅ Progress indicators**: Feedback visual elegante durante emails
+- **✅ Templates responsive**: Emails HTML5 con gradientes profesionales  
+- **✅ Fallbacks robustos**: Toast profesional cuando no hay vista disponible
+
+### 🔧 **GOOGLE SIGN-IN FUNCIONANDO (v1.3.1)**
+- **✅ SHA-1 configurado**: 2D:27:86:D0:77:63:36:D6:D2:B9:57:46:15:C4:6B:C3:BC:F4:4D:58
+- **✅ APK firmada**: libraryapp-keystore.jks completamente funcional
+- **✅ Firebase actualizado**: google-services.json con configuración correcta
+
+### 📱 **APK DE PRODUCCIÓN**
+- **✅ Tamaño optimizado**: 7.47 MB con Proguard + shrinking
+- **✅ Instalable**: 100% funcional sin errores "paquete no válido"  
+- **✅ Firmada**: Keystore de producción con contraseñas conocidas
+- **✅ Google Sign-In**: Completamente operativo en dispositivos
+
+---
+
 ## 🎉 ¡Todo listo!
 
 ```bash
@@ -241,4 +280,7 @@ LibraryInventoryApp/
 npm run release:patch "Mi primer release automático"
 ```
 
-**🚀 El sistema se encarga de todo automáticamente. ¡Solo siéntate y observa la magia!**
+**🚀 El sistema se encarga de TODO automáticamente:**
+- Version bump → Commit → Compilar → GitHub Release → Subir APK → Emails → Push
+
+**¡Solo siéntate y observa la magia empresarial! 🏆**
