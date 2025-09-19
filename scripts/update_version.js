@@ -7,6 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const GRADLE_FILE = path.join(__dirname, '../app/build.gradle.kts');
 
@@ -70,7 +71,40 @@ function updateVersion(releaseType = 'patch') {
     console.log(`✅ Nueva versión: ${newVersionName} (Code: ${newVersionCode})`);
     console.log(`📝 Archivo actualizado: ${GRADLE_FILE}`);
     
-    // 7. Retornar nueva versión para otros scripts
+    // 7. 🚀 Commit automático de la nueva versión
+    try {
+      console.log('🔄 Haciendo commit automático de la nueva versión...');
+      
+      // Git add del archivo gradle
+      execSync(`git add "${GRADLE_FILE}"`, { 
+        stdio: 'pipe',
+        cwd: path.join(__dirname, '..')
+      });
+      
+      // Git commit con mensaje descriptivo
+      const commitMessage = `📱 Bump version to ${newVersionName} (Code: ${newVersionCode})
+
+✅ VERSION BUMPED AUTOMÁTICAMENTE:
+- versionName: ${currentVersionName} → ${newVersionName}
+- versionCode: ${currentVersionCode} → ${newVersionCode}
+- Release type: ${releaseType}
+
+🤖 Commit automático generado por el script de release`;
+
+      execSync(`git commit -m "${commitMessage}"`, { 
+        stdio: 'pipe',
+        cwd: path.join(__dirname, '..')
+      });
+      
+      console.log('✅ Commit automático completado');
+      console.log(`📝 Commit: v${newVersionName} bump automático`);
+      
+    } catch (error) {
+      console.log('⚠️ No se pudo hacer commit automático (posiblemente no hay cambios o git no configurado)');
+      console.log(`   Puedes hacer commit manual con: git add app/build.gradle.kts && git commit`);
+    }
+    
+    // 8. Retornar nueva versión para otros scripts
     return {
       versionCode: newVersionCode,
       versionName: newVersionName,

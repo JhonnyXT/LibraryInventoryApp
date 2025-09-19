@@ -68,7 +68,20 @@ async function createRelease(releaseType = 'patch', releaseNotes = '') {
     console.log('\n📧 Paso 4: Notificando usuarios...');
     await notifyUsers(versionName, githubReleaseUrl, releaseNotes);
     
-    // 6. ✅ Resumen final
+    // 6. 🚀 Push automático de los cambios
+    console.log('\n🚀 Paso 5: Push automático de cambios...');
+    try {
+      execSync('git push', { 
+        stdio: 'pipe',
+        cwd: path.join(__dirname, '..')
+      });
+      console.log('✅ Push automático completado');
+    } catch (pushError) {
+      console.log('⚠️ No se pudo hacer push automático:', pushError.message);
+      console.log('   Puedes hacer push manual con: git push');
+    }
+    
+    // 7. ✅ Resumen final
     console.log('\n🎉 ¡RELEASE COMPLETADO EXITOSAMENTE!');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log(`📱 Nueva versión: ${versionName} (Code: ${versionCode})`);
@@ -126,9 +139,30 @@ async function createGitHubRelease(versionName, versionCode, releaseNotes) {
     
   } catch (error) {
     console.error('❌ Error creando GitHub Release:', error.message);
-    // Retornar URL mock si falla la API
+    
+    // Aún intentar subir APK aunque falle la creación del release
     const fallbackUrl = `https://github.com/${GITHUB_REPO}/releases/tag/${tagName}`;
     console.log(`⚠️ Usando URL de fallback: ${fallbackUrl}`);
+    
+    // 🔧 NUEVO: Intentar subir APK aunque el release haya fallado
+    if (fs.existsSync(APK_PATH)) {
+      try {
+        console.log('📤 Intentando subir APK con método alternativo...');
+        
+        // Esperar un momento para que GitHub sincronice
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Intentar subir APK usando el tag que debe existir
+        await uploadAPKToRelease(githubToken, fallbackUrl, APK_PATH, versionName);
+        console.log('✅ APK subido exitosamente (método alternativo)');
+        
+      } catch (uploadError) {
+        console.error('⚠️ No se pudo subir APK automaticamente:', uploadError.message);
+        console.log(`📱 APK compilado en: ${APK_PATH}`);
+        console.log(`🔗 Puedes subirlo manualmente en: ${fallbackUrl}`);
+      }
+    }
+    
     return fallbackUrl;
   }
 }
