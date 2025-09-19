@@ -31,13 +31,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/book_image"
+        <ImageView
+            android:id="@+id/book_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
+            android:scaleType="centerCrop"
                 android:contentDescription="Portada del libro"
-                tools:srcCompat="@tools:sample/avatars" />
+            tools:srcCompat="@tools:sample/avatars" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -54,22 +54,22 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
             <!-- 📚 Título del libro -->
-            <TextView
+        <TextView
                 android:id="@+id/book_title"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+            android:layout_height="wrap_content"
                 android:text="Título del libro"
                 android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                 android:textColor="?attr/colorOnSurface"
                 android:textStyle="bold"
                 android:maxLines="2"
-                android:ellipsize="end"
+            android:ellipsize="end"
                 android:layout_marginBottom="4dp"
                 tools:text="El Poder de la Oración Ferviente" />
 
             <!-- ✍️ Autor del libro -->
-            <TextView
-                android:id="@+id/book_author"
+        <TextView
+            android:id="@+id/book_author"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="por Nombre del Autor"
@@ -83,15 +83,15 @@
             <!-- 📊 Información básica -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+            android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:layout_marginBottom="8dp">
 
-                <TextView
+        <TextView
                     android:id="@+id/book_quantity"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+            android:layout_height="wrap_content"
                     android:text="3 ejemplares"
                     android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                     android:textColor="?attr/colorOnSurfaceVariant"
@@ -99,7 +99,7 @@
                     tools:text="3 ejemplares" />
 
                 <!-- Badge de asignación rápida -->
-                <TextView
+        <TextView
                     android:id="@+id/book_assigned_to"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -119,14 +119,14 @@
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/status_badge"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            android:layout_height="wrap_content"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp"
                 app:cardBackgroundColor="?attr/colorPrimaryContainer">
 
-                <TextView
-                    android:id="@+id/book_status"
+        <TextView
+            android:id="@+id/book_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Disponible"
@@ -210,14 +210,14 @@
             android:layout_height="0dp"
             android:visibility="gone" />
 
-        <Button
+            <Button
             android:id="@+id/editBookButton"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="gone" />
 
-        <Button
-            android:id="@+id/deleteBookButton"
+            <Button
+                android:id="@+id/deleteBookButton"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="gone" />

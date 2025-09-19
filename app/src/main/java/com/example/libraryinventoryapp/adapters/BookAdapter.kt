@@ -942,7 +942,7 @@ class BookAdapter(
         bsDeleteButton.setOnClickListener {
             bottomSheetDialog.dismiss()
             showDeleteConfirmationDialog(book, holder, context)
-        }
+            }
     }
 
     // Método auxiliar para mostrar u ocultar el ProgressBar

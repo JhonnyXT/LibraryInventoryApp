@@ -165,7 +165,7 @@ class ViewBooksFragment : Fragment() {
      */
     private fun setupSwipeRefresh() {
         swipeRefreshLayout.setOnRefreshListener {
-            loadBooks()
+        loadBooks()
         }
     }
 
@@ -355,7 +355,7 @@ class ViewBooksFragment : Fragment() {
             swipeRefreshLayout.visibility = View.VISIBLE
             
             Log.d("ViewBooksFragment", "📋 Lista mostrada con ${filteredBooksList.size} libros")
-        }
+            }
     }
 
     private fun loadUsers() {
