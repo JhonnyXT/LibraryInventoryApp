@@ -508,7 +508,7 @@ class BookAdapter(
                 notifyDataSetChanged()
 
                 // Enviar correos de notificación
-                sendAssignmentNotificationEmails(book, user, context)
+                sendAssignmentNotificationEmails(book, user, context, holder.itemView)
                 
                 // 🔔 NUEVA FUNCIONALIDAD: Programar notificaciones push
                 try {
@@ -632,7 +632,7 @@ class BookAdapter(
                 notifyDataSetChanged()
 
                 // Enviar correos de notificación
-                sendAssignmentNotificationEmails(book, user, context)
+                sendAssignmentNotificationEmails(book, user, context, holder.itemView)
             }
             .addOnFailureListener { e ->
                 showProgressBar(holder, false)
@@ -655,7 +655,7 @@ class BookAdapter(
             }
     }
 
-    private fun sendAssignmentNotificationEmails(book: Book, user: User, context: Context) {
+    private fun sendAssignmentNotificationEmails(book: Book, user: User, context: Context, itemView: View? = null) {
         // Obtener información del admin actual
         val currentUser = auth.currentUser
         if (currentUser == null) {
@@ -669,43 +669,83 @@ class BookAdapter(
                     val adminName = document.getString("name") ?: "Administrador"
                     val adminEmail = currentUser.email ?: "admin@biblioteca.com"
 
-                    // 🎨 Mostrar progreso elegante mientras se envía
-                    val progressSnackbar = NotificationHelper.showEmailSendingProgress(
-                        holder.itemView, 
-                        "Enviando notificación a ${user.name}..."
-                    )
-                    
-                    // Enviar correos REALES con SendGrid
-                    CoroutineScope(Dispatchers.Main).launch {
-                        val result = emailService.sendBookAssignmentEmail(
-                            adminEmail = adminEmail,
-                            userEmail = user.email,
-                            userName = user.name,
-                            bookTitle = book.title,
-                            bookAuthor = book.author,
-                            adminName = adminName
+                    // 🎨 Usar notificaciones elegantes si tenemos itemView, sino Toast profesional
+                    if (itemView != null) {
+                        val progressSnackbar = NotificationHelper.showEmailSendingProgress(
+                            itemView, 
+                            "Enviando notificación a ${user.name}..."
                         )
                         
-                        // Ocultar progreso
-                        progressSnackbar.dismiss()
+                        // Enviar correos REALES con SendGrid
+                        CoroutineScope(Dispatchers.Main).launch {
+                            val result = emailService.sendBookAssignmentEmail(
+                                adminEmail = adminEmail,
+                                userEmail = user.email,
+                                userName = user.name,
+                                bookTitle = book.title,
+                                bookAuthor = book.author,
+                                adminName = adminName
+                            )
+                            
+                            // Ocultar progreso
+                            progressSnackbar.dismiss()
+                            
+                            if (result.isSuccess) {
+                                Log.d("EmailService", "✅ SendGrid: Correos enviados exitosamente")
+                                // 🎨 Mostrar éxito elegante
+                                NotificationHelper.showEmailSuccess(
+                                    itemView,
+                                    user.name,
+                                    user.email,
+                                    book.title,
+                                    false
+                                )
+                            } else {
+                                Log.e("EmailService", "❌ SendGrid Error: ${result.exceptionOrNull()?.message}")
+                                // 🎨 Mostrar error elegante
+                                NotificationHelper.showEmailError(
+                                    itemView,
+                                    result.exceptionOrNull()?.message ?: "Error desconocido"
+                                )
+                            }
+                        }
+                    } else {
+                        // Fallback: Toast profesional cuando no hay itemView
+                        NotificationHelper.showModernToast(
+                            context,
+                            "Enviando notificación a ${user.name}...",
+                            NotificationHelper.NotificationType.INFO,
+                            Toast.LENGTH_SHORT
+                        )
                         
-                        if (result.isSuccess) {
-                            Log.d("EmailService", "✅ SendGrid: Correos enviados exitosamente")
-                            // 🎨 Mostrar éxito con estilo profesional
-                            NotificationHelper.showEmailSuccess(
-                                holder.itemView,
-                                user.name,
-                                user.email,
-                                book.title,
-                                false
+                        // Enviar correos sin UI avanzada
+                        CoroutineScope(Dispatchers.Main).launch {
+                            val result = emailService.sendBookAssignmentEmail(
+                                adminEmail = adminEmail,
+                                userEmail = user.email,
+                                userName = user.name,
+                                bookTitle = book.title,
+                                bookAuthor = book.author,
+                                adminName = adminName
                             )
-                        } else {
-                            Log.e("EmailService", "❌ SendGrid Error: ${result.exceptionOrNull()?.message}")
-                            // 🎨 Mostrar error con opciones de reintentar
-                            NotificationHelper.showEmailError(
-                                holder.itemView,
-                                result.exceptionOrNull()?.message ?: "Error desconocido"
-                            )
+                            
+                            if (result.isSuccess) {
+                                Log.d("EmailService", "✅ SendGrid: Correos enviados exitosamente")
+                                NotificationHelper.showModernToast(
+                                    context,
+                                    "Notificación enviada a ${user.name} ✉️",
+                                    NotificationHelper.NotificationType.SUCCESS,
+                                    Toast.LENGTH_LONG
+                                )
+                            } else {
+                                Log.e("EmailService", "❌ SendGrid Error: ${result.exceptionOrNull()?.message}")
+                                NotificationHelper.showModernToast(
+                                    context,
+                                    "Error enviando email: ${result.exceptionOrNull()?.message}",
+                                    NotificationHelper.NotificationType.ERROR,
+                                    Toast.LENGTH_LONG
+                                )
+                            }
                         }
                     }
 
