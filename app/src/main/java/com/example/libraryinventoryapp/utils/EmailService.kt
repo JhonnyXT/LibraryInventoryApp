@@ -131,8 +131,8 @@ class EmailService {
                     <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); padding: 20px; border-radius: 12px; text-align: center; margin: 25px 0;">
                         <h3 style="margin: 0 0 10px 0; color: #e65100; font-size: 18px;">🌟 ¡Disfruta tu lectura! 🌟</h3>
                         <p style="margin: 0; color: #bf360c; font-size: 14px; font-style: italic;">Que este libro enriquezca tu conocimiento y fortalezca tu fe</p>
-                    </div>
-                    
+                </div>
+                
                     <!-- Footer Profesional -->
                     <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e2e8f0; text-align: center;">
                         <div style="margin-bottom: 20px;">
@@ -147,8 +147,8 @@ class EmailService {
                                 Para cualquier consulta, contacta con el administrador.
                             </p>
                         </div>
-                    </div>
                 </div>
+            </div>
             </body>
             </html>
         """.trimIndent()
