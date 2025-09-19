@@ -179,11 +179,11 @@ async function notifyNewVersion(version, releaseUrl) {
                 
                 <h3>Instrucciones de instalacion:</h3>
                 <ol>
-                  <li><strong>Descarga:</strong> Haz clic en el boton verde "Descargar Nueva Version" arriba</li>
-                  <li><strong>GitHub:</strong> Se abrira GitHub, busca el archivo <strong>"LibraryInventoryApp-v${version}.apk"</strong> y descargalo</li>
-                  <li><strong>Permisos:</strong> En tu dispositivo Android, ve a Configuracion > Seguridad > "Permitir instalacion de fuentes desconocidas" (activar)</li>
-                  <li><strong>Instalar:</strong> Abre el archivo APK descargado desde tus archivos y toca "Instalar"</li>
-                  <li><strong>Finalizar:</strong> Una vez instalada, puedes desactivar "fuentes desconocidas" si lo prefieres</li>
+                  <li><strong>Descarga:</strong> Haz clic en el boton verde 'Descargar Nueva Version' arriba</li>
+                  <li><strong>GitHub:</strong> Se abrira GitHub, busca el archivo <strong>'LibraryInventoryApp-v${version}.apk'</strong> y descargalo</li>
+                  <li><strong>Permisos:</strong> En tu dispositivo Android, ve a Configuracion > Seguridad > 'Permitir instalacion de fuentes desconocidas' (activar)</li>
+                  <li><strong>Instalar:</strong> Abre el archivo APK descargado desde tus archivos y toca 'Instalar'</li>
+                  <li><strong>Finalizar:</strong> Una vez instalada, puedes desactivar 'fuentes desconocidas' si lo prefieres</li>
                 </ol>
                 
                 <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 15px 0;">
@@ -191,8 +191,8 @@ async function notifyNewVersion(version, releaseUrl) {
                   <ul>
                     <li>Desinstala la version anterior antes de instalar la nueva</li>
                     <li>Asegurate de tener conexion a Internet estable</li>
-                    <li>Si aparece advertencia de "App no verificada", toca "Instalar de todas formas"</li>
-                    <li>En algunos dispositivos Samsung, busca "Instalar apps desconocidas" en Configuracion</li>
+                    <li>Si aparece advertencia de 'App no verificada', toca 'Instalar de todas formas'</li>
+                    <li>En algunos dispositivos Samsung, busca 'Instalar apps desconocidas' en Configuracion</li>
                   </ul>
                 </div>
                 
