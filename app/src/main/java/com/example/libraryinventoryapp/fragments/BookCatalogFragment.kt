@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -18,24 +19,24 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.libraryinventoryapp.R
 import com.example.libraryinventoryapp.adapters.BooksGridAdapter
 import com.example.libraryinventoryapp.models.Book
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * 📚 BooksGridFragment - Grid completo 3x3 como en la imagen
+ * 📚 BookCatalogFragment - Catálogo completo de libros con grid 3x3
  * 
- * Muestra todos los libros en formato grid de 3 columnas
+ * Muestra todos los libros disponibles en formato grid de 3 columnas
+ * con funcionalidades de búsqueda y filtrado por categoría
  */
-class BooksGridFragment : Fragment() {
+class BookCatalogFragment : Fragment() {
 
     companion object {
-        private const val TAG = "BooksGridFragment"
+        private const val TAG = "BookCatalogFragment"
         
-        fun newInstance(category: String? = null): BooksGridFragment {
-            val fragment = BooksGridFragment()
+        fun newInstance(category: String? = null): BookCatalogFragment {
+            val fragment = BookCatalogFragment()
             val args = Bundle()
             args.putString("category", category)
             fragment.arguments = args
@@ -47,7 +48,7 @@ class BooksGridFragment : Fragment() {
     private lateinit var firestore: FirebaseFirestore
     
     // UI Components
-    private lateinit var toolbarBooksGrid: MaterialToolbar
+    private lateinit var btnBack: ImageButton
     private lateinit var textGridTitle: TextView
     private lateinit var textGridSubtitle: TextView
     private lateinit var searchBooksGrid: SearchView
@@ -70,7 +71,7 @@ class BooksGridFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_books_grid, container, false)
+        return inflater.inflate(R.layout.fragment_book_catalog, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,7 +79,7 @@ class BooksGridFragment : Fragment() {
         
         selectedCategory = arguments?.getString("category")
         
-        Log.d(TAG, "📚 Inicializando BooksGridFragment - Categoría: $selectedCategory")
+        Log.d(TAG, "📚 Inicializando BookCatalogFragment - Categoría: $selectedCategory")
         
         initializeFirebase()
         initializeComponents(view)
@@ -98,7 +99,7 @@ class BooksGridFragment : Fragment() {
      * 🏗️ Inicializar componentes UI
      */
     private fun initializeComponents(view: View) {
-        toolbarBooksGrid = view.findViewById(R.id.toolbar_books_grid)
+        btnBack = view.findViewById(R.id.btn_back)
         textGridTitle = view.findViewById(R.id.text_grid_title)
         textGridSubtitle = view.findViewById(R.id.text_grid_subtitle)
         searchBooksGrid = view.findViewById(R.id.search_books_grid)
@@ -150,7 +151,8 @@ class BooksGridFragment : Fragment() {
      */
     private fun setupClickListeners() {
         // Botón de regreso
-        toolbarBooksGrid.setNavigationOnClickListener {
+        btnBack.setOnClickListener {
+            Log.d(TAG, "🔙 Back button clicked - Returning to previous screen")
             parentFragmentManager.popBackStack()
         }
     }
@@ -160,9 +162,11 @@ class BooksGridFragment : Fragment() {
      */
     private fun updateTitle() {
         if (selectedCategory.isNullOrEmpty() || selectedCategory == "Todas") {
-            textGridTitle.text = "📚 Todos los Libros"
+            textGridTitle.text = "Catálogo Completo"
+            textGridSubtitle.text = "Explora todos los libros disponibles"
         } else {
-            textGridTitle.text = "📚 Libros de $selectedCategory"
+            textGridTitle.text = "Libros de $selectedCategory"
+            textGridSubtitle.text = "Libros de la categoría $selectedCategory"
         }
     }
 
@@ -209,12 +213,18 @@ class BooksGridFragment : Fragment() {
                     book.categories.contains(selectedCategory)
                 }
                 
-                // Filtro por búsqueda
+                // Filtro por búsqueda (título, autor Y categorías)
                 val searchMatch = if (currentSearchQuery.isEmpty()) {
                     true
                 } else {
-                    book.title.contains(currentSearchQuery, ignoreCase = true) ||
-                    book.author.contains(currentSearchQuery, ignoreCase = true)
+                    val query = normalizeText(currentSearchQuery)
+                    val titleMatch = normalizeText(book.title).contains(query)
+                    val authorMatch = normalizeText(book.author).contains(query)
+                    val categorySearchMatch = book.categories.any { category ->
+                        normalizeText(category).contains(query)
+                    }
+                    
+                    titleMatch || authorMatch || categorySearchMatch
                 }
                 
                 categoryMatch && searchMatch
@@ -226,7 +236,7 @@ class BooksGridFragment : Fragment() {
                 booksGridAdapter.notifyDataSetChanged()
                 
                 updateUI()
-                updateSubtitle()
+                updateSubtitleCount()
                 
                 Log.d(TAG, "🔍 Libros filtrados: ${filteredBooks.size} de ${allBooks.size}")
             }
@@ -236,14 +246,18 @@ class BooksGridFragment : Fragment() {
     /**
      * 📊 Actualizar subtítulo con conteo
      */
-    private fun updateSubtitle() {
+    private fun updateSubtitleCount() {
         val count = filteredBooks.size
-        textGridSubtitle.text = if (count == 0) {
-            "No se encontraron libros"
-        } else if (count == 1) {
-            "1 libro disponible"
+        val subtitle = when {
+            count == 0 -> "No se encontraron libros"
+            count == 1 -> "1 libro disponible"
+            else -> "$count libros disponibles"
+        }
+        
+        if (selectedCategory.isNullOrEmpty() || selectedCategory == "Todas") {
+            textGridSubtitle.text = subtitle
         } else {
-            "$count libros disponibles"
+            textGridSubtitle.text = "$subtitle en $selectedCategory"
         }
     }
 
@@ -293,5 +307,13 @@ class BooksGridFragment : Fragment() {
      */
     private fun showError(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+    }
+
+    /**
+     * 🔤 Normalizar texto para búsquedas (elimina acentos y convierte a minúsculas)
+     */
+    private fun normalizeText(text: String): String {
+        return java.text.Normalizer.normalize(text.lowercase().trim(), java.text.Normalizer.Form.NFD)
+            .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
     }
 }

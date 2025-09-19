@@ -181,8 +181,12 @@ class ViewBooksFragment : Fragment() {
         chipAvailable.setOnClickListener { applyFilter(FilterType.AVAILABLE) }
         chipAssigned.setOnClickListener { applyFilter(FilterType.ASSIGNED) }
         
-        // Establecer el filtro inicial
+        // 🎯 Establecer "Todos" como filtro por defecto
+        chipAllBooks.isChecked = true
+        currentFilterType = FilterType.ALL
         updateFilterUI(FilterType.ALL, booksList.size)
+        
+        Log.d("ViewBooksFragment", "🏷️ Filtro 'Todos' establecido por defecto")
     }
 
     /**
@@ -302,18 +306,13 @@ class ViewBooksFragment : Fragment() {
                 )
                 booksRecyclerView.adapter = booksAdapter
                 
-                // 🎯 Mostrar todos los libros inicialmente
-                filteredBooksList.clear()
-                filteredBooksList.addAll(booksList)
-                booksAdapter.updateBooks(filteredBooksList)
-                
-                // Actualizar UI
-                updateFilterUI(currentFilterType, filteredBooksList.size)
-                updateEmptyState()
+                // 🎯 Aplicar filtro por defecto "Todos" después de cargar los datos
+                applyFilter(FilterType.ALL)
                 
                 // 🎯 Ocultar estado de carga
                 loadingState.visibility = View.GONE
                 swipeRefreshLayout.isRefreshing = false
+                swipeRefreshLayout.visibility = View.VISIBLE
             }
             .addOnFailureListener { exception ->
                 // 🚨 Ocultar loading en caso de error

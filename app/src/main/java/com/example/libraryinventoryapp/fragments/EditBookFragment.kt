@@ -70,6 +70,7 @@ class EditBookFragment : Fragment() {
     private var editingBook: Book? = null
 
     // Views principales
+    private lateinit var btnBack: ImageButton
     private lateinit var bookTitleInput: TextInputEditText
     private lateinit var bookAuthorInput: TextInputEditText
     private lateinit var bookIsbnInput: TextInputEditText
@@ -212,6 +213,7 @@ class EditBookFragment : Fragment() {
 
     private fun initializeViews(view: View) {
         // Views principales
+        btnBack = view.findViewById(R.id.btn_back)
         bookTitleInput = view.findViewById(R.id.book_title_input)
         bookAuthorInput = view.findViewById(R.id.book_author_input)
         bookIsbnInput = view.findViewById(R.id.book_isbn_input)
@@ -237,6 +239,12 @@ class EditBookFragment : Fragment() {
     }
 
     private fun setupEventListeners() {
+        // 🔙 Botón de regresar
+        btnBack.setOnClickListener { 
+            Log.d("EditBookFragment", "🔙 Back button clicked - Returning to previous screen")
+            parentFragmentManager.popBackStack()
+        }
+        
         scanCodeButton.setOnClickListener { scanBarcode() }
         captureImageButton.setOnClickListener { captureImage() }
         selectCategoryButton.setOnClickListener { showCategorySelectionDialog() }
@@ -791,12 +799,35 @@ class EditBookFragment : Fragment() {
         val updatedAssignedDates = book.assignedDates?.toMutableList()
         val updatedLoanExpirationDates = book.loanExpirationDates?.toMutableList()
 
-        // Remover el usuario de todas las listas
-        updatedAssignedTo?.removeAt(userIndex)
-        updatedAssignedWithNames?.removeAt(userIndex)
-        updatedAssignedToEmails?.removeAt(userIndex)
-        updatedAssignedDates?.removeAt(userIndex)
-        updatedLoanExpirationDates?.removeAt(userIndex)
+        // Remover el usuario de todas las listas (validando índices)
+        try {
+            // Remover de assignedTo (siempre debe existir si llegamos aquí)
+            updatedAssignedTo?.removeAt(userIndex)
+            
+            // Remover de assignedWithNames solo si existe y el índice es válido
+            if (updatedAssignedWithNames != null && userIndex < updatedAssignedWithNames.size) {
+                updatedAssignedWithNames.removeAt(userIndex)
+            }
+            
+            // Remover de assignedToEmails solo si existe y el índice es válido
+            if (updatedAssignedToEmails != null && userIndex < updatedAssignedToEmails.size) {
+                updatedAssignedToEmails.removeAt(userIndex)
+            }
+            
+            // Remover de assignedDates solo si existe y el índice es válido
+            if (updatedAssignedDates != null && userIndex < updatedAssignedDates.size) {
+                updatedAssignedDates.removeAt(userIndex)
+            }
+            
+            // Remover de loanExpirationDates solo si existe y el índice es válido
+            if (updatedLoanExpirationDates != null && userIndex < updatedLoanExpirationDates.size) {
+                updatedLoanExpirationDates.removeAt(userIndex)
+            }
+        } catch (e: IndexOutOfBoundsException) {
+            Log.e("EditBookFragment", "Error al remover usuario del índice $userIndex: ${e.message}", e)
+            Toast.makeText(requireContext(), "❌ Error al desasignar usuario. Las listas están desincronizadas.", Toast.LENGTH_LONG).show()
+            return
+        }
 
         // Determinar valores finales
         val finalAssignedTo = if (updatedAssignedTo?.isEmpty() == true) null else updatedAssignedTo

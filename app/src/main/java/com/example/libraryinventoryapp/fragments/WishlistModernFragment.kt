@@ -18,7 +18,6 @@ import com.example.libraryinventoryapp.UserActivity
 import com.example.libraryinventoryapp.adapters.WishlistModernAdapter
 import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.WishlistItem
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -40,7 +39,6 @@ class WishlistModernFragment : Fragment() {
     private var currentUserId: String? = null
 
     // UI Components
-    private lateinit var toolbarWishlist: MaterialToolbar
     private lateinit var textWishlistCount: TextView
     private lateinit var swipeRefreshWishlist: SwipeRefreshLayout
     private lateinit var recyclerWishlist: RecyclerView
@@ -88,7 +86,6 @@ class WishlistModernFragment : Fragment() {
      * 🏗️ Inicializar componentes UI
      */
     private fun initializeComponents(view: View) {
-        toolbarWishlist = view.findViewById(R.id.toolbar_wishlist)
         textWishlistCount = view.findViewById(R.id.text_wishlist_count)
         swipeRefreshWishlist = view.findViewById(R.id.swipe_refresh_wishlist)
         recyclerWishlist = view.findViewById(R.id.recycler_wishlist)
@@ -124,8 +121,14 @@ class WishlistModernFragment : Fragment() {
      */
     private fun setupClickListeners() {
         btnExploreCatalog.setOnClickListener {
-            // Navegar al Home
-            (activity as? UserActivity)?.switchToTab(0)
+            Log.d(TAG, "📚 Abriendo catálogo completo desde Favoritos")
+            
+            // Navegar al catálogo completo
+            val fragment = BookCatalogFragment.newInstance()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.admin_fragment_container, fragment)
+                .addToBackStack(null)
+                .commit()
         }
     }
 

@@ -257,6 +257,11 @@ class HomeModernFragment : Fragment() {
             Log.d(TAG, "🏷️ Todas las categorías seleccionadas")
         }
         
+        // 🎯 Marcar "Todas" como seleccionado por defecto
+        todasChip?.isChecked = true
+        updateSectionTitle()
+        Log.d(TAG, "🏷️ Chip 'Todas' marcado por defecto")
+        
         // Mostrar primeras 6 categorías
         val visibleCategories = CATEGORIES.take(6)
         val showMoreChip = chipGroupCategories.findViewById<Chip>(R.id.chip_show_more)
@@ -645,12 +650,12 @@ class HomeModernFragment : Fragment() {
     }
 
     /**
-     * 📚 Abrir grid completo de libros (3x3)
+     * 📚 Abrir catálogo completo de libros 
      */
     private fun openBooksGridFragment() {
-        Log.d(TAG, "📚 Abriendo grid completo - Categoría: $selectedCategory")
+        Log.d(TAG, "📚 Abriendo catálogo completo - Categoría: $selectedCategory")
         
-        val fragment = BooksGridFragment.newInstance(selectedCategory)
+        val fragment = BookCatalogFragment.newInstance(selectedCategory)
         parentFragmentManager.beginTransaction()
             .replace(R.id.admin_fragment_container, fragment)
             .addToBackStack(null)
