@@ -24,6 +24,7 @@ import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.User
 import com.example.libraryinventoryapp.utils.EmailService
 import com.example.libraryinventoryapp.utils.LibraryNotificationManager
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -668,6 +669,12 @@ class BookAdapter(
                     val adminName = document.getString("name") ?: "Administrador"
                     val adminEmail = currentUser.email ?: "admin@biblioteca.com"
 
+                    // 🎨 Mostrar progreso elegante mientras se envía
+                    val progressSnackbar = NotificationHelper.showEmailSendingProgress(
+                        bottomSheetView, 
+                        "Enviando notificación a ${user.name}..."
+                    )
+                    
                     // Enviar correos REALES con SendGrid
                     CoroutineScope(Dispatchers.Main).launch {
                         val result = emailService.sendBookAssignmentEmail(
@@ -679,18 +686,28 @@ class BookAdapter(
                             adminName = adminName
                         )
                         
+                        // Ocultar progreso
+                        progressSnackbar.dismiss()
+                        
                         if (result.isSuccess) {
                             Log.d("EmailService", "✅ SendGrid: Correos enviados exitosamente")
+                            // 🎨 Mostrar éxito con estilo profesional
+                            NotificationHelper.showEmailSuccess(
+                                bottomSheetView,
+                                user.name,
+                                user.email,
+                                book.title,
+                                false
+                            )
                         } else {
                             Log.e("EmailService", "❌ SendGrid Error: ${result.exceptionOrNull()?.message}")
+                            // 🎨 Mostrar error con opciones de reintentar
+                            NotificationHelper.showEmailError(
+                                bottomSheetView,
+                                result.exceptionOrNull()?.message ?: "Error desconocido"
+                            )
                         }
                     }
-
-                    Toast.makeText(
-                        context, 
-                        "Notificaciones enviadas por correo ✉️", 
-                        Toast.LENGTH_SHORT
-                    ).show()
 
 
                 }

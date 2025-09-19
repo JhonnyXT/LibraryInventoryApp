@@ -55,4 +55,18 @@
     <!-- 🎨 Material Design 3 adicionales -->
     <color name="surface_variant">#F3F3F3</color>
     <color name="on_surface_variant">#49454E</color>
+    
+    <!-- 📧 Colores para sistema de notificaciones profesionales -->
+    <color name="success_green">#00C851</color>
+    <color name="error_red">#FF4444</color>
+    <color name="warning_orange">#FF8800</color>
+    <color name="info_blue">#33B5E5</color>
+    <color name="colorPrimary">#5EC9FF</color>
+    
+    <!-- 🎨 Gradientes para notificaciones premium -->
+    <color name="success_gradient_start">#00C851</color>
+    <color name="success_gradient_end">#00FF88</color>
+    <color name="email_sending_bg">#E3F2FD</color>
+    <color name="email_success_bg">#E8F5E8</color>
+    <color name="email_error_bg">#FFEBEE</color>
 </resources>

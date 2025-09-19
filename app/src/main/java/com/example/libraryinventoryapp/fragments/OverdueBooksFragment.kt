@@ -16,6 +16,7 @@ import com.example.libraryinventoryapp.adapters.OverdueBooksAdapter
 import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.OverdueBookItem
 import com.example.libraryinventoryapp.utils.EmailService
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.card.MaterialCardView
@@ -379,41 +380,36 @@ class OverdueBooksFragment : Fragment() {
                         hideProgress()
                         Log.i("OverdueBooksFragment", "✅ Recordatorio enviado exitosamente!")
                         
-                        // Toast personalizado según el estado (sin admin)
-                        val toastMessage = when {
-                            overdueItem.daysOverdue > 0 -> {
-                                "✅ Recordatorio enviado a ${overdueItem.userName}\n" +
-                                "📧 Email: ${overdueItem.userEmail}\n" +
-                                "📚 Libro: ${overdueItem.book.title}\n" +
-                                "⚠️ $daysText"
-                            }
-                            overdueItem.daysOverdue == 0 -> {
-                                "✅ Recordatorio enviado a ${overdueItem.userName}\n" +
-                                "📧 Email: ${overdueItem.userEmail}\n" +
-                                "📚 Libro: ${overdueItem.book.title}\n" +
-                                "🔥 Vence HOY"
-                            }
-                            else -> {
-                                "✅ Recordatorio enviado a ${overdueItem.userName}\n" +
-                                "📧 Email: ${overdueItem.userEmail}\n" +
-                                "📚 Libro: ${overdueItem.book.title}\n" +
-                                "⏳ $daysText"
-                            }
+                        // 🎨 Mostrar éxito con diseño profesional basado en estado
+                        view?.let { fragmentView ->
+                            NotificationHelper.showEmailSuccess(
+                                fragmentView,
+                                overdueItem.userName,
+                                overdueItem.userEmail,
+                                "${overdueItem.book.title} - $daysText",
+                                true // isReminder = true
+                            )
                         }
-                        
-                        Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show()
                         
                     } else {
                         hideProgress()
                         val errorMsg = result.exceptionOrNull()?.message ?: "Error desconocido"
                         Log.e("OverdueBooksFragment", "❌ Error enviando recordatorio: $errorMsg")
-                        Toast.makeText(context, "❌ Error enviando recordatorio: $errorMsg", Toast.LENGTH_LONG).show()
+                        
+                        // 🎨 Mostrar error con opciones elegantes
+                        view?.let { fragmentView ->
+                            NotificationHelper.showEmailError(fragmentView, errorMsg)
+                        }
                     }
                     
                 } catch (e: Exception) {
                     hideProgress()
                     Log.e("OverdueBooksFragment", "❌ Excepción enviando recordatorio: ${e.message}", e)
-                    Toast.makeText(context, "❌ Error inesperado: ${e.message}", Toast.LENGTH_LONG).show()
+                    
+                    // 🎨 Mostrar error de excepción con estilo
+                    view?.let { fragmentView ->
+                        NotificationHelper.showEmailError(fragmentView, "Error inesperado: ${e.message}")
+                    }
                 }
             }
         }

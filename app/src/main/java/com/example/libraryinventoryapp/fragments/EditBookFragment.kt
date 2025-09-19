@@ -30,6 +30,7 @@ import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.User
 import com.example.libraryinventoryapp.utils.LibraryNotificationManager
 import com.example.libraryinventoryapp.utils.EmailService
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
@@ -603,20 +604,46 @@ class EditBookFragment : Fragment() {
                                     val adminName = adminDoc.getString("name") ?: "Admin"
                                     val adminEmail = adminDoc.getString("email") ?: currentUser.email ?: "admin@biblioteca.com"
                                     
-                                    lifecycleScope.launch(Dispatchers.IO) {
-                                        val result = emailService.sendBookAssignmentEmail(
-                                            adminEmail = adminEmail,
-                                            userEmail = user.email,
-                                            userName = user.name,
-                                            bookTitle = book.title,
-                                            bookAuthor = book.author,
-                                            adminName = adminName
+                                    // 🎨 Mostrar progreso elegante mientras se envía  
+                                    view?.let { fragmentView ->
+                                        val progressSnackbar = NotificationHelper.showEmailSendingProgress(
+                                            fragmentView, 
+                                            "Enviando notificación a ${user.name}..."
                                         )
                                         
-                                        if (result.isSuccess) {
-                                            Log.d("EmailService", "✅ SendGrid: Correo enviado exitosamente a ${user.name}")
-                                        } else {
-                                            Log.e("EmailService", "❌ SendGrid Error: ${result.exceptionOrNull()?.message}")
+                                        lifecycleScope.launch(Dispatchers.IO) {
+                                            val result = emailService.sendBookAssignmentEmail(
+                                                adminEmail = adminEmail,
+                                                userEmail = user.email,
+                                                userName = user.name,
+                                                bookTitle = book.title,
+                                                bookAuthor = book.author,
+                                                adminName = adminName
+                                            )
+                                            
+                                            // Cambiar a hilo principal para UI
+                                            lifecycleScope.launch(Dispatchers.Main) {
+                                                progressSnackbar.dismiss()
+                                                
+                                                if (result.isSuccess) {
+                                                    Log.d("EmailService", "✅ SendGrid: Correo enviado exitosamente a ${user.name}")
+                                                    // 🎨 Mostrar éxito elegante
+                                                    NotificationHelper.showEmailSuccess(
+                                                        fragmentView,
+                                                        user.name,
+                                                        user.email,
+                                                        book.title,
+                                                        false
+                                                    )
+                                                } else {
+                                                    Log.e("EmailService", "❌ SendGrid Error: ${result.exceptionOrNull()?.message}")
+                                                    // 🎨 Mostrar error elegante
+                                                    NotificationHelper.showEmailError(
+                                                        fragmentView,
+                                                        result.exceptionOrNull()?.message ?: "Error desconocido"
+                                                    )
+                                                }
+                                            }
                                         }
                                     }
                                 }

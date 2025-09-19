@@ -68,26 +68,89 @@ class EmailService {
     ): Result<String> {
         val subject = "📚 Te han asignado un libro: $bookTitle"
         val content = """
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <h2 style="color: #4CAF50; text-align: center;">¡Te han asignado un libro! 📚</h2>
-                
-                <p>Hola <strong>$userName</strong>,</p>
-                
-                <p>Te informamos que se te ha asignado el siguiente libro:</p>
-                
-                <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #4CAF50;">
-                    <p style="margin: 5px 0;"><strong>📖 Título:</strong> $bookTitle</p>
-                    <p style="margin: 5px 0;"><strong>✍️ Autor:</strong> $bookAuthor</p>
-                    <p style="margin: 5px 0;"><strong>👤 Asignado por:</strong> $adminName</p>
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Libro Asignado - Sistema de Biblioteca</title>
+                <style>
+                    @media screen and (max-width: 600px) {
+                        .container { width: 100% !important; padding: 15px !important; }
+                        .book-card { padding: 15px !important; }
+                        .header h1 { font-size: 24px !important; }
+                    }
+                </style>
+            </head>
+            <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; line-height: 1.6;">
+                <div class="container" style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff;">
+                    
+                    <!-- Header Moderno -->
+                    <div class="header" style="text-align: center; padding: 30px 0; background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%); border-radius: 12px; margin-bottom: 30px; color: white;">
+                        <h1 style="margin: 0; font-size: 28px; font-weight: 600;">📚 ¡Nuevo Libro Asignado!</h1>
+                        <p style="margin: 10px 0 0 0; opacity: 0.9; font-size: 16px;">Sistema de Biblioteca Digital</p>
+                    </div>
+                    
+                    <!-- Saludo Personal -->
+                    <div style="margin-bottom: 25px;">
+                        <h2 style="color: #2d3748; margin: 0 0 10px 0; font-size: 24px; font-weight: 500;">Hola $userName 👋</h2>
+                        <p style="color: #4a5568; margin: 0; font-size: 16px;">Te informamos que tienes un nuevo libro esperándote:</p>
+                    </div>
+                    
+                    <!-- Card del Libro - Diseño Material -->
+                    <div class="book-card" style="background-color: #f7fafc; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin: 25px 0;">
+                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #4CAF50, #66BB6A); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                <span style="color: white; font-size: 24px;">📖</span>
+                            </div>
+                            <div>
+                                <h3 style="margin: 0; color: #2d3748; font-size: 20px; font-weight: 600;">$bookTitle</h3>
+                                <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Información del libro</p>
+                            </div>
+                        </div>
+                        
+                        <div style="background-color: white; padding: 20px; border-radius: 8px; border-left: 4px solid #4CAF50;">
+                            <div style="margin-bottom: 15px;">
+                                <span style="display: inline-block; background-color: #e3f2fd; color: #1976d2; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; margin-bottom: 8px;">TÍTULO</span>
+                                <p style="margin: 0; color: #2d3748; font-size: 16px; font-weight: 500;">$bookTitle</p>
+                            </div>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <span style="display: inline-block; background-color: #f3e5f5; color: #7b1fa2; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; margin-bottom: 8px;">AUTOR</span>
+                                <p style="margin: 0; color: #2d3748; font-size: 16px;">$bookAuthor</p>
+                            </div>
+                            
+                            <div>
+                                <span style="display: inline-block; background-color: #e8f5e8; color: #388e3c; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; margin-bottom: 8px;">ASIGNADO POR</span>
+                                <p style="margin: 0; color: #2d3748; font-size: 16px;">$adminName</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mensaje Motivacional -->
+                    <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); padding: 20px; border-radius: 12px; text-align: center; margin: 25px 0;">
+                        <h3 style="margin: 0 0 10px 0; color: #e65100; font-size: 18px;">🌟 ¡Disfruta tu lectura! 🌟</h3>
+                        <p style="margin: 0; color: #bf360c; font-size: 14px; font-style: italic;">Que este libro enriquezca tu conocimiento y fortalezca tu fe</p>
+                    </div>
+                    
+                    <!-- Footer Profesional -->
+                    <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e2e8f0; text-align: center;">
+                        <div style="margin-bottom: 20px;">
+                            <img src="https://via.placeholder.com/60x60/4CAF50/FFFFFF?text=📚" alt="Logo" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px;">
+                        </div>
+                        <p style="margin: 0 0 5px 0; color: #2d3748; font-weight: 600; font-size: 16px;">Iglesia Hermanos en Cristo Bello</p>
+                        <p style="margin: 0 0 15px 0; color: #718096; font-size: 14px;">Sistema de Biblioteca Digital</p>
+                        
+                        <div style="background-color: #f7fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                            <p style="margin: 0; color: #4a5568; font-size: 12px;">
+                                📧 Este es un email automático del sistema de biblioteca.<br>
+                                Para cualquier consulta, contacta con el administrador.
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                
-                <p>¡Disfruta tu lectura!</p>
-                
-                <div style="margin-top: 30px; text-align: center; color: #666;">
-                    <p>Saludos,<br>
-                    <strong>Iglesia hermanos en Cristo Bello - Sistema de Biblioteca</strong></p>
-                </div>
-            </div>
+            </body>
+            </html>
         """.trimIndent()
         
         return sendBrevoEmail(userEmail, userName, subject, content)
