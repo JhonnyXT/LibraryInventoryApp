@@ -3,6 +3,7 @@ serviceAccountKey.json
 google-services.json
 *.keystore
 *.jks
+configure_tokens_REAL.ps1
 
 # 📱 Android
 *.iml
@@ -36,3 +37,7 @@ app/release/
 
 # 📧 Logs
 *.log
+
+# 🔐 Variables de entorno sensibles
+.env
+configure_tokens.ps1

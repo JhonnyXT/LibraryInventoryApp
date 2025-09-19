@@ -8,12 +8,16 @@
  * Ejemplo: node notify_new_version.js "1.0.4" "https://github.com/tu-usuario/LibraryInventoryApp/releases/tag/v1.0.4"
  */
 
+// Cargar variables de entorno desde archivo .env
+require('dotenv').config();
+
 const admin = require('firebase-admin');
-const sgMail = require('@sendgrid/mail');
+const https = require('https');
 
 // Configuración - Variables de entorno requeridas
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || 'TU_SENDGRID_API_KEY_AQUI';
+const BREVO_API_KEY = process.env.BREVO_API_KEY || 'TU_BREVO_API_KEY_AQUI';
 const FROM_EMAIL = process.env.FROM_EMAIL || 'tu-email@ejemplo.com';
+const BREVO_URL = 'https://api.brevo.com/v3/smtp/email';
 
 // Inicializar Firebase Admin
 // IMPORTANTE: Descargar serviceAccountKey.json desde Firebase Console
@@ -33,7 +37,55 @@ try {
   process.exit(1);
 }
 
-sgMail.setApiKey(SENDGRID_API_KEY);
+// Función COPIADA EXACTAMENTE del test que funcionó
+async function sendBrevoEmail(email, name, subject, htmlContent) {
+  return new Promise((resolve, reject) => {
+    const data = JSON.stringify({
+      sender: { 
+        email: FROM_EMAIL, 
+        name: "Sistema de Biblioteca" 
+      },
+      to: [{ 
+        email: email, 
+        name: name 
+      }],
+      subject: subject,
+      htmlContent: htmlContent
+    });
+
+    const options = {
+      hostname: 'api.brevo.com',
+      path: '/v3/smtp/email',
+      method: 'POST',
+      headers: {
+        'api-key': BREVO_API_KEY,
+        'Content-Type': 'application/json',
+        'Content-Length': data.length
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let responseBody = '';
+      res.on('data', (chunk) => {
+        responseBody += chunk;
+      });
+      res.on('end', () => {
+        if (res.statusCode === 201 || res.statusCode === 200) {
+          resolve(`✅ Email enviado exitosamente`);
+        } else {
+          reject(new Error(`❌ Brevo Error ${res.statusCode}: ${responseBody}`));
+        }
+      });
+    });
+
+    req.on('error', (error) => {
+      reject(error);
+    });
+
+    req.write(data);
+    req.end();
+  });
+}
 
 async function notifyNewVersion(version, releaseUrl) {
   try {
@@ -57,91 +109,96 @@ async function notifyNewVersion(version, releaseUrl) {
     
     console.log(`👥 Encontrados ${users.length} usuarios para notificar`);
     
-    // 2. Crear emails personalizados
-    const emails = users.map(user => ({
-      to: user.email,
-      from: FROM_EMAIL,
-      subject: `📱 LibraryInventoryApp ${version} - Nueva versión disponible`,
-      html: generateEmailHTML(user, version, releaseUrl)
-    }));
+    // 2. Enviar emails a TODOS los usuarios con datos sanitizados
+    let emailsSent = 0;
     
-    // 3. Enviar emails en lotes de 1000 (límite SendGrid)
-    const batchSize = 100;
-    for (let i = 0; i < emails.length; i += batchSize) {
-      const batch = emails.slice(i, i + batchSize);
-      await sgMail.send(batch);
-      console.log(`📧 Enviado lote ${Math.floor(i/batchSize) + 1}/${Math.ceil(emails.length/batchSize)}`);
+    for (const user of users) {
+      try {
+        // SANITIZAR COMPLETAMENTE los datos de Firebase
+        const cleanEmail = user.email.toString().trim().toLowerCase();
+        const cleanName = user.name.toString()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '') // Remover acentos
+          .replace(/[^\w\s-]/g, '') // Solo letras, números, espacios y guiones
+          .trim();
+        
+        console.log(`📤 Enviando ${emailsSent + 1}/${users.length}: ${cleanName} (${cleanEmail})`);
+        
+        // Template profesional SIN emojis problemáticos
+        const subject = `Sistema de Biblioteca ${version} - Nueva version disponible`;
+        const htmlContent = `
+          <html>
+            <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="background: #1976D2; color: white; padding: 20px; text-align: center; border-radius: 8px;">
+                <h1>Sistema de Biblioteca</h1>
+                <h2>Nueva version ${version} disponible</h2>
+              </div>
+              
+              <div style="background: #f9f9f9; padding: 30px; border-radius: 8px; margin-top: 10px;">
+                <p>Hola ${cleanName},</p>
+                
+                <p>Nos complace informarte que hemos lanzado una nueva version del Sistema de Biblioteca con mejoras y nuevas funcionalidades.</p>
+                
+                <h3>Novedades en esta version:</h3>
+                <ul>
+                  <li>Sistema de autenticacion mejorado con Google Sign-In</li>
+                  <li>Sistema de notificaciones por email mejorado (9,000 emails/mes gratis)</li>
+                  <li>Interfaz de usuario actualizada y moderna</li>
+                  <li>Correccion de errores y mejoras de rendimiento</li>
+                </ul>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href="${releaseUrl}" style="background: #4CAF50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Descargar Nueva Version</a>
+                </div>
+                
+                <h3>Instrucciones de instalacion:</h3>
+                <ol>
+                  <li><strong>Descarga:</strong> Haz clic en el boton verde "Descargar Nueva Version" arriba</li>
+                  <li><strong>GitHub:</strong> Se abrira GitHub, busca el archivo "app-release-unsigned.apk" y descargalo</li>
+                  <li><strong>Permisos:</strong> En tu dispositivo Android, ve a Configuracion > Seguridad > "Permitir instalacion de fuentes desconocidas" (activar)</li>
+                  <li><strong>Instalar:</strong> Abre el archivo APK descargado desde tus archivos y toca "Instalar"</li>
+                  <li><strong>Finalizar:</strong> Una vez instalada, puedes desactivar "fuentes desconocidas" si lo prefieres</li>
+                </ol>
+                
+                <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                  <p><strong>Recomendaciones importantes:</strong></p>
+                  <ul>
+                    <li>Desinstala la version anterior antes de instalar la nueva</li>
+                    <li>Asegurate de tener conexion a Internet estable</li>
+                    <li>Si aparece advertencia de "App no verificada", toca "Instalar de todas formas"</li>
+                    <li>En algunos dispositivos Samsung, busca "Instalar apps desconocidas" en Configuracion</li>
+                  </ul>
+                </div>
+                
+                <p>Si tienes alguna pregunta o problema, no dudes en contactarnos.</p>
+                
+                <p><strong>Gracias por usar el Sistema de Biblioteca!</strong></p>
+              </div>
+              
+              <div style="text-align: center; margin-top: 30px; color: #666; font-size: 12px;">
+                <p>Este es un email automatico del Sistema de Biblioteca.</p>
+              </div>
+            </body>
+          </html>
+        `.replace(/\s+/g, ' ').trim();
+        
+        await sendBrevoEmail(cleanEmail, cleanName, subject, htmlContent);
+        emailsSent++;
+        console.log(`📧 ✅ Enviado exitosamente - ${emailsSent}/${users.length}`);
+        
+        // Pausa para respetar rate limits de Brevo
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+      } catch (emailError) {
+        console.error(`❌ Error enviando a ${user.email}:`, emailError.message);
+      }
     }
     
-    console.log(`✅ ¡Notificación completada! ${emails.length} emails enviados`);
+    console.log(`✅ ¡Notificación completada! ${emailsSent} emails enviados`);
     
   } catch (error) {
     console.error('❌ Error enviando notificaciones:', error);
   }
-}
-
-function generateEmailHTML(user, version, releaseUrl) {
-  return `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Nueva versión disponible</title>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: #1976D2; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-    .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
-    .button { display: inline-block; background: #4CAF50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-    .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>📱 LibraryInventoryApp</h1>
-      <h2>Nueva versión ${version} disponible</h2>
-    </div>
-    
-    <div class="content">
-      <p>¡Hola ${user.name}!</p>
-      
-      <p>Nos complace informarte que hemos lanzado una nueva versión de LibraryInventoryApp con mejoras y nuevas funcionalidades.</p>
-      
-      <h3>🆕 Novedades en esta versión:</h3>
-      <ul>
-        <li>🔐 Inicio de sesión con Google implementado</li>
-        <li>🎨 Interfaz de usuario mejorada y más moderna</li>
-        <li>⚡ Rendimiento optimizado</li>
-        <li>🔧 Corrección de errores y estabilidad mejorada</li>
-      </ul>
-      
-      <p style="text-align: center;">
-        <a href="${releaseUrl}" class="button">📥 Descargar nueva versión</a>
-      </p>
-      
-      <h3>📱 Instrucciones de instalación:</h3>
-      <ol>
-        <li>Haz clic en el botón de descarga arriba</li>
-        <li>Descarga el archivo APK</li>
-        <li>Permite "Fuentes desconocidas" en tu dispositivo si es necesario</li>
-        <li>Instala la nueva versión</li>
-      </ol>
-      
-      <p><strong>Nota:</strong> Es recomendable desinstalar la versión anterior antes de instalar la nueva.</p>
-      
-      <p>Si tienes alguna pregunta o problema, no dudes en contactarnos.</p>
-      
-      <p>¡Gracias por usar el sistema de inventario de libros!</p>
-    </div>
-    
-    <div class="footer">
-      <p>Este es un email automático. Para dejar de recibir notificaciones, contacta al administrador.</p>
-    </div>
-  </div>
-</body>
-</html>
-  `;
 }
 
 // Ejecutar script

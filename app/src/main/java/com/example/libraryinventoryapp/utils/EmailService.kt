@@ -13,10 +13,10 @@ import java.util.concurrent.TimeUnit
 
 class EmailService {
     companion object {
-        // SendGrid Configuration - CONFIGURAR CON TUS CREDENCIALES REALES
-        private const val SENDGRID_API_KEY = "TU_SENDGRID_API_KEY_AQUI" // Tu API Key de SendGrid (SG.xxxxx)
-        private const val SENDGRID_URL = "https://api.sendgrid.com/v3/mail/send"
-        private const val FROM_EMAIL = "tu-email@ejemplo.com" // Email verificado en SendGrid
+        // Brevo Configuration - CONFIGURAR CON TUS CREDENCIALES REALES
+        private const val BREVO_API_KEY = "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" // Tu API Key de Brevo (xkeysib-xxxxx)
+        private const val BREVO_URL = "https://api.brevo.com/v3/smtp/email"
+        private const val FROM_EMAIL = "hermanosencristobello@gmail.com" // Email verificado en Brevo
         private const val FROM_NAME = "Iglesia hermanos en Cristo Bello - Sistema de Biblioteca"
         
         private val client = OkHttpClient.Builder()
@@ -89,7 +89,7 @@ class EmailService {
             </div>
         """.trimIndent()
         
-        return sendSendGridEmail(userEmail, userName, subject, content)
+        return sendBrevoEmail(userEmail, userName, subject, content)
     }
 
     private suspend fun sendEmailToAdmin(
@@ -122,10 +122,10 @@ class EmailService {
             </div>
         """.trimIndent()
         
-        return sendSendGridEmail(adminEmail, adminName, subject, content)
+        return sendBrevoEmail(adminEmail, adminName, subject, content)
     }
 
-    private suspend fun sendSendGridEmail(
+    private suspend fun sendBrevoEmail(
         toEmail: String,
         toName: String,
         subject: String,
@@ -133,50 +133,41 @@ class EmailService {
     ): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
-                // Construir JSON para SendGrid API v3
+                // Construir JSON para Brevo API v3
                 val json = JSONObject().apply {
-                    put("personalizations", JSONArray().apply {
-                        put(JSONObject().apply {
-                            put("to", JSONArray().apply {
-                                put(JSONObject().apply {
-                                    put("email", toEmail)
-                                    put("name", toName)
-                                })
-                            })
-                        })
-                    })
-                    put("from", JSONObject().apply {
+                    put("sender", JSONObject().apply {
                         put("email", FROM_EMAIL)
                         put("name", FROM_NAME)
                     })
-                    put("subject", subject)
-                    put("content", JSONArray().apply {
+                    put("to", JSONArray().apply {
                         put(JSONObject().apply {
-                            put("type", "text/html")
-                            put("value", htmlContent)
+                            put("email", toEmail)
+                            put("name", toName)
                         })
                     })
+                    put("subject", subject)
+                    put("htmlContent", htmlContent)
                 }
 
                 val mediaType = "application/json".toMediaType()
                 val requestBody = json.toString().toRequestBody(mediaType)
 
                 val request = Request.Builder()
-                    .url(SENDGRID_URL)
+                    .url(BREVO_URL)
                     .post(requestBody)
-                    .addHeader("Authorization", "Bearer $SENDGRID_API_KEY")
+                    .addHeader("api-key", BREVO_API_KEY)
                     .addHeader("Content-Type", "application/json")
                     .build()
 
                 val response = client.newCall(request).execute()
 
                 if (response.isSuccessful) {
-                    Log.d("EmailService", "✅ SendGrid: Email enviado exitosamente a: $toEmail")
+                    Log.d("EmailService", "✅ Brevo: Email enviado exitosamente a: $toEmail")
                     Result.success("Email enviado exitosamente")
                 } else {
                     val errorBody = response.body?.string() ?: "Error desconocido"
-                    Log.e("EmailService", "❌ SendGrid Error: ${response.code} - $errorBody")
-                    Result.failure(Exception("SendGrid Error ${response.code}: $errorBody"))
+                    Log.e("EmailService", "❌ Brevo Error: ${response.code} - $errorBody")
+                    Result.failure(Exception("Brevo Error ${response.code}: $errorBody"))
                 }
             } catch (e: Exception) {
                 Log.e("EmailService", "❌ Excepción enviando email a $toEmail: ${e.message}", e)
@@ -198,7 +189,7 @@ class EmailService {
         adminName: String
     ) {
         Log.i("EmailService", """
-            📧 EMAIL ENVIADO (DEMO MODE - SendGrid) 📧
+            📧 EMAIL ENVIADO (DEMO MODE - Brevo) 📧
             
             === EMAIL AL USUARIO ===
             Para: $userEmail
@@ -238,10 +229,10 @@ class EmailService {
             ===========================
             
             🚀 Para activar correos REALES:
-            1. Crear cuenta en SendGrid (https://sendgrid.com)
-            2. Obtener API Key
+            1. Crear cuenta en Brevo (https://app.brevo.com)
+            2. Obtener API Key (https://app.brevo.com/settings/keys/api)
             3. Verificar dominio de email
-            4. Actualizar SENDGRID_API_KEY y FROM_EMAIL
+            4. Actualizar BREVO_API_KEY y FROM_EMAIL
             5. Cambiar sendBookAssignmentEmailDemo() por sendBookAssignmentEmail()
         """.trimIndent())
     }
@@ -348,7 +339,7 @@ class EmailService {
             </html>
         """.trimIndent()
 
-        return sendSendGridEmail(userEmail, userName, subject, htmlContent)
+        return sendBrevoEmail(userEmail, userName, subject, htmlContent)
     }
 
     private suspend fun sendReminderConfirmationToAdmin(
@@ -411,7 +402,7 @@ class EmailService {
             </html>
         """.trimIndent()
 
-        return sendSendGridEmail(adminEmail, adminName, subject, htmlContent)
+        return sendBrevoEmail(adminEmail, adminName, subject, htmlContent)
     }
 
     /**
@@ -428,7 +419,7 @@ class EmailService {
         daysOverdue: String
     ) {
         Log.i("EmailService", """
-            📧 EMAIL DE RECORDATORIO ENVIADO (DEMO MODE - SendGrid) 📧
+            📧 EMAIL DE RECORDATORIO ENVIADO (DEMO MODE - Brevo) 📧
 
             === EMAIL AL USUARIO (RECORDATORIO DE DEVOLUCIÓN) ===
             Para: $userEmail
@@ -471,7 +462,7 @@ class EmailService {
             ===========================
 
             🚀 Para activar correos REALES de recordatorio:
-            1. Implementar sendBookExpirationReminderEmail() con SendGrid
+            1. Implementar sendBookExpirationReminderEmail() con Brevo
             2. Cambiar sendBookExpirationReminderEmailDemo() por sendBookExpirationReminderEmail()
         """.trimIndent())
     }

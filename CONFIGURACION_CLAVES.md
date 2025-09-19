@@ -8,30 +8,30 @@ Para usar el sistema de automatización de releases y notificaciones, necesitas 
 
 ---
 
-## 🔑 **1. SENDGRID API KEY**
+## 🔑 **1. BREVO API KEY**
 
 ### **📧 Para notificaciones por email:**
 
-1. **Obtener API Key de SendGrid:**
-   - Ve a [SendGrid.com](https://sendgrid.com) 
-   - Crea una cuenta gratuita
-   - Ve a Settings > API Keys
-   - Crea una nueva API Key con permisos "Full Access"
-   - Copia la clave que empieza con `SG.xxxxx`
+1. **Obtener API Key de Brevo:**
+   - Ve a [Brevo.com](https://www.brevo.com/es/) (anteriormente Sendinblue)
+   - Crea una cuenta gratuita (9,000 emails/mes)
+   - Ve a Settings > API Keys: [https://app.brevo.com/settings/keys/api](https://app.brevo.com/settings/keys/api)
+   - Crea una nueva API Key con permisos "Envío de emails transaccionales"
+   - Copia la clave que empieza con `xkeysib-xxxxx`
 
 2. **Configurar en el código:**
 
    **📱 Para EmailService.kt (Android):**
    ```kotlin
    // En app/src/main/java/com/example/libraryinventoryapp/utils/EmailService.kt
-   private const val SENDGRID_API_KEY = "SG.TU_CLAVE_AQUI"
+   private const val BREVO_API_KEY = "xkeysib-TU_CLAVE_AQUI"
    private const val FROM_EMAIL = "tu-email@ejemplo.com"
    ```
 
    **🖥️ Para notify_new_version.js (Node.js):**
    ```bash
    # Opción 1: Variable de entorno (RECOMENDADO)
-   set SENDGRID_API_KEY=SG.TU_CLAVE_AQUI
+   set BREVO_API_KEY=xkeysib-TU_CLAVE_AQUI
    set FROM_EMAIL=tu-email@ejemplo.com
 
    # Opción 2: Editar directamente el archivo
@@ -78,7 +78,7 @@ Para usar el sistema de automatización de releases y notificaciones, necesitas 
 ### **🖥️ En Windows PowerShell:**
 ```powershell
 # Configurar variables de entorno temporales
-$env:SENDGRID_API_KEY = "SG.TU_CLAVE_AQUI"
+$env:BREVO_API_KEY = "xkeysib-TU_CLAVE_AQUI"
 $env:FROM_EMAIL = "tu-email@ejemplo.com"
 $env:GITHUB_TOKEN = "ghp_TU_TOKEN_AQUI"
 
@@ -88,7 +88,7 @@ npm run release:patch "Descripción del cambio"
 
 ### **💻 En Windows CMD:**
 ```cmd
-set SENDGRID_API_KEY=SG.TU_CLAVE_AQUI
+set BREVO_API_KEY=xkeysib-TU_CLAVE_AQUI
 set FROM_EMAIL=tu-email@ejemplo.com
 set GITHUB_TOKEN=ghp_TU_TOKEN_AQUI
 
@@ -97,7 +97,7 @@ npm run release:patch "Descripción del cambio"
 
 ### **🐧 En Linux/macOS:**
 ```bash
-export SENDGRID_API_KEY="SG.TU_CLAVE_AQUI"
+export BREVO_API_KEY="xkeysib-TU_CLAVE_AQUI"
 export FROM_EMAIL="tu-email@ejemplo.com"
 export GITHUB_TOKEN="ghp_TU_TOKEN_AQUI"
 
@@ -111,11 +111,11 @@ npm run release:patch "Descripción del cambio"
 ```
 LibraryInventoryApp/
 ├── serviceAccountKey.json  ← Clave Firebase (NO SUBIR A GIT)
-├── notify_new_version.js   ← Configurar SENDGRID_API_KEY
+├── notify_new_version.js   ← Configurar BREVO_API_KEY
 ├── scripts/
 │   └── release.js          ← Configurar GITHUB_TOKEN
 └── app/src/main/java/com/example/libraryinventoryapp/utils/
-    └── EmailService.kt     ← Configurar SENDGRID_API_KEY
+    └── EmailService.kt     ← Configurar BREVO_API_KEY
 ```
 
 ---
@@ -152,8 +152,8 @@ npm run release:patch "Prueba de configuración"
 ## 🆘 **SOLUCIÓN DE PROBLEMAS:**
 
 ### **📧 Si no llegan emails:**
-1. Verifica SENDGRID_API_KEY sea correcta
-2. Confirma FROM_EMAIL esté verificado en SendGrid
+1. Verifica BREVO_API_KEY sea correcta
+2. Confirma FROM_EMAIL esté verificado en Brevo
 3. Revisa logs en consola para errores
 
 ### **🐙 Si falla GitHub Release:**

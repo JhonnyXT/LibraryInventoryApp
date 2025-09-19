@@ -14,6 +14,9 @@
  * Ejemplo: node scripts/release.js patch "Corrección de bugs y mejoras de UI"
  */
 
+// Cargar variables de entorno desde archivo .env
+require('dotenv').config();
+
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
