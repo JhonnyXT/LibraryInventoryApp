@@ -26,7 +26,7 @@ const { updateVersion } = require('./update_version');
 // Configuración - Variables de entorno requeridas
 const GITHUB_REPO = 'JhonnyXT/LibraryInventoryApp'; // Tu repo de GitHub
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || 'TU_GITHUB_TOKEN_AQUI'; // Personal Access Token de GitHub
-const APK_PATH = path.join(__dirname, '../app/build/outputs/apk/release/app-release-unsigned.apk'); // Temporalmente unsigned - arreglar keystore
+const APK_PATH = path.join(__dirname, '../app/build/outputs/apk/release/app-release.apk'); // APK firmado con nuevo keystore
 
 async function createRelease(releaseType = 'patch', releaseNotes = '') {
   try {

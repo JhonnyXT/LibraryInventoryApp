@@ -39,10 +39,10 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("../libraryinventorykeystore.jks")
-            storePassword = "library123"
-            keyAlias = "librarykey"
-            keyPassword = "library123"
+            storeFile = file("../libraryapp-keystore.jks")
+            storePassword = "LibraryApp2024"
+            keyAlias = "libraryapp"
+            keyPassword = "LibraryApp2024"
         }
     }
 
@@ -61,7 +61,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // signingConfig = signingConfigs.getByName("release") // Temporalmente deshabilitado - verificar contraseñas keystore
+            signingConfig = signingConfigs.getByName("release") // APK firmado con nuevo keystore
             
             // Optimizaciones adicionales
             isJniDebuggable = false
