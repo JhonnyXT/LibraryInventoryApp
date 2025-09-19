@@ -671,7 +671,7 @@ class BookAdapter(
 
                     // 🎨 Mostrar progreso elegante mientras se envía
                     val progressSnackbar = NotificationHelper.showEmailSendingProgress(
-                        bottomSheetView, 
+                        holder.itemView, 
                         "Enviando notificación a ${user.name}..."
                     )
                     
@@ -693,7 +693,7 @@ class BookAdapter(
                             Log.d("EmailService", "✅ SendGrid: Correos enviados exitosamente")
                             // 🎨 Mostrar éxito con estilo profesional
                             NotificationHelper.showEmailSuccess(
-                                bottomSheetView,
+                                holder.itemView,
                                 user.name,
                                 user.email,
                                 book.title,
@@ -703,7 +703,7 @@ class BookAdapter(
                             Log.e("EmailService", "❌ SendGrid Error: ${result.exceptionOrNull()?.message}")
                             // 🎨 Mostrar error con opciones de reintentar
                             NotificationHelper.showEmailError(
-                                bottomSheetView,
+                                holder.itemView,
                                 result.exceptionOrNull()?.message ?: "Error desconocido"
                             )
                         }
