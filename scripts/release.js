@@ -120,7 +120,8 @@ async function createGitHubRelease(versionName, versionCode, releaseNotes) {
       name: releaseName,
       body: autoReleaseNotes,
       draft: false,
-      prerelease: false
+      prerelease: false,
+      generate_release_notes: false
     };
 
     const releaseUrl = await createGitHubReleaseAPI(githubToken, releaseData);
@@ -202,7 +203,8 @@ function createGitHubReleaseAPI(token, releaseData) {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Accept': 'application/vnd.github.v3+json',
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
         'User-Agent': 'LibraryInventoryApp-Release-Bot',
         'Content-Type': 'application/json',
         'Content-Length': postData.length
@@ -258,7 +260,8 @@ async function uploadAPKToRelease(token, releaseUrl, apkPath, versionName) {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Accept': 'application/vnd.github.v3+json',
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
           'Content-Type': 'application/vnd.android.package-archive',
           'Content-Length': apkData.length,
           'User-Agent': 'LibraryInventoryApp-Release-Bot'
@@ -306,7 +309,8 @@ async function getReleaseId(token, releaseUrl) {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Accept': 'application/vnd.github.v3+json',
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
         'User-Agent': 'LibraryInventoryApp-Release-Bot'
       }
     };
