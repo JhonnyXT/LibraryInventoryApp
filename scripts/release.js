@@ -116,7 +116,7 @@ async function createGitHubRelease(versionName, versionCode, releaseNotes) {
     // 2. Subir APK como asset
     if (fs.existsSync(APK_PATH)) {
       console.log('📤 Subiendo APK...');
-      await uploadAPKToRelease(githubToken, releaseUrl, APK_PATH);
+      await uploadAPKToRelease(githubToken, releaseUrl, APK_PATH, versionName);
       console.log('✅ APK subido exitosamente');
     } else {
       console.log('⚠️ APK no encontrado, saltando subida');
@@ -200,11 +200,103 @@ function createGitHubReleaseAPI(token, releaseData) {
 }
 
 // Subir APK como asset al release
-function uploadAPKToRelease(token, releaseUrl, apkPath) {
+async function uploadAPKToRelease(token, releaseUrl, apkPath, versionName) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // 1. Obtener release ID desde la URL
+      const releaseId = await getReleaseId(token, releaseUrl);
+      
+      // 2. Leer el archivo APK
+      if (!fs.existsSync(apkPath)) {
+        throw new Error(`APK no encontrado en: ${apkPath}`);
+      }
+      
+      const apkData = fs.readFileSync(apkPath);
+      const apkStats = fs.statSync(apkPath);
+      const fileName = `LibraryInventoryApp-v${versionName}.apk`;
+      
+      console.log(`📤 Subiendo ${fileName} (${(apkStats.size / 1024 / 1024).toFixed(2)} MB)...`);
+      
+      // 3. Subir usando GitHub Upload API
+      const uploadOptions = {
+        hostname: 'uploads.github.com',
+        path: `/repos/${GITHUB_REPO}/releases/${releaseId}/assets?name=${fileName}`,
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/vnd.android.package-archive',
+          'Content-Length': apkData.length,
+          'User-Agent': 'LibraryInventoryApp-Release-Bot'
+        }
+      };
+
+      const req = https.request(uploadOptions, (res) => {
+        let responseBody = '';
+        res.on('data', (chunk) => {
+          responseBody += chunk;
+        });
+        res.on('end', () => {
+          if (res.statusCode === 201) {
+            const response = JSON.parse(responseBody);
+            console.log(`✅ APK subido exitosamente: ${response.browser_download_url}`);
+            resolve(response.browser_download_url);
+          } else {
+            reject(new Error(`GitHub Upload Error ${res.statusCode}: ${responseBody}`));
+          }
+        });
+      });
+
+      req.on('error', (error) => {
+        reject(error);
+      });
+
+      req.write(apkData);
+      req.end();
+      
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+// Obtener Release ID desde GitHub API
+async function getReleaseId(token, releaseUrl) {
   return new Promise((resolve, reject) => {
-    // Esta función sería más compleja, por ahora la dejamos como placeholder
-    console.log('📋 Upload APK implementación pendiente');
-    resolve();
+    // Extraer tag desde la URL: https://github.com/user/repo/releases/tag/v1.0.17
+    const tagName = releaseUrl.split('/').pop(); // v1.0.17
+    
+    const options = {
+      hostname: 'api.github.com',
+      path: `/repos/${GITHUB_REPO}/releases/tags/${tagName}`,
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'LibraryInventoryApp-Release-Bot'
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let responseBody = '';
+      res.on('data', (chunk) => {
+        responseBody += chunk;
+      });
+      res.on('end', () => {
+        if (res.statusCode === 200) {
+          const response = JSON.parse(responseBody);
+          resolve(response.id);
+        } else {
+          reject(new Error(`GitHub API Error ${res.statusCode}: ${responseBody}`));
+        }
+      });
+    });
+
+    req.on('error', (error) => {
+      reject(error);
+    });
+
+    req.end();
   });
 }
 
