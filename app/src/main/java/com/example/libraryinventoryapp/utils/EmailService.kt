@@ -1,6 +1,7 @@
 package com.example.libraryinventoryapp.utils
 
 import android.util.Log
+import com.example.libraryinventoryapp.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -13,10 +14,10 @@ import java.util.concurrent.TimeUnit
 
 class EmailService {
     companion object {
-        // Brevo Configuration - CONFIGURAR CON TUS CREDENCIALES REALES
-        private const val BREVO_API_KEY = "CONFIGURAR_TU_CLAVE_AQUI" // Tu clave de Brevo (formato: xkeysib-xxxxx)
+        // Brevo Configuration - Cargada desde local.properties via BuildConfig
+        private val BREVO_API_KEY = BuildConfig.BREVO_API_KEY
         private const val BREVO_URL = "https://api.brevo.com/v3/smtp/email"
-        private const val FROM_EMAIL = "hermanosencristobello@gmail.com" // Email verificado en Brevo
+        private val FROM_EMAIL = BuildConfig.BREVO_FROM_EMAIL
         private const val FROM_NAME = "Iglesia hermanos en Cristo Bello - Sistema de Biblioteca"
         
         private val client = OkHttpClient.Builder()
@@ -232,7 +233,7 @@ class EmailService {
             1. Crear cuenta en Brevo (https://app.brevo.com)
             2. Obtener API Key (https://app.brevo.com/settings/keys/api)
             3. Verificar dominio de email
-            4. Actualizar BREVO_API_KEY (tu clave real) y FROM_EMAIL
+            4. Actualizar BREVO_API_KEY en local.properties con tu clave real
             5. Cambiar sendBookAssignmentEmailDemo() por sendBookAssignmentEmail()
         """.trimIndent())
     }
@@ -462,7 +463,7 @@ class EmailService {
             ===========================
 
             🚀 Para activar correos REALES de recordatorio:
-            1. Implementar sendBookExpirationReminderEmail() con Brevo
+            1. Configurar BREVO_API_KEY en local.properties con tu clave real
             2. Cambiar sendBookExpirationReminderEmailDemo() por sendBookExpirationReminderEmail()
         """.trimIndent())
     }

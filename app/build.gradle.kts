@@ -5,6 +5,13 @@ plugins {
     kotlin("kapt")
 }
 
+// Leer propiedades del archivo local.properties
+val localProperties = java.util.Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(java.io.FileInputStream(localPropertiesFile))
+}
+
 android {
     namespace = "com.example.libraryinventoryapp"
     compileSdk = 34
@@ -17,6 +24,14 @@ android {
         versionName = "1.0.12"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Configuración de Brevo desde local.properties
+        buildConfigField("String", "BREVO_API_KEY", "\"${localProperties.getProperty("BREVO_API_KEY", "TU_API_KEY_DE_BREVO_AQUI")}\"")
+        buildConfigField("String", "BREVO_FROM_EMAIL", "\"${localProperties.getProperty("BREVO_FROM_EMAIL", "hermanosencristobello@gmail.com")}\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     signingConfigs {
