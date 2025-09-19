@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,10 +9,10 @@ plugins {
 }
 
 // Leer propiedades del archivo local.properties
-val localProperties = java.util.Properties()
+val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
-    localProperties.load(java.io.FileInputStream(localPropertiesFile))
+    localProperties.load(FileInputStream(localPropertiesFile))
 }
 
 android {
@@ -20,8 +23,8 @@ android {
         applicationId = "com.example.libraryinventoryapp"
         minSdk = 26  // Android 8.0+ (Cambiado desde Android 7.0)
         targetSdk = 34  // Android 14 (última versión)
-        versionCode = 9
-        versionName = "1.0.12"
+        versionCode = 10
+        versionName = "1.0.13"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
