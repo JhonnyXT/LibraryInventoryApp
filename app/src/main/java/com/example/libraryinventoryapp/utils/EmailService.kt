@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 class EmailService {
     companion object {
         // Brevo Configuration - CONFIGURAR CON TUS CREDENCIALES REALES
-        private const val BREVO_API_KEY = "TU_API_KEY_DE_BREVO_AQUI" // Tu API Key de Brevo (xkeysib-xxxxx)
+        private const val BREVO_API_KEY = "CONFIGURAR_TU_CLAVE_AQUI" // Tu clave de Brevo (formato: xkeysib-xxxxx)
         private const val BREVO_URL = "https://api.brevo.com/v3/smtp/email"
         private const val FROM_EMAIL = "hermanosencristobello@gmail.com" // Email verificado en Brevo
         private const val FROM_NAME = "Iglesia hermanos en Cristo Bello - Sistema de Biblioteca"
@@ -232,7 +232,7 @@ class EmailService {
             1. Crear cuenta en Brevo (https://app.brevo.com)
             2. Obtener API Key (https://app.brevo.com/settings/keys/api)
             3. Verificar dominio de email
-            4. Actualizar BREVO_API_KEY y FROM_EMAIL
+            4. Actualizar BREVO_API_KEY (tu clave real) y FROM_EMAIL
             5. Cambiar sendBookAssignmentEmailDemo() por sendBookAssignmentEmail()
         """.trimIndent())
     }
