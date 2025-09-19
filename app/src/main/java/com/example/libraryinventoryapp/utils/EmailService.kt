@@ -66,7 +66,7 @@ class EmailService {
         bookAuthor: String,
         adminName: String
     ): Result<String> {
-        val subject = "📚 Te han asignado un libro: $bookTitle"
+        val subject = "Te han asignado un libro: $bookTitle"
         val content = """
             <!DOCTYPE html>
             <html lang="es">
@@ -100,9 +100,6 @@ class EmailService {
                     <!-- Card del Libro - Diseño Material -->
                     <div class="book-card" style="background-color: #f7fafc; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin: 25px 0;">
                         <div style="text-align: center; margin-bottom: 20px;">
-                            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #4CAF50, #66BB6A); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px;">
-                                <span style="color: white; font-size: 28px;">📖</span>
-                            </div>
                             <h3 style="margin: 0; color: #2d3748; font-size: 20px; font-weight: 600;">$bookTitle</h3>
                             <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Información del libro</p>
                         </div>
@@ -133,9 +130,6 @@ class EmailService {
                 
                     <!-- Footer Profesional -->
                     <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e2e8f0; text-align: center;">
-                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #4CAF50, #66BB6A); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 0 auto 15px auto;">
-                            <span style="color: white; font-size: 24px;">📚</span>
-                        </div>
                         <p style="margin: 0 0 5px 0; color: #2d3748; font-weight: 600; font-size: 16px;">Iglesia Hermanos en Cristo Bello</p>
                         <p style="margin: 0 0 15px 0; color: #718096; font-size: 14px;">Sistema de Biblioteca Digital</p>
                         
@@ -211,9 +205,6 @@ class EmailService {
                     
                     <!-- Footer -->
                     <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e2e8f0; text-align: center;">
-                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #2196F3, #42A5F5); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 0 auto 15px auto;">
-                            <span style="color: white; font-size: 24px;">✅</span>
-                        </div>
                         <p style="margin: 0 0 5px 0; color: #2d3748; font-weight: 600; font-size: 16px;">Iglesia Hermanos en Cristo Bello</p>
                         <p style="margin: 0 0 15px 0; color: #718096; font-size: 14px;">Sistema de Biblioteca Digital</p>
                         
@@ -300,7 +291,7 @@ class EmailService {
             
             === EMAIL AL USUARIO ===
             Para: $userEmail
-            Asunto: 📚 Te han asignado un libro: $bookTitle
+            Asunto: Te han asignado un libro: $bookTitle
             
             Hola $userName,
             
