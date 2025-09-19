@@ -8,15 +8,39 @@
  * Ejemplo: node notify_new_version.js "1.0.4" "https://github.com/tu-usuario/LibraryInventoryApp/releases/tag/v1.0.4"
  */
 
-// Cargar variables de entorno desde archivo .env
-require('dotenv').config();
+// Leer configuración desde local.properties (consistente con Android)
+const fs = require('fs');
+const path = require('path');
 
 const admin = require('firebase-admin');
 const https = require('https');
 
-// Configuración - Variables de entorno requeridas
-const BREVO_API_KEY = process.env.BREVO_API_KEY || 'TU_BREVO_API_KEY_AQUI';
-const FROM_EMAIL = process.env.FROM_EMAIL || 'tu-email@ejemplo.com';
+// Leer local.properties
+function readLocalProperties() {
+  const localPropertiesPath = path.join(__dirname, 'local.properties');
+  const properties = {};
+  
+  if (fs.existsSync(localPropertiesPath)) {
+    const content = fs.readFileSync(localPropertiesPath, 'utf8');
+    content.split('\n').forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#')) {
+        const [key, ...valueParts] = trimmed.split('=');
+        if (key && valueParts.length > 0) {
+          properties[key.trim()] = valueParts.join('=').trim();
+        }
+      }
+    });
+  }
+  
+  return properties;
+}
+
+const localProps = readLocalProperties();
+
+// Configuración - Leer desde local.properties
+const BREVO_API_KEY = localProps.BREVO_API_KEY || 'TU_BREVO_API_KEY_AQUI';
+const FROM_EMAIL = localProps.BREVO_FROM_EMAIL || 'tu-email@ejemplo.com';
 const BREVO_URL = 'https://api.brevo.com/v3/smtp/email';
 
 // Inicializar Firebase Admin

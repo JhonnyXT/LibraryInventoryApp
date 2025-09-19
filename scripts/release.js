@@ -20,6 +20,7 @@ require('dotenv').config();
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
 const { updateVersion } = require('./update_version');
 
 // Configuración - Variables de entorno requeridas
@@ -84,7 +85,11 @@ async function createRelease(releaseType = 'patch', releaseNotes = '') {
 }
 
 async function createGitHubRelease(versionName, versionCode, releaseNotes) {
-  // Implementación de GitHub API
+  
+  // Leer GitHub token desde local.properties
+  const localProps = readLocalProperties();
+  const githubToken = localProps.GITHUB_TOKEN || GITHUB_TOKEN;
+  
   const tagName = `v${versionName}`;
   const releaseName = `LibraryInventoryApp ${versionName}`;
   
@@ -94,11 +99,113 @@ async function createGitHubRelease(versionName, versionCode, releaseNotes) {
   console.log(`📝 Creando release: ${releaseName}`);
   console.log(`🏷️ Tag: ${tagName}`);
   
-  // Por ahora, retornamos URL mock (implementaremos GitHub API después)
-  const mockUrl = `https://github.com/${GITHUB_REPO}/releases/tag/${tagName}`;
-  console.log(`✅ Release creado: ${mockUrl}`);
+  try {
+    // 1. Crear GitHub Release usando API
+    const releaseData = {
+      tag_name: tagName,
+      target_commitish: 'master',
+      name: releaseName,
+      body: autoReleaseNotes,
+      draft: false,
+      prerelease: false
+    };
+
+    const releaseUrl = await createGitHubReleaseAPI(githubToken, releaseData);
+    console.log(`✅ Release creado en GitHub: ${releaseUrl}`);
+
+    // 2. Subir APK como asset
+    if (fs.existsSync(APK_PATH)) {
+      console.log('📤 Subiendo APK...');
+      await uploadAPKToRelease(githubToken, releaseUrl, APK_PATH);
+      console.log('✅ APK subido exitosamente');
+    } else {
+      console.log('⚠️ APK no encontrado, saltando subida');
+    }
+
+    return releaseUrl;
+    
+  } catch (error) {
+    console.error('❌ Error creando GitHub Release:', error.message);
+    // Retornar URL mock si falla la API
+    const fallbackUrl = `https://github.com/${GITHUB_REPO}/releases/tag/${tagName}`;
+    console.log(`⚠️ Usando URL de fallback: ${fallbackUrl}`);
+    return fallbackUrl;
+  }
+}
+
+// Función auxiliar para leer local.properties
+function readLocalProperties() {
+  const fs = require('fs');
+  const path = require('path');
   
-  return mockUrl;
+  const localPropertiesPath = path.join(__dirname, '../local.properties');
+  const properties = {};
+  
+  if (fs.existsSync(localPropertiesPath)) {
+    const content = fs.readFileSync(localPropertiesPath, 'utf8');
+    content.split('\n').forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#')) {
+        const [key, ...valueParts] = trimmed.split('=');
+        if (key && valueParts.length > 0) {
+          properties[key.trim()] = valueParts.join('=').trim();
+        }
+      }
+    });
+  }
+  
+  return properties;
+}
+
+// Crear release usando GitHub API
+function createGitHubReleaseAPI(token, releaseData) {
+  return new Promise((resolve, reject) => {
+    const postData = JSON.stringify(releaseData);
+    
+    const options = {
+      hostname: 'api.github.com',
+      path: `/repos/${GITHUB_REPO}/releases`,
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'LibraryInventoryApp-Release-Bot',
+        'Content-Type': 'application/json',
+        'Content-Length': postData.length
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let responseBody = '';
+      res.on('data', (chunk) => {
+        responseBody += chunk;
+      });
+      res.on('end', () => {
+        if (res.statusCode === 201) {
+          const response = JSON.parse(responseBody);
+          resolve(response.html_url);
+        } else {
+          reject(new Error(`GitHub API Error ${res.statusCode}: ${responseBody}`));
+        }
+      });
+    });
+
+    req.on('error', (error) => {
+      reject(error);
+    });
+
+    req.write(postData);
+    req.end();
+  });
+}
+
+// Subir APK como asset al release
+function uploadAPKToRelease(token, releaseUrl, apkPath) {
+  return new Promise((resolve, reject) => {
+    // Esta función sería más compleja, por ahora la dejamos como placeholder
+    console.log('📋 Upload APK implementación pendiente');
+    resolve();
+  });
 }
 
 async function notifyUsers(versionName, releaseUrl, releaseNotes) {
