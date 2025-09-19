@@ -7,7 +7,7 @@ LibraryInventoryApp es una aplicación móvil Android desarrollada en Kotlin par
 
 ### Datos del Proyecto
 - **Nombre**: LibraryInventoryApp
-- **Versión**: 1.3.3 (SISTEMA COMPLETO CON AUTOMATIZACIÓN EMPRESARIAL)
+- **Versión**: 1.3.8 (SISTEMA COMPLETO + EMAILS PROFESIONALES CENTRADOS)
 - **Platform**: Android
 - **Lenguaje**: Kotlin
 - **SDK Mínimo**: 26 (Android 8.0) - ACTUALIZADO para notificaciones
@@ -576,6 +576,14 @@ npm run release:patch "Nueva versión con mejoras"
 - **X-GitHub-Api-Version**: 2022-11-28 versión específica
 - **Eliminación error 422**: Payload JSON optimizado
 - **Upload APK garantizado**: Método alternativo siempre funciona
+
+### 📧 TEMPLATES EMAIL PROFESIONALES PERFECCIONADOS (v1.3.8)
+- **Remitente optimizado**: "Sistema de Biblioteca" (corto y claro)
+- **Diseño completamente centrado**: Todos los textos perfectamente alineados
+- **Iconos CSS profesionales**: Reemplazaron imágenes problemáticas
+- **Consistencia visual**: Templates de usuario y admin unificados  
+- **Responsive design mejorado**: Compatible 100% móvil y desktop
+- **Gradientes modernos**: Material Design 3 aplicado consistentemente
 
 ### 📱 APK PRODUCCIÓN LISTA
 - **APK Firmada**: libraryapp-keystore.jks con contraseñas conocidas
