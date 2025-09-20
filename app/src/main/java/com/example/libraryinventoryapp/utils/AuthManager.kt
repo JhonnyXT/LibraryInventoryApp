@@ -70,7 +70,7 @@ class AuthManager private constructor() {
                 
                 // 4. Mostrar mensaje de éxito
                 if (showSuccessMessage) {
-                    DialogHelper.showLogoutSuccess(
+                    NotificationHelper.showLogoutSuccess(
                         context = context,
                         canChooseAccount = success
                     )
@@ -87,7 +87,7 @@ class AuthManager private constructor() {
                 // Fallback: logout básico
                 try {
                     FirebaseAuth.getInstance().signOut()
-                    DialogHelper.showWarning(
+                    NotificationHelper.showWarning(
                         context = context,
                         title = "Logout Parcial",
                         message = "Se cerró la sesión de Firebase, pero hubo un problema con Google Sign-In.\n\nTu sesión ha sido cerrada correctamente."
@@ -95,7 +95,7 @@ class AuthManager private constructor() {
                     navigateToLogin(activity)
                 } catch (fallbackError: Exception) {
                     Log.e(TAG, "❌ Error crítico en logout: ${fallbackError.message}")
-                    DialogHelper.showError(
+                    NotificationHelper.showError(
                         context = context,
                         title = "Error Crítico",
                         message = "Ocurrió un error crítico al cerrar sesión.\n\nReinicia la aplicación si es necesario."
@@ -131,7 +131,7 @@ class AuthManager private constructor() {
                 
                 // 4. Mostrar mensaje de éxito
                 if (showSuccessMessage) {
-                    DialogHelper.showLogoutSuccess(
+                    NotificationHelper.showLogoutSuccess(
                         context = activity,
                         canChooseAccount = success
                     )
@@ -148,7 +148,7 @@ class AuthManager private constructor() {
                 // Fallback: logout básico
                 try {
                     FirebaseAuth.getInstance().signOut()
-                    DialogHelper.showWarning(
+                    NotificationHelper.showWarning(
                         context = activity,
                         title = "Logout Parcial",
                         message = "Se cerró la sesión de Firebase, pero hubo un problema con Google Sign-In.\n\nTu sesión ha sido cerrada correctamente."
@@ -156,7 +156,7 @@ class AuthManager private constructor() {
                     navigateToLogin(activity)
                 } catch (fallbackError: Exception) {
                     Log.e(TAG, "❌ Error crítico en logout: ${fallbackError.message}")
-                    DialogHelper.showError(
+                    NotificationHelper.showError(
                         context = activity,
                         title = "Error Crítico",
                         message = "Ocurrió un error crítico al cerrar sesión.\n\nReinicia la aplicación si es necesario."

@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.libraryinventoryapp.utils.PermissionHelper
-import com.example.libraryinventoryapp.utils.DialogHelper
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -57,7 +57,7 @@ class LoginActivity : AppCompatActivity() {
                 8 -> "Error interno - Verifica configuración Firebase"
                 else -> "Error Google Sign-In: Código $errorCode - ${e.message}"
             }
-            DialogHelper.showError(
+            NotificationHelper.showError(
                 context = this,
                 title = "Error de Autenticación",
                 message = errorMessage
@@ -121,7 +121,7 @@ class LoginActivity : AppCompatActivity() {
 
             // Validar el campo de email
             if (email.isEmpty()) {
-                DialogHelper.showValidationError(
+                NotificationHelper.showValidationError(
                     context = this,
                     field = "Email",
                     requirement = "Por favor ingresa tu correo electrónico."
@@ -130,7 +130,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                DialogHelper.showValidationError(
+                NotificationHelper.showValidationError(
                     context = this,
                     field = "Email",
                     requirement = "Por favor ingresa un email válido con formato correcto (ejemplo@dominio.com)."
@@ -140,7 +140,7 @@ class LoginActivity : AppCompatActivity() {
 
             // Validar el campo de contraseña
             if (password.isEmpty()) {
-                DialogHelper.showValidationError(
+                NotificationHelper.showValidationError(
                     context = this,
                     field = "Contraseña",
                     requirement = "Por favor ingresa tu contraseña."
@@ -149,7 +149,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             if (password.length < 6) {
-                DialogHelper.showValidationError(
+                NotificationHelper.showValidationError(
                     context = this,
                     field = "Contraseña",
                     requirement = "La contraseña debe tener al menos 6 caracteres para mayor seguridad."
@@ -180,7 +180,7 @@ class LoginActivity : AppCompatActivity() {
                             else ->
                                 task.exception?.localizedMessage ?: "Error de autenticación. Inténtalo de nuevo."
                         }
-                        DialogHelper.showError(
+                        NotificationHelper.showError(
                 context = this,
                 title = "Error de Autenticación",
                 message = errorMessage
@@ -194,7 +194,7 @@ class LoginActivity : AppCompatActivity() {
         if (user == null) {
             // Handle user not logged in
             findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.GONE
-            DialogHelper.showError(
+            NotificationHelper.showError(
                 context = this,
                 title = "Error de Autenticación",
                 message = "No se pudo autenticar al usuario.\n\nIntenta iniciar sesión de nuevo."
@@ -223,7 +223,7 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 // Handle the case where the document does not exist
                 findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.GONE
-                DialogHelper.showError(
+                NotificationHelper.showError(
                 context = this,
                 title = "Error de Usuario",
                 message = "No se encontraron datos del usuario.\n\nContacta al administrador."
@@ -232,7 +232,7 @@ class LoginActivity : AppCompatActivity() {
         }.addOnFailureListener { exception ->
             // Handle errors
             findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.GONE
-            DialogHelper.showError(
+            NotificationHelper.showError(
                 context = this,
                 title = "Error de Conexión",
                 message = "No se pudieron obtener los datos del usuario:\n\n${exception.message}"
@@ -311,7 +311,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 } else {
                     findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.GONE
-                    DialogHelper.showError(
+                    NotificationHelper.showError(
                     context = this,
                     title = "Error Google Sign-In",
                     message = "No se pudo autenticar con Google:\n\n${task.exception?.message}"
@@ -340,7 +340,7 @@ class LoginActivity : AppCompatActivity() {
                         createNewGoogleUser(user)
                     }
                 } else {
-                    DialogHelper.showError(
+                    NotificationHelper.showError(
                     context = this,
                     title = "Error de Verificación",
                     message = "No se pudo verificar el usuario:\n\n${task.exception?.message}"
@@ -367,13 +367,13 @@ class LoginActivity : AppCompatActivity() {
                 findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.GONE
                 
                 if (task.isSuccessful) {
-                    DialogHelper.showAccountCreated(
+                    NotificationHelper.showAccountCreated(
                     context = this,
                     userName = user.displayName ?: "Usuario"
                 )
                     navigateBasedOnRole("usuario")
                 } else {
-                    DialogHelper.showError(
+                    NotificationHelper.showError(
                     context = this,
                     title = "Error al Crear Usuario",
                     message = "No se pudo crear el usuario en el sistema:\n\n${task.exception?.message}"
@@ -393,7 +393,7 @@ class LoginActivity : AppCompatActivity() {
                 startActivity(intent)
             }
             else -> {
-                DialogHelper.showError(
+                NotificationHelper.showError(
                 context = this,
                 title = "Error de Rol",
                 message = "El rol del usuario no es reconocido por el sistema.\n\nContacta al administrador."

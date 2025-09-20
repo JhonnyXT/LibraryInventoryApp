@@ -25,7 +25,6 @@ import com.example.libraryinventoryapp.utils.EmailService
 import com.example.libraryinventoryapp.utils.LibraryNotificationManager
 import com.example.libraryinventoryapp.utils.NotificationHelper
 import com.example.libraryinventoryapp.utils.WishlistAvailabilityService
-import com.example.libraryinventoryapp.utils.DialogHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -275,10 +274,11 @@ class BookAdapter(
         firestore.collection("books").document(book.id).update(updates)
             .addOnSuccessListener {
                 showProgressBar(holder, false)
-                DialogHelper.showBookUnassigned(
+                NotificationHelper.showBookUnassigned(
                     context = context,
                     bookTitle = book.title,
-                    userName = userName
+                    userName = userName,
+                    view = holder.itemView
                 )
 
                 // Actualizar la lista local
@@ -295,7 +295,7 @@ class BookAdapter(
             }
             .addOnFailureListener { e ->
                 showProgressBar(holder, false)
-                DialogHelper.showError(
+                NotificationHelper.showError(
                     context = context,
                     title = "Error al Desasignar",
                     message = "No se pudo desasignar el libro \"${book.title}\":\n\n${e.message}"
@@ -310,10 +310,11 @@ class BookAdapter(
         context: Context
     ) {
         if (userName.isBlank()) {
-            DialogHelper.showValidationError(
+            NotificationHelper.showValidationError(
                 context = context,
                 field = "Usuario",
-                requirement = "Por favor, selecciona un usuario para asignar el libro."
+                requirement = "Por favor, selecciona un usuario para asignar el libro.",
+                view = holder.itemView
             )
             return
         }
@@ -358,7 +359,7 @@ class BookAdapter(
             assignUserToBookWithExpiration(book, userName, expirationTimestamp, holder, context)
             
             val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-            DialogHelper.showBookAssigned(
+            NotificationHelper.showBookAssigned(
                 context = context,
                 bookTitle = book.title,
                 userName = userName,
@@ -406,14 +407,14 @@ class BookAdapter(
                     storageRef.delete()
                         .addOnSuccessListener {
                             showProgressBar(holder, false)
-                            DialogHelper.showBookDeleted(
+                            NotificationHelper.showBookDeleted(
                                 context = context,
                                 bookTitle = book.title
                             )
                         }
                         .addOnFailureListener { e ->
                             showProgressBar(holder, false)
-                            DialogHelper.showError(
+                            NotificationHelper.showError(
                                 context = context,
                                 title = "Error al Eliminar Imagen",
                                 message = "El libro fue eliminado pero hubo un problema al eliminar la imagen:\n\n$e"
@@ -426,7 +427,7 @@ class BookAdapter(
             }
             .addOnFailureListener { e ->
                 showProgressBar(holder, false)
-                DialogHelper.showError(
+                NotificationHelper.showError(
                     context = context,
                     title = "Error al Eliminar",
                     message = "No se pudo eliminar el libro \"${book.title}\":\n\n$e"
@@ -446,10 +447,11 @@ class BookAdapter(
         // Validar que el nombre del usuario no esté en blanco
         if (userName.isBlank()) {
             showProgressBar(holder, false)
-            DialogHelper.showValidationError(
+            NotificationHelper.showValidationError(
                 context = context,
                 field = "Usuario",
-                requirement = "Por favor, selecciona un usuario para asignar el libro."
+                requirement = "Por favor, selecciona un usuario para asignar el libro.",
+                view = holder.itemView
             )
             return
         }
@@ -458,7 +460,7 @@ class BookAdapter(
         val user = userList.find { it.name.equals(userName, ignoreCase = true) }
         if (user == null) {
             showProgressBar(holder, false)
-            DialogHelper.showError(
+            NotificationHelper.showError(
                 context = context,
                 title = "Usuario No Encontrado",
                 message = "No se encontró un usuario con ese nombre.\n\nVerifica que el nombre esté correcto e intenta de nuevo."
@@ -470,7 +472,7 @@ class BookAdapter(
         if (book.assignedTo?.contains(user.uid) == true) {
             showProgressBar(holder, false)
             holder.bookUserSearch.setText("")
-            DialogHelper.showWarning(
+            NotificationHelper.showWarning(
                 context = context,
                 title = "Libro Ya Asignado",
                 message = "Este usuario ya tiene asignado este libro.\n\nNo se puede asignar el mismo libro dos veces al mismo usuario."
@@ -481,7 +483,7 @@ class BookAdapter(
         // Verificar si hay cantidad suficiente para asignar
         if (book.quantity <= 0) {
             showProgressBar(holder, false)
-            DialogHelper.showWarning(
+            NotificationHelper.showWarning(
                 context = context,
                 title = "Sin Copias Disponibles",
                 message = "Ya no quedan copias disponibles de este libro para asignar.\n\nEspera a que algún usuario devuelva su copia."
@@ -525,7 +527,7 @@ class BookAdapter(
                 holder.bookUserSearch.setText("")
                 
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                DialogHelper.showBookAssigned(
+                NotificationHelper.showBookAssigned(
                     context = context,
                     bookTitle = book.title,
                     userName = user.name,
@@ -587,7 +589,7 @@ class BookAdapter(
             }
             .addOnFailureListener { e ->
                 showProgressBar(holder, false)
-                DialogHelper.showError(
+                NotificationHelper.showError(
                     context = context,
                     title = "Error al Asignar",
                     message = "No se pudo asignar el libro:\n\n$e"
@@ -606,10 +608,11 @@ class BookAdapter(
         // Validar que el nombre del usuario no esté en blanco
         if (userName.isBlank()) {
             showProgressBar(holder, false)
-            DialogHelper.showValidationError(
+            NotificationHelper.showValidationError(
                 context = context,
                 field = "Usuario",
-                requirement = "Por favor, selecciona un usuario para asignar el libro."
+                requirement = "Por favor, selecciona un usuario para asignar el libro.",
+                view = holder.itemView
             )
             return
         }
@@ -618,7 +621,7 @@ class BookAdapter(
         val user = userList.find { it.name.equals(userName, ignoreCase = true) }
         if (user == null) {
             showProgressBar(holder, false)
-            DialogHelper.showError(
+            NotificationHelper.showError(
                 context = context,
                 title = "Usuario No Encontrado",
                 message = "No se encontró un usuario con ese nombre.\n\nVerifica que el nombre esté correcto e intenta de nuevo."
@@ -630,7 +633,7 @@ class BookAdapter(
         if (book.assignedTo?.contains(user.uid) == true) {
             showProgressBar(holder, false)
             holder.bookUserSearch.setText("")
-            DialogHelper.showWarning(
+            NotificationHelper.showWarning(
                 context = context,
                 title = "Libro Ya Asignado",
                 message = "Este usuario ya tiene asignado este libro.\n\nNo se puede asignar el mismo libro dos veces al mismo usuario."
@@ -641,7 +644,7 @@ class BookAdapter(
         // Verificar si hay cantidad suficiente para asignar
         if (book.quantity <= 0) {
             showProgressBar(holder, false)
-            DialogHelper.showWarning(
+            NotificationHelper.showWarning(
                 context = context,
                 title = "Sin Copias Disponibles",
                 message = "Ya no quedan copias disponibles de este libro para asignar.\n\nEspera a que algún usuario devuelva su copia."
@@ -680,7 +683,7 @@ class BookAdapter(
             .addOnSuccessListener {
                 showProgressBar(holder, false)
                 holder.bookUserSearch.setText("")
-                DialogHelper.showBookAssigned(
+                NotificationHelper.showBookAssigned(
                     context = context,
                     bookTitle = book.title,
                     userName = user.name
@@ -703,7 +706,7 @@ class BookAdapter(
             }
             .addOnFailureListener { e ->
                 showProgressBar(holder, false)
-                DialogHelper.showError(
+                NotificationHelper.showError(
                     context = context,
                     title = "Error al Asignar",
                     message = "No se pudo asignar el libro:\n\n$e"
@@ -722,7 +725,7 @@ class BookAdapter(
                 updateBooks(updatedBooks)
             }
             .addOnFailureListener { e ->
-                DialogHelper.showError(
+                NotificationHelper.showError(
                     context = context,
                     title = "Error de Conexión",
                     message = "No se pudo recuperar la lista de libros:\n\n$e"
@@ -734,7 +737,7 @@ class BookAdapter(
         // Obtener información del admin actual
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            DialogHelper.showError(
+            NotificationHelper.showError(
                 context = context,
                 title = "Error de Autenticación",
                 message = "No se pudo identificar al administrador actual.\n\nIntenta cerrar sesión y volver a ingresar."
@@ -805,14 +808,14 @@ class BookAdapter(
                             
                             if (result.isSuccess) {
                                 Log.d("EmailService", "✅ SendGrid: Correos enviados exitosamente")
-                                DialogHelper.showEmailSent(
+                                NotificationHelper.showEmailSent(
                                     context = context,
                                     emailType = "Notificación de asignación",
                                     recipient = user.name
                                 )
                             } else {
                                 Log.e("EmailService", "❌ SendGrid Error: ${result.exceptionOrNull()?.message}")
-                                DialogHelper.showError(
+                                NotificationHelper.showError(
                                     context = context,
                                     title = "Error de Email",
                                     message = "No se pudo enviar la notificación por email:\n\n${result.exceptionOrNull()?.message}"
@@ -825,7 +828,7 @@ class BookAdapter(
                 }
             }
             .addOnFailureListener { e ->
-                DialogHelper.showError(
+                NotificationHelper.showError(
                     context = context,
                     title = "Error de Datos",
                     message = "No se pudieron obtener los datos del administrador:\n\n${e.message}"
