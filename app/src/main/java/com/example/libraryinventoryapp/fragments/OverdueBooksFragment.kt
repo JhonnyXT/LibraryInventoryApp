@@ -15,7 +15,7 @@ import com.example.libraryinventoryapp.R
 import com.example.libraryinventoryapp.adapters.OverdueBooksAdapter
 import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.OverdueBookItem
-import com.example.libraryinventoryapp.utils.EmailService
+import com.example.libraryinventoryapp.utils.EmailServiceBridge
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.card.MaterialCardView
@@ -46,7 +46,7 @@ class OverdueBooksFragment : Fragment() {
     private lateinit var chipGroupFilters: ChipGroup
     private lateinit var textFilterCount: TextView
     
-    private val emailService = EmailService()
+    private val emailService = EmailServiceBridge()
     
     // 📊 Estados para filtrado
     enum class FilterState {

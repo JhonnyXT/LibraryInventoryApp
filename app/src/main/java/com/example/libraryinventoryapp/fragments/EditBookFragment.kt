@@ -29,7 +29,7 @@ import com.example.libraryinventoryapp.R
 import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.User
 import com.example.libraryinventoryapp.utils.LibraryNotificationManager
-import com.example.libraryinventoryapp.utils.EmailService
+import com.example.libraryinventoryapp.utils.EmailServiceBridge
 import com.example.libraryinventoryapp.utils.NotificationHelper
 import com.example.libraryinventoryapp.utils.WishlistAvailabilityService
 import com.google.android.material.button.MaterialButton
@@ -65,7 +65,7 @@ class EditBookFragment : Fragment() {
 
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storage: FirebaseStorage
-    private val emailService = EmailService()
+    private val emailService = EmailServiceBridge()
     private var imageUri: Uri? = null
     private var originalImageUrl: String? = null
     private var editingBook: Book? = null

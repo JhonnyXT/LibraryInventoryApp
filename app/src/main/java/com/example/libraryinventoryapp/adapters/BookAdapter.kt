@@ -21,7 +21,7 @@ import com.bumptech.glide.Glide
 import com.example.libraryinventoryapp.R
 import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.User
-import com.example.libraryinventoryapp.utils.EmailService
+import com.example.libraryinventoryapp.utils.EmailServiceBridge
 import com.example.libraryinventoryapp.utils.LibraryNotificationManager
 import com.example.libraryinventoryapp.utils.NotificationHelper
 import com.example.libraryinventoryapp.utils.WishlistAvailabilityService
@@ -46,7 +46,7 @@ class BookAdapter(
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var storage: FirebaseStorage
-    private val emailService = EmailService()
+    private val emailService = EmailServiceBridge()
 
     inner class BookViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val bookTitle: TextView = view.findViewById(R.id.book_title)
