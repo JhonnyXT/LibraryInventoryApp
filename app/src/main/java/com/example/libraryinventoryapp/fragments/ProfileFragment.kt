@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.libraryinventoryapp.LoginActivity
 import com.example.libraryinventoryapp.R
+import com.example.libraryinventoryapp.utils.AuthManager
 import com.google.firebase.auth.FirebaseAuth
 
 class ProfileFragment : Fragment() {
@@ -37,42 +38,8 @@ class ProfileFragment : Fragment() {
     }
 
     private fun logoutUser() {
-        try {
-            // Cerrar sesión de Firebase
-            auth.signOut()
-            
-            // Mostrar feedback al usuario
-            Toast.makeText(context, "Sesión cerrada correctamente", Toast.LENGTH_SHORT).show()
-            
-            // Crear intent para ir a LoginActivity
-            val intent = Intent(context, LoginActivity::class.java).apply {
-                // Limpiar el stack de actividades y crear una nueva tarea
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                // Asegurar que no se pueda volver atrás
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            }
-            
-            // Iniciar LoginActivity
-            startActivity(intent)
-            
-            // Cerrar la actividad actual de forma segura
-            activity?.let { activity ->
-                activity.finishAffinity() // Cierra todas las actividades del stack
-            }
-            
-        } catch (e: Exception) {
-            // Manejo de errores en caso de que algo falle
-            Toast.makeText(context, "Error al cerrar sesión: ${e.message}", Toast.LENGTH_SHORT).show()
-            
-            // Fallback: intentar logout básico
-            try {
-                val intent = Intent(context, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                activity?.finish()
-            } catch (fallbackError: Exception) {
-                Toast.makeText(context, "Error crítico en logout", Toast.LENGTH_LONG).show()
-            }
-        }
+        // 🔐 Usar AuthManager para logout completo (Firebase + Google Sign-In)
+        val authManager = AuthManager.getInstance()
+        authManager.performCompleteLogout(this, showSuccessMessage = true)
     }
 }

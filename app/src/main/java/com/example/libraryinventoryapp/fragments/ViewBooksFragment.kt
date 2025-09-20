@@ -28,6 +28,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
+import com.example.libraryinventoryapp.utils.AuthManager
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 import java.util.*
@@ -740,20 +741,9 @@ class ViewBooksFragment : Fragment() {
      * 🚪 Realizar logout
      */
     private fun performLogout() {
-        try {
-            // Cerrar sesión en Firebase
-            FirebaseAuth.getInstance().signOut()
-            
-            // Redirigir al login
-            val intent = Intent(requireContext(), LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            activity?.finish()
-            
-        } catch (e: Exception) {
-            Log.e("ViewBooksFragment", "Error al cerrar sesión: ${e.message}", e)
-            Toast.makeText(requireContext(), "Error al cerrar sesión", Toast.LENGTH_SHORT).show()
-        }
+        // 🔐 Usar AuthManager para logout completo (Firebase + Google Sign-In)
+        val authManager = AuthManager.getInstance()
+        authManager.performCompleteLogout(this, showSuccessMessage = true)
     }
 
     private fun normalizeText(text: String): String {

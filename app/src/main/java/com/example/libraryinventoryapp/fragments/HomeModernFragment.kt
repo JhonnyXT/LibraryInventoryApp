@@ -27,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import android.view.MenuItem
 import android.widget.PopupMenu
 import com.example.libraryinventoryapp.LoginActivity
+import com.example.libraryinventoryapp.utils.AuthManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -418,20 +419,9 @@ class HomeModernFragment : Fragment() {
      * 🚪 Realizar logout
      */
     private fun performLogout() {
-        try {
-            // Cerrar sesión en Firebase
-            FirebaseAuth.getInstance().signOut()
-            
-            // Redirigir al login
-            val intent = Intent(requireContext(), LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            activity?.finish()
-            
-        } catch (e: Exception) {
-            Log.e(TAG, "Error al cerrar sesión: ${e.message}", e)
-            Toast.makeText(requireContext(), "Error al cerrar sesión", Toast.LENGTH_SHORT).show()
-        }
+        // 🔐 Usar AuthManager para logout completo (Firebase + Google Sign-In)
+        val authManager = AuthManager.getInstance()
+        authManager.performCompleteLogout(this, showSuccessMessage = true)
     }
 
     /**
@@ -752,10 +742,9 @@ class HomeModernFragment : Fragment() {
      * 🚪 Cerrar sesión
      */
     private fun logout() {
-        auth.signOut()
-        val intent = Intent(requireContext(), com.example.libraryinventoryapp.LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
+        // 🔐 Usar AuthManager para logout completo (Firebase + Google Sign-In)
+        val authManager = AuthManager.getInstance()
+        authManager.performCompleteLogout(this, showSuccessMessage = true)
     }
 
     /**
