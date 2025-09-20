@@ -12,7 +12,7 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
@@ -562,7 +562,12 @@ class BookDetailModernFragment : Fragment() {
             .addOnSuccessListener {
                 isFavorite = true
                 updateFavoriteButtons()
-                Toast.makeText(requireContext(), "Añadido a favoritos ⭐", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showSuccess(
+                    context = requireContext(),
+                    title = "Añadido a Favoritos",
+                    message = "⭐ El libro ha sido agregado a tu lista de deseos.",
+                    view = view
+                )
                 Log.d(TAG, "✅ Libro añadido a wishlist: ${currentBook!!.title}")
             }
             .addOnFailureListener { e ->
@@ -585,7 +590,12 @@ class BookDetailModernFragment : Fragment() {
                 }
                 isFavorite = false
                 updateFavoriteButtons()
-                Toast.makeText(requireContext(), "Removido de favoritos", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showSuccess(
+                    context = requireContext(),
+                    title = "Removido de Favoritos",
+                    message = "El libro ha sido eliminado de tu lista de deseos.",
+                    view = view
+                )
                 Log.d(TAG, "✅ Libro removido de wishlist: ${currentBook!!.title}")
             }
             .addOnFailureListener { e ->
@@ -621,7 +631,12 @@ class BookDetailModernFragment : Fragment() {
      * ❌ Mostrar error
      */
     private fun showError(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+        NotificationHelper.showError(
+            context = requireContext(),
+            title = "Error",
+            message = message,
+            view = view
+        )
     }
     
     // ═══════════════════════════════════════════════════════════
@@ -723,7 +738,12 @@ class BookDetailModernFragment : Fragment() {
                         btnSendComment.isEnabled = true
                         btnSendComment.text = "Enviar comentario"
                         
-                        Toast.makeText(requireContext(), "✅ Comentario enviado", Toast.LENGTH_SHORT).show()
+                        NotificationHelper.showSuccess(
+                            context = requireContext(),
+                            title = "Comentario Enviado",
+                            message = "✅ Tu comentario ha sido publicado correctamente.",
+                            view = view
+                        )
                         Log.d(TAG, "✅ Comentario guardado: $commentId")
                     }
                     .addOnFailureListener { e ->
@@ -755,7 +775,12 @@ class BookDetailModernFragment : Fragment() {
                         editCommentText.text?.clear()
                         btnSendComment.isEnabled = true
                         btnSendComment.text = "Enviar comentario"
-                        Toast.makeText(requireContext(), "✅ Comentario enviado", Toast.LENGTH_SHORT).show()
+                        NotificationHelper.showSuccess(
+                            context = requireContext(),
+                            title = "Comentario Enviado",
+                            message = "✅ Tu comentario ha sido publicado correctamente.",
+                            view = view
+                        )
                     }
                     .addOnFailureListener { 
                         btnSendComment.isEnabled = true

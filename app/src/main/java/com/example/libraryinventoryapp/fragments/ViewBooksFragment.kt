@@ -12,7 +12,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -319,11 +319,12 @@ class ViewBooksFragment : Fragment() {
                 // 🚨 Ocultar loading en caso de error
                 loadingState.visibility = View.GONE
                 swipeRefreshLayout.isRefreshing = false
-                Toast.makeText(
-                    context, 
-                    "Error al cargar inventario: ${exception.message}", 
-                    Toast.LENGTH_LONG
-                ).show()
+                NotificationHelper.showError(
+                    context = requireContext(),
+                    title = "Error de Carga",
+                    message = "No se pudo cargar el inventario de libros: ${exception.message}",
+                    view = view
+                )
             }
     }
 
@@ -379,7 +380,12 @@ class ViewBooksFragment : Fragment() {
             }
             .addOnFailureListener { e ->
                 // Manejar el error de carga
-                Toast.makeText(context, "Error al cargar los usuarios: $e", Toast.LENGTH_LONG).show()
+                NotificationHelper.showError(
+                    context = requireContext(),
+                    title = "Error de Usuarios",
+                    message = "No se pudieron cargar los usuarios: $e",
+                    view = view
+                )
             }
     }
 
@@ -465,7 +471,12 @@ class ViewBooksFragment : Fragment() {
                 }
                 
                 if (userList.isEmpty()) {
-                    Toast.makeText(context, "No hay usuarios registrados", Toast.LENGTH_SHORT).show()
+                    NotificationHelper.showInfo(
+                        context = requireContext(),
+                        title = "Sin Usuarios",
+                        message = "No hay usuarios registrados en el sistema.",
+                        view = view
+                    )
                     return@addOnSuccessListener
                 }
 
@@ -476,7 +487,12 @@ class ViewBooksFragment : Fragment() {
                 showUserSearchDialog(userList)
             }
             .addOnFailureListener { e ->
-                Toast.makeText(context, "Error al cargar usuarios: ${e.message}", Toast.LENGTH_LONG).show()
+                NotificationHelper.showError(
+                    context = requireContext(),
+                    title = "Error de Carga",
+                    message = "No se pudieron cargar los usuarios: ${e.message}",
+                    view = view
+                )
             }
     }
 
@@ -588,11 +604,12 @@ class ViewBooksFragment : Fragment() {
             filterBooksByDateTimestamp(filterTimestamp)
             
             val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-            Toast.makeText(
-                context, 
-                "Filtrando libros asignados desde: ${dateFormat.format(selectedDate.time)}", 
-                Toast.LENGTH_SHORT
-            ).show()
+            NotificationHelper.showInfo(
+                context = requireContext(),
+                title = "Filtro Aplicado",
+                message = "Filtrando libros asignados desde: ${dateFormat.format(selectedDate.time)}",
+                view = view
+            )
             
         }, currentYear, currentMonth, currentDay).show()
     }
@@ -612,7 +629,12 @@ class ViewBooksFragment : Fragment() {
         updateFilterUI(FilterType.ALL, filteredBooksList.size)
         updateEmptyState()
         
-        Toast.makeText(context, "Filtros limpiados", Toast.LENGTH_SHORT).show()
+        NotificationHelper.showSuccess(
+            context = requireContext(),
+            title = "Filtros Limpiados",
+            message = "✅ Todos los filtros han sido eliminados.",
+            view = view
+        )
     }
 
     private fun filterBooksByCategories(selectedCategories: List<String>) {
@@ -645,7 +667,12 @@ class ViewBooksFragment : Fragment() {
         } else {
             "Mostrando $count libro${if (count == 1) "" else "s"} asignado${if (count == 1) "" else "s"} a '$userName'"
         }
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        NotificationHelper.showInfo(
+            context = requireContext(),
+            title = "Filtro por Usuario",
+            message = message,
+            view = view
+        )
     }
 
     private fun filterBooksByDate(days: Int) {
@@ -664,11 +691,12 @@ class ViewBooksFragment : Fragment() {
         updateEmptyState()
         
         val resultCount = filteredBooksList.size
-        Toast.makeText(
-            context, 
-            "Encontrados $resultCount libros asignados en los últimos $days días", 
-            Toast.LENGTH_SHORT
-        ).show()
+        NotificationHelper.showInfo(
+            context = requireContext(),
+            title = "Resultados del Filtro",
+            message = "Encontrados $resultCount libros asignados en los últimos $days días",
+            view = view
+        )
     }
 
     private fun filterBooksByDateTimestamp(fromDate: Timestamp) {
@@ -685,11 +713,12 @@ class ViewBooksFragment : Fragment() {
         
         val resultCount = filteredBooksList.size
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        Toast.makeText(
-            context, 
-            "Encontrados $resultCount libros asignados desde ${dateFormat.format(fromDate.toDate())}", 
-            Toast.LENGTH_SHORT
-        ).show()
+        NotificationHelper.showInfo(
+            context = requireContext(),
+            title = "Resultados del Filtro",
+            message = "Encontrados $resultCount libros asignados desde ${dateFormat.format(fromDate.toDate())}",
+            view = view
+        )
     }
 
     /**

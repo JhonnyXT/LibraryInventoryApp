@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.libraryinventoryapp.R
@@ -99,7 +99,12 @@ class BookDetailAdminFragment : Fragment() {
             loadBookDetails(bookId!!)
         } else {
             Log.e(TAG, "❌ No se proporcionó ID de libro")
-            Toast.makeText(context, "Error: Libro no encontrado", Toast.LENGTH_SHORT).show()
+            NotificationHelper.showError(
+                context = requireContext(),
+                title = "Libro No Encontrado",
+                message = "No se pudo cargar la información del libro seleccionado.",
+                view = view
+            )
             parentFragmentManager.popBackStack()
         }
         
@@ -508,18 +513,23 @@ class BookDetailAdminFragment : Fragment() {
             .delete()
             .addOnSuccessListener {
                 Log.d(TAG, "✅ Libro eliminado exitosamente")
-                Toast.makeText(context, "Libro eliminado correctamente", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showBookDeleted(
+                    context = requireContext(),
+                    bookTitle = book?.title ?: "Libro",
+                    view = view
+                )
                 
                 // Regresar a la lista
                 parentFragmentManager.popBackStack()
             }
             .addOnFailureListener { exception ->
                 Log.e(TAG, "❌ Error al eliminar libro", exception)
-                Toast.makeText(
-                    context,
-                    "Error al eliminar libro: ${exception.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                NotificationHelper.showError(
+                    context = requireContext(),
+                    title = "Error de Eliminación",
+                    message = "No se pudo eliminar el libro: ${exception.message}",
+                    view = view
+                )
             }
     }
 
@@ -527,7 +537,12 @@ class BookDetailAdminFragment : Fragment() {
      * ❌ Mostrar error al usuario
      */
     private fun showError(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        NotificationHelper.showError(
+            context = requireContext(),
+            title = "Error",
+            message = message,
+            view = view
+        )
         Log.e(TAG, "❌ Error: $message")
     }
 }

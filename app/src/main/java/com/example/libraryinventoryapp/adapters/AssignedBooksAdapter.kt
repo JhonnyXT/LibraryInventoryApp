@@ -15,7 +15,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.android.material.button.MaterialButton
 import android.app.AlertDialog
-import android.widget.Toast
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -333,7 +333,11 @@ class AssignedBooksAdapter(
     private fun markBookAsReturned(book: Book, context: Context) {
         // Implementar lógica para marcar el libro como devuelto
         // Esto podría ser similar a la funcionalidad en OverdueBooksAdapter
-        Toast.makeText(context, "¡Libro marcado como devuelto!", Toast.LENGTH_SHORT).show()
+        NotificationHelper.showSuccess(
+            context = context,
+            title = "Libro Devuelto",
+            message = "¡Libro marcado como devuelto correctamente!"
+        )
         
         // Aquí iríamos a Firebase para actualizar el libro
         // Remover al usuario de la lista de asignados, restaurar cantidad, etc.

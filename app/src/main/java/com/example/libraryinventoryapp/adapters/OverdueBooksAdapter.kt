@@ -8,7 +8,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.libraryinventoryapp.R
@@ -230,22 +230,22 @@ class OverdueBooksAdapter(
             .update(updates)
             .addOnSuccessListener {
                 hideProgress()
-                Toast.makeText(
-                    itemView.context,
-                    "✅ Libro '${book.title}' marcado como devuelto por ${overdueItem.userName}",
-                    Toast.LENGTH_LONG
-                ).show()
+                NotificationHelper.showSuccess(
+                    context = itemView.context,
+                    title = "Libro Devuelto",
+                    message = "✅ '${book.title}' marcado como devuelto por ${overdueItem.userName}"
+                )
                 
                 // Notificar al fragmento para que remueva el item de la lista
                 onBookReturned(overdueItem)
             }
             .addOnFailureListener { e ->
                 hideProgress()
-                Toast.makeText(
-                    itemView.context,
-                    "❌ Error al marcar como devuelto: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                NotificationHelper.showError(
+                    context = itemView.context,
+                    title = "Error de Devolución",
+                    message = "❌ No se pudo marcar como devuelto: ${e.message}"
+                )
             }
     }
 }

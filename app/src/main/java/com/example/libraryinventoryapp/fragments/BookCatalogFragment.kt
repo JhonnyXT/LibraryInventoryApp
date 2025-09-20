@@ -9,7 +9,7 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -306,7 +306,12 @@ class BookCatalogFragment : Fragment() {
      * ❌ Mostrar error
      */
     private fun showError(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+        NotificationHelper.showError(
+            context = requireContext(),
+            title = "Error",
+            message = message,
+            view = view
+        )
     }
 
     /**
