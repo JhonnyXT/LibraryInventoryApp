@@ -14,7 +14,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
@@ -26,6 +25,7 @@ import com.example.libraryinventoryapp.utils.EmailService
 import com.example.libraryinventoryapp.utils.LibraryNotificationManager
 import com.example.libraryinventoryapp.utils.NotificationHelper
 import com.example.libraryinventoryapp.utils.WishlistAvailabilityService
+import com.example.libraryinventoryapp.utils.DialogHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -275,11 +275,11 @@ class BookAdapter(
         firestore.collection("books").document(book.id).update(updates)
             .addOnSuccessListener {
                 showProgressBar(holder, false)
-                Toast.makeText(
-                    context,
-                    "Libro '${book.title}' desasignado de $userName correctamente.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                DialogHelper.showBookUnassigned(
+                    context = context,
+                    bookTitle = book.title,
+                    userName = userName
+                )
 
                 // Actualizar la lista local
                 val updatedBook = book.copy(
@@ -295,7 +295,11 @@ class BookAdapter(
             }
             .addOnFailureListener { e ->
                 showProgressBar(holder, false)
-                Toast.makeText(context, "Error al desasignar el libro: ${e.message}", Toast.LENGTH_LONG).show()
+                DialogHelper.showError(
+                    context = context,
+                    title = "Error al Desasignar",
+                    message = "No se pudo desasignar el libro \"${book.title}\":\n\n${e.message}"
+                )
             }
     }
 
@@ -306,7 +310,11 @@ class BookAdapter(
         context: Context
     ) {
         if (userName.isBlank()) {
-            Toast.makeText(context, "Por favor, selecciona un usuario para asignar el libro.", Toast.LENGTH_SHORT).show()
+            DialogHelper.showValidationError(
+                context = context,
+                field = "Usuario",
+                requirement = "Por favor, selecciona un usuario para asignar el libro."
+            )
             return
         }
 
@@ -350,11 +358,12 @@ class BookAdapter(
             assignUserToBookWithExpiration(book, userName, expirationTimestamp, holder, context)
             
             val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-            Toast.makeText(
-                context, 
-                "Libro asignado hasta: ${dateFormat.format(expirationDate.time)}", 
-                Toast.LENGTH_SHORT
-            ).show()
+            DialogHelper.showBookAssigned(
+                context = context,
+                bookTitle = book.title,
+                userName = userName,
+                expirationDate = dateFormat.format(expirationDate.time)
+            )
             
         }, suggestedYear, suggestedMonth, suggestedDay)
 
@@ -385,7 +394,7 @@ class BookAdapter(
 
     private fun deleteBook(book: Book, holder: BookViewHolder, context: Context) {
         showProgressBar(holder, true)
-        Toast.makeText(context, "Eliminando libro...", Toast.LENGTH_SHORT).show()
+        // No mostrar popup de "Eliminando..." ya que hay progress bar
 
         // Eliminar el libro de Firestore
         val bookRef = firestore.collection("books").document(book.id)
@@ -397,11 +406,18 @@ class BookAdapter(
                     storageRef.delete()
                         .addOnSuccessListener {
                             showProgressBar(holder, false)
-                            Toast.makeText(context, "Libro e imagen eliminados correctamente", Toast.LENGTH_SHORT).show()
+                            DialogHelper.showBookDeleted(
+                                context = context,
+                                bookTitle = book.title
+                            )
                         }
                         .addOnFailureListener { e ->
                             showProgressBar(holder, false)
-                            Toast.makeText(context, "Error al eliminar la imagen: $e", Toast.LENGTH_LONG).show()
+                            DialogHelper.showError(
+                                context = context,
+                                title = "Error al Eliminar Imagen",
+                                message = "El libro fue eliminado pero hubo un problema al eliminar la imagen:\n\n$e"
+                            )
                         }
                 }
 
@@ -410,7 +426,11 @@ class BookAdapter(
             }
             .addOnFailureListener { e ->
                 showProgressBar(holder, false)
-                Toast.makeText(context, "Error al eliminar el libro: $e", Toast.LENGTH_LONG).show()
+                DialogHelper.showError(
+                    context = context,
+                    title = "Error al Eliminar",
+                    message = "No se pudo eliminar el libro \"${book.title}\":\n\n$e"
+                )
             }
     }
 
@@ -426,7 +446,11 @@ class BookAdapter(
         // Validar que el nombre del usuario no esté en blanco
         if (userName.isBlank()) {
             showProgressBar(holder, false)
-            Toast.makeText(context, "Por favor, selecciona un usuario para asignar el libro.", Toast.LENGTH_SHORT).show()
+            DialogHelper.showValidationError(
+                context = context,
+                field = "Usuario",
+                requirement = "Por favor, selecciona un usuario para asignar el libro."
+            )
             return
         }
 
@@ -434,7 +458,11 @@ class BookAdapter(
         val user = userList.find { it.name.equals(userName, ignoreCase = true) }
         if (user == null) {
             showProgressBar(holder, false)
-            Toast.makeText(context, "Usuario no encontrado. Intenta de nuevo.", Toast.LENGTH_SHORT).show()
+            DialogHelper.showError(
+                context = context,
+                title = "Usuario No Encontrado",
+                message = "No se encontró un usuario con ese nombre.\n\nVerifica que el nombre esté correcto e intenta de nuevo."
+            )
             return
         }
 
@@ -442,14 +470,22 @@ class BookAdapter(
         if (book.assignedTo?.contains(user.uid) == true) {
             showProgressBar(holder, false)
             holder.bookUserSearch.setText("")
-            Toast.makeText(context, "El usuario ya tiene asignado este libro.", Toast.LENGTH_SHORT).show()
+            DialogHelper.showWarning(
+                context = context,
+                title = "Libro Ya Asignado",
+                message = "Este usuario ya tiene asignado este libro.\n\nNo se puede asignar el mismo libro dos veces al mismo usuario."
+            )
             return
         }
 
         // Verificar si hay cantidad suficiente para asignar
         if (book.quantity <= 0) {
             showProgressBar(holder, false)
-            Toast.makeText(context, "No hay más copias disponibles de este libro.", Toast.LENGTH_SHORT).show()
+            DialogHelper.showWarning(
+                context = context,
+                title = "Sin Copias Disponibles",
+                message = "Ya no quedan copias disponibles de este libro para asignar.\n\nEspera a que algún usuario devuelva su copia."
+            )
             return
         }
 
@@ -489,11 +525,12 @@ class BookAdapter(
                 holder.bookUserSearch.setText("")
                 
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                Toast.makeText(
-                    context,
-                    "El libro '${book.title}' ha sido asignado a ${user.name} hasta ${dateFormat.format(expirationDate.toDate())}.",
-                    Toast.LENGTH_LONG
-                ).show()
+                DialogHelper.showBookAssigned(
+                    context = context,
+                    bookTitle = book.title,
+                    userName = user.name,
+                    expirationDate = dateFormat.format(expirationDate.toDate())
+                )
 
                 // Actualizar la lista local de libros y notificar el adaptador
                 val updatedBook = book.copy(
@@ -550,7 +587,11 @@ class BookAdapter(
             }
             .addOnFailureListener { e ->
                 showProgressBar(holder, false)
-                Toast.makeText(context, "Error al asignar el libro: $e", Toast.LENGTH_LONG).show()
+                DialogHelper.showError(
+                    context = context,
+                    title = "Error al Asignar",
+                    message = "No se pudo asignar el libro:\n\n$e"
+                )
             }
     }
 
@@ -565,7 +606,11 @@ class BookAdapter(
         // Validar que el nombre del usuario no esté en blanco
         if (userName.isBlank()) {
             showProgressBar(holder, false)
-            Toast.makeText(context, "Por favor, selecciona un usuario para asignar el libro.", Toast.LENGTH_SHORT).show()
+            DialogHelper.showValidationError(
+                context = context,
+                field = "Usuario",
+                requirement = "Por favor, selecciona un usuario para asignar el libro."
+            )
             return
         }
 
@@ -573,7 +618,11 @@ class BookAdapter(
         val user = userList.find { it.name.equals(userName, ignoreCase = true) }
         if (user == null) {
             showProgressBar(holder, false)
-            Toast.makeText(context, "Usuario no encontrado. Intenta de nuevo.", Toast.LENGTH_SHORT).show()
+            DialogHelper.showError(
+                context = context,
+                title = "Usuario No Encontrado",
+                message = "No se encontró un usuario con ese nombre.\n\nVerifica que el nombre esté correcto e intenta de nuevo."
+            )
             return
         }
 
@@ -581,14 +630,22 @@ class BookAdapter(
         if (book.assignedTo?.contains(user.uid) == true) {
             showProgressBar(holder, false)
             holder.bookUserSearch.setText("")
-            Toast.makeText(context, "El usuario ya tiene asignado este libro.", Toast.LENGTH_SHORT).show()
+            DialogHelper.showWarning(
+                context = context,
+                title = "Libro Ya Asignado",
+                message = "Este usuario ya tiene asignado este libro.\n\nNo se puede asignar el mismo libro dos veces al mismo usuario."
+            )
             return
         }
 
         // Verificar si hay cantidad suficiente para asignar
         if (book.quantity <= 0) {
             showProgressBar(holder, false)
-            Toast.makeText(context, "No hay más copias disponibles de este libro.", Toast.LENGTH_SHORT).show()
+            DialogHelper.showWarning(
+                context = context,
+                title = "Sin Copias Disponibles",
+                message = "Ya no quedan copias disponibles de este libro para asignar.\n\nEspera a que algún usuario devuelva su copia."
+            )
             return
         }
 
@@ -623,11 +680,11 @@ class BookAdapter(
             .addOnSuccessListener {
                 showProgressBar(holder, false)
                 holder.bookUserSearch.setText("")
-                Toast.makeText(
-                    context,
-                    "El libro '${book.title}' ha sido asignado a ${user.name}.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                DialogHelper.showBookAssigned(
+                    context = context,
+                    bookTitle = book.title,
+                    userName = user.name
+                )
 
                 // Actualizar la lista local de libros y notificar el adaptador
                 val updatedBook = book.copy(
@@ -646,7 +703,11 @@ class BookAdapter(
             }
             .addOnFailureListener { e ->
                 showProgressBar(holder, false)
-                Toast.makeText(context, "Error al asignar el libro: $e", Toast.LENGTH_LONG).show()
+                DialogHelper.showError(
+                    context = context,
+                    title = "Error al Asignar",
+                    message = "No se pudo asignar el libro:\n\n$e"
+                )
             }
     }
 
@@ -661,7 +722,11 @@ class BookAdapter(
                 updateBooks(updatedBooks)
             }
             .addOnFailureListener { e ->
-                Toast.makeText(context, "Error al recuperar la lista de libros: $e", Toast.LENGTH_LONG).show()
+                DialogHelper.showError(
+                    context = context,
+                    title = "Error de Conexión",
+                    message = "No se pudo recuperar la lista de libros:\n\n$e"
+                )
             }
     }
 
@@ -669,7 +734,11 @@ class BookAdapter(
         // Obtener información del admin actual
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            Toast.makeText(context, "Error: No se pudo identificar al administrador", Toast.LENGTH_SHORT).show()
+            DialogHelper.showError(
+                context = context,
+                title = "Error de Autenticación",
+                message = "No se pudo identificar al administrador actual.\n\nIntenta cerrar sesión y volver a ingresar."
+            )
             return
         }
 
@@ -720,13 +789,8 @@ class BookAdapter(
                             }
                         }
                     } else {
-                        // Fallback: Toast profesional cuando no hay itemView
-                        NotificationHelper.showModernToast(
-                            context,
-                            "Enviando notificación a ${user.name}...",
-                            NotificationHelper.NotificationType.INFO,
-                            Toast.LENGTH_SHORT
-                        )
+                        // Información: enviando email (no mostrar popup durante proceso)
+                        // Se mostrará el resultado al final
                         
                         // Enviar correos sin UI avanzada
                         CoroutineScope(Dispatchers.Main).launch {
@@ -741,19 +805,17 @@ class BookAdapter(
                             
                             if (result.isSuccess) {
                                 Log.d("EmailService", "✅ SendGrid: Correos enviados exitosamente")
-                                NotificationHelper.showModernToast(
-                                    context,
-                                    "Notificación enviada a ${user.name} ✉️",
-                                    NotificationHelper.NotificationType.SUCCESS,
-                                    Toast.LENGTH_LONG
+                                DialogHelper.showEmailSent(
+                                    context = context,
+                                    emailType = "Notificación de asignación",
+                                    recipient = user.name
                                 )
                             } else {
                                 Log.e("EmailService", "❌ SendGrid Error: ${result.exceptionOrNull()?.message}")
-                                NotificationHelper.showModernToast(
-                                    context,
-                                    "Error enviando email: ${result.exceptionOrNull()?.message}",
-                                    NotificationHelper.NotificationType.ERROR,
-                                    Toast.LENGTH_LONG
+                                DialogHelper.showError(
+                                    context = context,
+                                    title = "Error de Email",
+                                    message = "No se pudo enviar la notificación por email:\n\n${result.exceptionOrNull()?.message}"
                                 )
                             }
                         }
@@ -763,7 +825,11 @@ class BookAdapter(
                 }
             }
             .addOnFailureListener { e ->
-                Toast.makeText(context, "Error obteniendo datos del admin: ${e.message}", Toast.LENGTH_SHORT).show()
+                DialogHelper.showError(
+                    context = context,
+                    title = "Error de Datos",
+                    message = "No se pudieron obtener los datos del administrador:\n\n${e.message}"
+                )
             }
     }
 

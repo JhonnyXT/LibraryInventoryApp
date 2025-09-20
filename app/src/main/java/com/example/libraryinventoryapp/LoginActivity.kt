@@ -7,13 +7,13 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.libraryinventoryapp.utils.PermissionHelper
+import com.example.libraryinventoryapp.utils.DialogHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -57,7 +57,11 @@ class LoginActivity : AppCompatActivity() {
                 8 -> "Error interno - Verifica configuración Firebase"
                 else -> "Error Google Sign-In: Código $errorCode - ${e.message}"
             }
-            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
+            DialogHelper.showError(
+                context = this,
+                title = "Error de Autenticación",
+                message = errorMessage
+            )
             android.util.Log.e("GoogleSignIn", "Error detallado: Código=$errorCode, Mensaje=${e.message}")
         }
     }
@@ -117,23 +121,39 @@ class LoginActivity : AppCompatActivity() {
 
             // Validar el campo de email
             if (email.isEmpty()) {
-                Toast.makeText(this, "Por favor ingresa un email.", Toast.LENGTH_SHORT).show()
+                DialogHelper.showValidationError(
+                    context = this,
+                    field = "Email",
+                    requirement = "Por favor ingresa tu correo electrónico."
+                )
                 return@setOnClickListener
             }
 
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(this, "Por favor ingresa un email válido.", Toast.LENGTH_SHORT).show()
+                DialogHelper.showValidationError(
+                    context = this,
+                    field = "Email",
+                    requirement = "Por favor ingresa un email válido con formato correcto (ejemplo@dominio.com)."
+                )
                 return@setOnClickListener
             }
 
             // Validar el campo de contraseña
             if (password.isEmpty()) {
-                Toast.makeText(this, "Por favor ingresa una contraseña.", Toast.LENGTH_SHORT).show()
+                DialogHelper.showValidationError(
+                    context = this,
+                    field = "Contraseña",
+                    requirement = "Por favor ingresa tu contraseña."
+                )
                 return@setOnClickListener
             }
 
             if (password.length < 6) {
-                Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres.", Toast.LENGTH_SHORT).show()
+                DialogHelper.showValidationError(
+                    context = this,
+                    field = "Contraseña",
+                    requirement = "La contraseña debe tener al menos 6 caracteres para mayor seguridad."
+                )
                 return@setOnClickListener
             }
 
@@ -160,7 +180,11 @@ class LoginActivity : AppCompatActivity() {
                             else ->
                                 task.exception?.localizedMessage ?: "Error de autenticación. Inténtalo de nuevo."
                         }
-                        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
+                        DialogHelper.showError(
+                context = this,
+                title = "Error de Autenticación",
+                message = errorMessage
+            )
                     }
                 }
         }
@@ -170,7 +194,11 @@ class LoginActivity : AppCompatActivity() {
         if (user == null) {
             // Handle user not logged in
             findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.GONE
-            Toast.makeText(this, "Usuario no autenticado.", Toast.LENGTH_SHORT).show()
+            DialogHelper.showError(
+                context = this,
+                title = "Error de Autenticación",
+                message = "No se pudo autenticar al usuario.\n\nIntenta iniciar sesión de nuevo."
+            )
             return
         }
 
@@ -195,12 +223,20 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 // Handle the case where the document does not exist
                 findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.GONE
-                Toast.makeText(this, "El documento del usuario no existe.", Toast.LENGTH_SHORT).show()
+                DialogHelper.showError(
+                context = this,
+                title = "Error de Usuario",
+                message = "No se encontraron datos del usuario.\n\nContacta al administrador."
+            )
             }
         }.addOnFailureListener { exception ->
             // Handle errors
             findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.GONE
-            Toast.makeText(this, "Error al obtener los datos del usuario: ${exception.message}", Toast.LENGTH_LONG).show()
+            DialogHelper.showError(
+                context = this,
+                title = "Error de Conexión",
+                message = "No se pudieron obtener los datos del usuario:\n\n${exception.message}"
+            )
         }
     }
     
@@ -275,7 +311,11 @@ class LoginActivity : AppCompatActivity() {
                     }
                 } else {
                     findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.GONE
-                    Toast.makeText(this, "Error en autenticación con Google: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    DialogHelper.showError(
+                    context = this,
+                    title = "Error Google Sign-In",
+                    message = "No se pudo autenticar con Google:\n\n${task.exception?.message}"
+                )
                 }
             }
     }
@@ -300,7 +340,11 @@ class LoginActivity : AppCompatActivity() {
                         createNewGoogleUser(user)
                     }
                 } else {
-                    Toast.makeText(this, "Error al verificar usuario: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    DialogHelper.showError(
+                    context = this,
+                    title = "Error de Verificación",
+                    message = "No se pudo verificar el usuario:\n\n${task.exception?.message}"
+                )
                 }
             }
     }
@@ -323,10 +367,17 @@ class LoginActivity : AppCompatActivity() {
                 findViewById<CircularProgressIndicator>(R.id.progressBarLogin).visibility = View.GONE
                 
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "¡Bienvenido! Tu cuenta ha sido creada exitosamente.", Toast.LENGTH_SHORT).show()
+                    DialogHelper.showAccountCreated(
+                    context = this,
+                    userName = user.displayName ?: "Usuario"
+                )
                     navigateBasedOnRole("usuario")
                 } else {
-                    Toast.makeText(this, "Error al crear usuario: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    DialogHelper.showError(
+                    context = this,
+                    title = "Error al Crear Usuario",
+                    message = "No se pudo crear el usuario en el sistema:\n\n${task.exception?.message}"
+                )
                 }
             }
     }
@@ -342,7 +393,11 @@ class LoginActivity : AppCompatActivity() {
                 startActivity(intent)
             }
             else -> {
-                Toast.makeText(this, "Rol de usuario no reconocido", Toast.LENGTH_SHORT).show()
+                DialogHelper.showError(
+                context = this,
+                title = "Error de Rol",
+                message = "El rol del usuario no es reconocido por el sistema.\n\nContacta al administrador."
+            )
                 return
             }
         }

@@ -3,7 +3,6 @@ package com.example.libraryinventoryapp.utils
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.Fragment
@@ -71,11 +70,10 @@ class AuthManager private constructor() {
                 
                 // 4. Mostrar mensaje de éxito
                 if (showSuccessMessage) {
-                    if (success) {
-                        Toast.makeText(context, "🔐 Sesión cerrada correctamente - Podrás elegir cuenta", Toast.LENGTH_LONG).show()
-                    } else {
-                        Toast.makeText(context, "🔐 Sesión cerrada - Logout Google parcial", Toast.LENGTH_LONG).show()
-                    }
+                    DialogHelper.showLogoutSuccess(
+                        context = context,
+                        canChooseAccount = success
+                    )
                 }
                 
                 // 5. Navegar a LoginActivity
@@ -89,11 +87,19 @@ class AuthManager private constructor() {
                 // Fallback: logout básico
                 try {
                     FirebaseAuth.getInstance().signOut()
-                    Toast.makeText(context, "⚠️ Logout parcial - Error con Google Sign-In", Toast.LENGTH_LONG).show()
+                    DialogHelper.showWarning(
+                        context = context,
+                        title = "Logout Parcial",
+                        message = "Se cerró la sesión de Firebase, pero hubo un problema con Google Sign-In.\n\nTu sesión ha sido cerrada correctamente."
+                    )
                     navigateToLogin(activity)
                 } catch (fallbackError: Exception) {
                     Log.e(TAG, "❌ Error crítico en logout: ${fallbackError.message}")
-                    Toast.makeText(context, "❌ Error crítico al cerrar sesión", Toast.LENGTH_LONG).show()
+                    DialogHelper.showError(
+                        context = context,
+                        title = "Error Crítico",
+                        message = "Ocurrió un error crítico al cerrar sesión.\n\nReinicia la aplicación si es necesario."
+                    )
                 }
             }
         }
@@ -125,11 +131,10 @@ class AuthManager private constructor() {
                 
                 // 4. Mostrar mensaje de éxito
                 if (showSuccessMessage) {
-                    if (success) {
-                        Toast.makeText(activity, "🔐 Sesión cerrada correctamente - Podrás elegir cuenta", Toast.LENGTH_LONG).show()
-                    } else {
-                        Toast.makeText(activity, "🔐 Sesión cerrada - Logout Google parcial", Toast.LENGTH_LONG).show()
-                    }
+                    DialogHelper.showLogoutSuccess(
+                        context = activity,
+                        canChooseAccount = success
+                    )
                 }
                 
                 // 5. Navegar a LoginActivity
@@ -143,11 +148,19 @@ class AuthManager private constructor() {
                 // Fallback: logout básico
                 try {
                     FirebaseAuth.getInstance().signOut()
-                    Toast.makeText(activity, "⚠️ Logout parcial - Error con Google Sign-In", Toast.LENGTH_LONG).show()
+                    DialogHelper.showWarning(
+                        context = activity,
+                        title = "Logout Parcial",
+                        message = "Se cerró la sesión de Firebase, pero hubo un problema con Google Sign-In.\n\nTu sesión ha sido cerrada correctamente."
+                    )
                     navigateToLogin(activity)
                 } catch (fallbackError: Exception) {
                     Log.e(TAG, "❌ Error crítico en logout: ${fallbackError.message}")
-                    Toast.makeText(activity, "❌ Error crítico al cerrar sesión", Toast.LENGTH_LONG).show()
+                    DialogHelper.showError(
+                        context = activity,
+                        title = "Error Crítico",
+                        message = "Ocurrió un error crítico al cerrar sesión.\n\nReinicia la aplicación si es necesario."
+                    )
                 }
             }
         }
