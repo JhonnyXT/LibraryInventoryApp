@@ -12,6 +12,7 @@ import com.example.libraryinventoryapp.fragments.HomeModernFragment
 import com.example.libraryinventoryapp.fragments.NotificationsFragment
 import com.example.libraryinventoryapp.fragments.WishlistModernFragment
 import com.example.libraryinventoryapp.models.Book
+import com.example.libraryinventoryapp.utils.WishlistAvailabilityService
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.Timestamp
@@ -42,7 +43,7 @@ class UserActivity : AppCompatActivity() {
         setupBottomNavigation()
         
         // 🏠 Fragmento por defecto - NUEVA PANTALLA HOME MODERNA
-        loadFragment(HomeModernFragment())
+        handleNavigationFromNotification()
     }
     
     /**
@@ -53,6 +54,13 @@ class UserActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         currentUserId = auth.currentUser?.uid
+        
+        // 🌟 Inicializar servicio de lista de deseos
+        if (currentUserId != null) {
+            val wishlistService = WishlistAvailabilityService.getInstance(this)
+            wishlistService.startMonitoring()
+            Log.i(TAG, "🌟 Servicio de lista de deseos iniciado para usuario: $currentUserId")
+        }
     }
     
     /**
@@ -232,6 +240,46 @@ class UserActivity : AppCompatActivity() {
         } catch (e: Exception) {
             // Log del error en caso de que falle la transacción
             android.util.Log.e("UserActivity", "Error loading fragment: ${e.message}", e)
+        }
+    }
+    
+    /**
+     * 📱 Manejar navegación desde notificaciones
+     */
+    private fun handleNavigationFromNotification() {
+        val extras = intent.extras
+        
+        when {
+            extras?.getBoolean("open_wishlist", false) == true -> {
+                // Abrir lista de deseos desde notificación
+                loadFragment(WishlistModernFragment())
+                bottomNav.selectedItemId = R.id.nav_wishlist
+                Log.d(TAG, "📱 Navegando a lista de deseos desde notificación")
+            }
+            extras?.getBoolean("open_assigned_books", false) == true -> {
+                // Abrir mis libros desde notificación
+                loadFragment(AssignedBooksFragment())
+                bottomNav.selectedItemId = R.id.nav_assigned_books
+                Log.d(TAG, "📱 Navegando a libros asignados desde notificación")
+            }
+            else -> {
+                // Fragmento por defecto - Home Moderno
+                loadFragment(HomeModernFragment())
+                bottomNav.selectedItemId = R.id.nav_home
+            }
+        }
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        
+        // 🌟 Detener servicio de lista de deseos
+        try {
+            val wishlistService = WishlistAvailabilityService.getInstance(this)
+            wishlistService.stopMonitoring()
+            Log.i(TAG, "🌟 Servicio de lista de deseos detenido")
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error deteniendo servicio de lista de deseos: ${e.message}")
         }
     }
 }

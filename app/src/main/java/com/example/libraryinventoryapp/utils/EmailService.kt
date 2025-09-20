@@ -396,7 +396,7 @@ class EmailService {
             else -> arrayOf("RECORDATORIO", "#4caf50", "#388e3c", "📚")
         }
         
-        val subject = "📚 Recordatorio: Devolución de libro - $bookTitle"
+        val subject = "Recordatorio: Devolución de libro - $bookTitle"
         val htmlContent = """
             <!DOCTYPE html>
             <html lang="es">

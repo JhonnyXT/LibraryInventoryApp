@@ -25,6 +25,7 @@ import com.example.libraryinventoryapp.models.User
 import com.example.libraryinventoryapp.utils.EmailService
 import com.example.libraryinventoryapp.utils.LibraryNotificationManager
 import com.example.libraryinventoryapp.utils.NotificationHelper
+import com.example.libraryinventoryapp.utils.WishlistAvailabilityService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -536,6 +537,15 @@ class BookAdapter(
                     Log.d("BookAdapter", "📱 Notificaciones programadas para ${user.name} - ${book.title}")
                 } catch (e: Exception) {
                     Log.e("BookAdapter", "❌ Error programando notificaciones: ${e.message}")
+                }
+                
+                // 🌟 NUEVA FUNCIONALIDAD: Remover de lista de deseos automáticamente
+                try {
+                    val wishlistService = WishlistAvailabilityService.getInstance(context)
+                    wishlistService.removeFromWishlistOnAssignment(book.id, user.uid)
+                    Log.d("BookAdapter", "✨ Verificando remoción de lista de deseos para ${user.name} - ${book.title}")
+                } catch (e: Exception) {
+                    Log.e("BookAdapter", "❌ Error removiendo de lista de deseos: ${e.message}")
                 }
             }
             .addOnFailureListener { e ->
