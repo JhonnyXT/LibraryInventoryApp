@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -46,7 +46,11 @@ class RegisterActivity : AppCompatActivity() {
             val password = etPassword.text.toString().trim()
 
             if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Por favor, completa todos los campos.", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showValidationError(
+                    context = this,
+                    field = "Campos Obligatorios",
+                    requirement = "Por favor, completa todos los campos (nombre, email y contraseña)."
+                )
                 return@setOnClickListener
             }
 
@@ -64,11 +68,19 @@ class RegisterActivity : AppCompatActivity() {
                         saveUserToFirestore(name, email, userId)
                     } else {
                         findViewById<CircularProgressIndicator>(R.id.progressBarRegister).visibility = View.GONE
-                        Toast.makeText(this, "Error al obtener el UID del usuario.", Toast.LENGTH_SHORT).show()
+                        NotificationHelper.showError(
+                            context = this,
+                            title = "Error de Usuario",
+                            message = "No se pudo obtener el identificador único del usuario."
+                        )
                     }
                 } else {
                     findViewById<CircularProgressIndicator>(R.id.progressBarRegister).visibility = View.GONE
-                    Toast.makeText(this, "Error al registrar el usuario: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    NotificationHelper.showError(
+                        context = this,
+                        title = "Error de Registro",
+                        message = "No se pudo registrar el usuario: ${task.exception?.message}"
+                    )
                 }
             }
     }
@@ -85,7 +97,10 @@ class RegisterActivity : AppCompatActivity() {
             .set(userMap)
             .addOnSuccessListener {
                 findViewById<CircularProgressIndicator>(R.id.progressBarRegister).visibility = View.GONE
-                Toast.makeText(this, "Usuario registrado con éxito.", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showAccountCreated(
+                    context = this,
+                    userName = name
+                )
                 // Redirigir a LoginActivity
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
@@ -93,7 +108,11 @@ class RegisterActivity : AppCompatActivity() {
             }
             .addOnFailureListener { exception ->
                 findViewById<CircularProgressIndicator>(R.id.progressBarRegister).visibility = View.GONE
-                Toast.makeText(this, "Error al guardar el usuario: ${exception.message}", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showError(
+                    context = this,
+                    title = "Error de Base de Datos",
+                    message = "No se pudo guardar la información del usuario: ${exception.message}"
+                )
             }
     }
 

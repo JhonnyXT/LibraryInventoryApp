@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -273,7 +273,12 @@ class WishlistModernFragment : Fragment() {
                 // Usar el método del adapter para actualización inmediata de UI
                 wishlistAdapter.removeItem(wishlistItem)
                 updateUI()
-                Toast.makeText(requireContext(), "Removido de favoritos", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showSuccess(
+                    context = requireContext(),
+                    title = "Removido de Favoritos",
+                    message = "El libro ha sido eliminado de tu lista de deseos.",
+                    view = view
+                )
                 Log.d(TAG, "✅ Libro removido de wishlist: ${wishlistItem.bookTitle}")
             }
             .addOnFailureListener { e ->
@@ -336,6 +341,11 @@ class WishlistModernFragment : Fragment() {
      * ❌ Mostrar error
      */
     private fun showError(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+        NotificationHelper.showError(
+            context = requireContext(),
+            title = "Error",
+            message = message,
+            view = view
+        )
     }
 }

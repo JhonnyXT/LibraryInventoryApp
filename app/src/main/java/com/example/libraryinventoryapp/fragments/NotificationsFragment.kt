@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.libraryinventoryapp.R
 import com.example.libraryinventoryapp.UserActivity
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import com.example.libraryinventoryapp.adapters.NotificationsAdapter
 import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.NotificationItem
@@ -179,7 +180,12 @@ class NotificationsFragment : Fragment() {
                 Log.e(TAG, "❌ Error cargando notificaciones: ${e.message}")
                 showEmptyState()
                 swipeRefresh.isRefreshing = false
-                Toast.makeText(requireContext(), "Error cargando notificaciones", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showError(
+                    context = requireContext(),
+                    title = "Error de Carga",
+                    message = "No se pudieron cargar las notificaciones. Verifica tu conexión.",
+                    view = view
+                )
             }
     }
 
@@ -273,7 +279,12 @@ class NotificationsFragment : Fragment() {
         updateBottomMenuBadge()
         
         // ✅ Feedback al usuario
-        Toast.makeText(requireContext(), "Notificación marcada como leída", Toast.LENGTH_SHORT).show()
+        NotificationHelper.showSuccess(
+            context = requireContext(),
+            title = "Notificación Leída",
+            message = "La notificación ha sido marcada como leída.",
+            view = view
+        )
         
         Log.d(TAG, "📝 Notificación removida: ${notification.bookTitle}. Notificaciones restantes: ${notifications.size}")
     }
@@ -296,7 +307,12 @@ class NotificationsFragment : Fragment() {
         }
         adapter.notifyDataSetChanged()
         updateUI()
-        Toast.makeText(requireContext(), "✅ Todas las notificaciones marcadas como leídas", Toast.LENGTH_SHORT).show()
+        NotificationHelper.showSuccess(
+            context = requireContext(),
+            title = "Todas Leídas",
+            message = "✅ Todas las notificaciones han sido marcadas como leídas.",
+            view = view
+        )
     }
 
     /**
@@ -306,7 +322,12 @@ class NotificationsFragment : Fragment() {
         notifications.clear()
         adapter.notifyDataSetChanged()
         updateUI()
-        Toast.makeText(requireContext(), "🗑️ Notificaciones limpiadas", Toast.LENGTH_SHORT).show()
+        NotificationHelper.showSuccess(
+            context = requireContext(),
+            title = "Notificaciones Limpiadas",
+            message = "🗑️ Todas las notificaciones han sido eliminadas.",
+            view = view
+        )
     }
 
     /**

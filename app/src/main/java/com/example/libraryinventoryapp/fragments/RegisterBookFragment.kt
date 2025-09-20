@@ -23,6 +23,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.libraryinventoryapp.LoginActivity
 import com.example.libraryinventoryapp.R
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.Timestamp
@@ -109,32 +110,60 @@ class RegisterBookFragment : Fragment() {
                                     // Show result on main thread
                                     capturedImageView.post {
                                         if (success) {
-                                            Toast.makeText(context, "✅ Imagen capturada exitosamente", Toast.LENGTH_SHORT).show()
+                                            NotificationHelper.showSuccess(
+                                                context = context!!,
+                                                title = "Imagen Capturada",
+                                                message = "La imagen del libro se capturó exitosamente."
+                                            )
                                         } else {
-                                            Toast.makeText(context, "⚠️ Error al guardar imagen", Toast.LENGTH_SHORT).show()
+                                            NotificationHelper.showWarning(
+                                                context = context!!,
+                                                title = "Error al Guardar",
+                                                message = "La imagen se capturó pero hubo un problema al guardarla."
+                                            )
                                         }
                                     }
                                 }.start()
                                 
                             } else {
                                 Log.e("RegisterBookFragment", "No bitmap found in camera result")
-                                Toast.makeText(context, "❌ Error: No se pudo obtener la imagen", Toast.LENGTH_SHORT).show()
+                                NotificationHelper.showError(
+                                    context = context!!,
+                                    title = "Error de Imagen",
+                                    message = "No se pudo obtener la imagen de la cámara."
+                                )
                             }
                         } else {
                             Log.e("RegisterBookFragment", "No extras in camera intent")
-                            Toast.makeText(context, "❌ Error: Datos de imagen no encontrados", Toast.LENGTH_SHORT).show()
+                            NotificationHelper.showError(
+                                context = context!!,
+                                title = "Datos No Encontrados",
+                                message = "No se encontraron datos de imagen en la captura."
+                            )
                         }
                     } ?: run {
                         Log.e("RegisterBookFragment", "No data in camera result")
-                        Toast.makeText(context, "❌ Error: Sin datos de la cámara", Toast.LENGTH_SHORT).show()
+                        NotificationHelper.showError(
+                            context = context!!,
+                            title = "Sin Datos",
+                            message = "La cámara no proporcionó ningún dato."
+                        )
                     }
                 } else {
                     Log.w("RegisterBookFragment", "Camera cancelled or failed, result code: ${result.resultCode}")
-                    Toast.makeText(context, "📷 Captura cancelada", Toast.LENGTH_SHORT).show()
+                    NotificationHelper.showInfo(
+                        context = context!!,
+                        title = "Captura Cancelada",
+                        message = "La captura de imagen fue cancelada."
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("RegisterBookFragment", "Exception in camera result handler", e)
-                Toast.makeText(context, "❌ Error procesando imagen: ${e.message}", Toast.LENGTH_LONG).show()
+                NotificationHelper.showError(
+                    context = context!!,
+                    title = "Error de Procesamiento",
+                    message = "Hubo un error al procesar la imagen: ${e.message}"
+                )
             }
         }
 
@@ -143,7 +172,11 @@ class RegisterBookFragment : Fragment() {
             if (isGranted) {
                 launchCamera()
             } else {
-                Toast.makeText(context, "❌ Permiso de cámara requerido", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showError(
+                    context = context!!,
+                    title = "Permiso Requerido",
+                    message = "La aplicación necesita acceso a la cámara para capturar imágenes."
+                )
             }
         }
 
@@ -153,7 +186,11 @@ class RegisterBookFragment : Fragment() {
                 val scannedCode = result.data?.getStringExtra("SCAN_RESULT")
                 scannedCode?.let {
                     bookIsbnInput.setText(it)
-                    Toast.makeText(context, "✅ ISBN escaneado: $it", Toast.LENGTH_LONG).show()
+                    NotificationHelper.showSuccess(
+                        context = context!!,
+                        title = "ISBN Escaneado",
+                        message = "Código ISBN escaneado correctamente: $it"
+                    )
                 }
             }
         }
@@ -212,7 +249,11 @@ class RegisterBookFragment : Fragment() {
                 // Si ya hay una imagen capturada, limpiar la vista y permitir nueva captura
                 capturedImageView.setImageBitmap(null) // Limpiar la imagen anterior
                 imageUri = null // Limpiar URI
-                Toast.makeText(context, "Captura una nueva imagen", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showInfo(
+                    context = context!!,
+                    title = "Captura Imagen",
+                    message = "Por favor, captura una nueva imagen para el libro."
+                )
             }
             captureImage() // Llama a la función para capturar la imagen
         }
@@ -230,7 +271,11 @@ class RegisterBookFragment : Fragment() {
                 showProgressBar()
                 uploadBookToFirebase(title, author, isbn, description, selectedCategories, quantity, code)
             } else {
-                Toast.makeText(context, "Todos los campos son obligatorios y debe capturar una imagen", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showValidationError(
+                    context = context!!,
+                    field = "Campos Obligatorios",
+                    requirement = "Todos los campos son obligatorios y debes capturar una imagen del libro."
+                )
             }
         }
 
@@ -251,7 +296,11 @@ class RegisterBookFragment : Fragment() {
             barcodeLauncher.launch(intent)
         } catch (e: Exception) {
             Log.e("RegisterBookFragment", "Error launching barcode scanner", e)
-            Toast.makeText(context, "❌ Error al iniciar escáner: ${e.message}", Toast.LENGTH_SHORT).show()
+            NotificationHelper.showError(
+                context = context!!,
+                title = "Error del Escáner",
+                message = "No se pudo iniciar el escáner de códigos: ${e.message}"
+            )
         }
     }
 
@@ -300,11 +349,19 @@ class RegisterBookFragment : Fragment() {
             if (takePictureIntent.resolveActivity(requireActivity().packageManager) != null) {
                 cameraLauncher.launch(takePictureIntent)
             } else {
-                Toast.makeText(context, "❌ No hay app de cámara disponible", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showError(
+                    context = context!!,
+                    title = "Cámara No Disponible",
+                    message = "No se encontró una aplicación de cámara en tu dispositivo."
+                )
             }
         } catch (e: Exception) {
             Log.e("RegisterBookFragment", "Error launching camera", e)
-            Toast.makeText(context, "❌ Error al abrir cámara: ${e.message}", Toast.LENGTH_SHORT).show()
+            NotificationHelper.showError(
+                context = context!!,
+                title = "Error de Cámara",
+                message = "No se pudo abrir la cámara: ${e.message}"
+            )
         }
     }
 
@@ -415,19 +472,30 @@ class RegisterBookFragment : Fragment() {
                         .addOnSuccessListener {
                             // Notificar al usuario y limpiar campos
                             hideProgressBar()
-                            Toast.makeText(context, "Libro registrado con éxito", Toast.LENGTH_SHORT).show()
+                            NotificationHelper.showBookCreated(
+                                context = context!!,
+                                bookTitle = title
+                            )
                             clearFields()
                         }
                         .addOnFailureListener { e ->
                             hideProgressBar()
                             Log.e("Firebase", "Error al registrar el libro", e)
-                            Toast.makeText(context, "Error al registrar el libro", Toast.LENGTH_SHORT).show()
+                            NotificationHelper.showError(
+                                context = context!!,
+                                title = "Error de Registro",
+                                message = "No se pudo registrar el libro en la base de datos."
+                            )
                         }
                 }
             }.addOnFailureListener { e ->
                 hideProgressBar()
                 Log.e("Firebase", "Error al subir la imagen", e)
-                Toast.makeText(context, "Error al subir la imagen", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showError(
+                    context = context!!,
+                    title = "Error al Subir Imagen",
+                    message = "No se pudo subir la imagen del libro al servidor."
+                )
             }
         } else {
             // Si no hay imagen seleccionada, guardar el libro sin imagen
@@ -453,13 +521,20 @@ class RegisterBookFragment : Fragment() {
                 .addOnSuccessListener {
                     // Notificar al usuario y limpiar campos
                     hideProgressBar()
-                    Toast.makeText(context, "Libro registrado con éxito", Toast.LENGTH_SHORT).show()
+                    NotificationHelper.showBookCreated(
+                        context = context!!,
+                        bookTitle = title
+                    )
                     clearFields()
                 }
                 .addOnFailureListener { e ->
                     hideProgressBar()
                     Log.e("Firebase", "Error al registrar el libro sin imagen", e)
-                    Toast.makeText(context, "Error al registrar el libro", Toast.LENGTH_SHORT).show()
+                    NotificationHelper.showError(
+                        context = context!!,
+                        title = "Error de Registro",
+                        message = "No se pudo registrar el libro sin imagen."
+                    )
                 }
         }
     }
@@ -477,7 +552,11 @@ class RegisterBookFragment : Fragment() {
         bookQuantityInput.text?.clear()
         bookCodeInput.text?.clear()
         
-        Toast.makeText(context, "✅ Campos limpiados", Toast.LENGTH_SHORT).show()
+        NotificationHelper.showSuccess(
+            context = context!!,
+            title = "Campos Limpiados",
+            message = "✅ Todos los campos han sido limpiados correctamente."
+        )
     }
 
     private fun showProgressBar() {

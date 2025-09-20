@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +16,6 @@ import com.example.libraryinventoryapp.adapters.OverdueBooksAdapter
 import com.example.libraryinventoryapp.models.Book
 import com.example.libraryinventoryapp.models.OverdueBookItem
 import com.example.libraryinventoryapp.utils.EmailService
-import com.example.libraryinventoryapp.utils.NotificationHelper
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.card.MaterialCardView
@@ -305,11 +304,12 @@ class OverdueBooksFragment : Fragment() {
                 // 🚨 Ocultar loading en caso de error
                 loadingState.visibility = View.GONE
                 swipeRefreshLayout.isRefreshing = false
-                Toast.makeText(
-                    context, 
-                    "Error al cargar devoluciones pendientes: ${exception.message}", 
-                    Toast.LENGTH_LONG
-                ).show()
+                NotificationHelper.showError(
+                    context = requireContext(),
+                    title = "Error de Carga",
+                    message = "No se pudieron cargar las devoluciones pendientes: ${exception.message}",
+                    view = view
+                )
             }
     }
 
@@ -338,7 +338,12 @@ class OverdueBooksFragment : Fragment() {
         if (overdueItem.userEmail.isBlank()) {
             Log.e("OverdueBooksFragment", "❌ ERROR: Email del usuario está vacío para ${overdueItem.userName}")
             hideProgress()
-            Toast.makeText(context, "❌ Error: No se encontró email para ${overdueItem.userName}", Toast.LENGTH_LONG).show()
+            NotificationHelper.showError(
+                context = requireContext(),
+                title = "Email No Encontrado",
+                message = "❌ No se pudo enviar el recordatorio a ${overdueItem.userName} porque no tiene email registrado.",
+                view = view
+            )
             return
         }
         

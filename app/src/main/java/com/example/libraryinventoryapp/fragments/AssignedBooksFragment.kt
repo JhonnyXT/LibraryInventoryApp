@@ -10,7 +10,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
+import com.example.libraryinventoryapp.utils.NotificationHelper
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -107,7 +107,12 @@ class AssignedBooksFragment : Fragment() {
     private fun fetchAssignedBooks() {
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            Toast.makeText(context, "Debes iniciar sesión para ver tus libros asignados.", Toast.LENGTH_SHORT).show()
+            NotificationHelper.showWarning(
+                context = requireContext(),
+                title = "Sesión Requerida",
+                message = "Debes iniciar sesión para ver tus libros asignados.",
+                view = view
+            )
             updateEmptyState(true)
             return
         }
@@ -157,7 +162,12 @@ class AssignedBooksFragment : Fragment() {
                 swipeRefreshLayout.isRefreshing = false
                 updateEmptyState(true)
                 
-                Toast.makeText(context, "Error al cargar los libros: ${exception.message}", Toast.LENGTH_LONG).show()
+                NotificationHelper.showError(
+                    context = requireContext(),
+                    title = "Error de Carga",
+                    message = "No se pudieron cargar los libros asignados: ${exception.message}",
+                    view = view
+                )
             }
     }
 
