@@ -1,9 +1,9 @@
 <libraries>
   <library
       name=":@@:shared::debug"
-      jars="C:\Users\BLANDON\.gradle\caches\transforms-4\581508dbcb1d50d4601354fdeb140c35\transformed\out\jars\classes.jar;C:\Users\BLANDON\.gradle\caches\transforms-4\581508dbcb1d50d4601354fdeb140c35\transformed\out\jars\libs\R.jar"
+      jars="C:\Users\BLANDON\.gradle\caches\transforms-4\406d3b9c6047d878444d236490b9092d\transformed\out\jars\classes.jar;C:\Users\BLANDON\.gradle\caches\transforms-4\406d3b9c6047d878444d236490b9092d\transformed\out\jars\libs\R.jar"
       resolved="LibraryInventoryApp:shared:unspecified"
-      folder="C:\Users\BLANDON\.gradle\caches\transforms-4\581508dbcb1d50d4601354fdeb140c35\transformed\out"
+      folder="C:\Users\BLANDON\.gradle\caches\transforms-4\406d3b9c6047d878444d236490b9092d\transformed\out"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -12,6 +12,58 @@
       symbolFile="R.txt"
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
+  <library
+      name="io.ktor:ktor-client-android-jvm:2.3.5@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\io.ktor\ktor-client-android-jvm\2.3.5\f38ce91cc9a7d581b074379ea4fc92b60576ecce\ktor-client-android-jvm-2.3.5.jar"
+      resolved="io.ktor:ktor-client-android-jvm:2.3.5"/>
+  <library
+      name="io.ktor:ktor-client-content-negotiation-jvm:2.3.5@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\io.ktor\ktor-client-content-negotiation-jvm\2.3.5\e25d74e05f9d46b0771ea0cbda83ddc1b3f58c56\ktor-client-content-negotiation-jvm-2.3.5.jar"
+      resolved="io.ktor:ktor-client-content-negotiation-jvm:2.3.5"/>
+  <library
+      name="io.ktor:ktor-client-core-jvm:2.3.5@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\io.ktor\ktor-client-core-jvm\2.3.5\c25335c6ee45cc95cc5d43f3a8efdb07a4551199\ktor-client-core-jvm-2.3.5.jar"
+      resolved="io.ktor:ktor-client-core-jvm:2.3.5"/>
+  <library
+      name="io.ktor:ktor-serialization-kotlinx-json-jvm:2.3.5@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\io.ktor\ktor-serialization-kotlinx-json-jvm\2.3.5\dab33fd6165cfc96cfaed19352704af406d4c36b\ktor-serialization-kotlinx-json-jvm-2.3.5.jar"
+      resolved="io.ktor:ktor-serialization-kotlinx-json-jvm:2.3.5"/>
+  <library
+      name="io.ktor:ktor-events-jvm:2.3.5@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\io.ktor\ktor-events-jvm\2.3.5\544ad6e9367a888482a901b163f81c0c81c8ae77\ktor-events-jvm-2.3.5.jar"
+      resolved="io.ktor:ktor-events-jvm:2.3.5"/>
+  <library
+      name="io.ktor:ktor-websocket-serialization-jvm:2.3.5@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\io.ktor\ktor-websocket-serialization-jvm\2.3.5\21d5eaa2abfcf23b123b4d1ad55ee3fadf1975a5\ktor-websocket-serialization-jvm-2.3.5.jar"
+      resolved="io.ktor:ktor-websocket-serialization-jvm:2.3.5"/>
+  <library
+      name="io.ktor:ktor-serialization-kotlinx-jvm:2.3.5@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\io.ktor\ktor-serialization-kotlinx-jvm\2.3.5\c41e998fc3b386c52a9bc02af6e95d261a2e2959\ktor-serialization-kotlinx-jvm-2.3.5.jar"
+      resolved="io.ktor:ktor-serialization-kotlinx-jvm:2.3.5"/>
+  <library
+      name="io.ktor:ktor-serialization-jvm:2.3.5@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\io.ktor\ktor-serialization-jvm\2.3.5\1ed680f3c389385fba2e76921ea838c969eebf34\ktor-serialization-jvm-2.3.5.jar"
+      resolved="io.ktor:ktor-serialization-jvm:2.3.5"/>
+  <library
+      name="io.ktor:ktor-websockets-jvm:2.3.5@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\io.ktor\ktor-websockets-jvm\2.3.5\af65d672f48cd04fdf097aab1d7534687262fd61\ktor-websockets-jvm-2.3.5.jar"
+      resolved="io.ktor:ktor-websockets-jvm:2.3.5"/>
+  <library
+      name="io.ktor:ktor-http-jvm:2.3.5@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\io.ktor\ktor-http-jvm\2.3.5\12c198d8b3fae1f59a437cc51b0060ba5736426e\ktor-http-jvm-2.3.5.jar"
+      resolved="io.ktor:ktor-http-jvm:2.3.5"/>
+  <library
+      name="io.ktor:ktor-utils-jvm:2.3.5@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\io.ktor\ktor-utils-jvm\2.3.5\bf83db3c2075b79f1ecb4cf8fe65b00c709b1e84\ktor-utils-jvm-2.3.5.jar"
+      resolved="io.ktor:ktor-utils-jvm:2.3.5"/>
+  <library
+      name="io.ktor:ktor-io-jvm:2.3.5@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\io.ktor\ktor-io-jvm\2.3.5\10756008f9d7964250abcf50b35e2fe5b456d17f\ktor-io-jvm-2.3.5.jar"
+      resolved="io.ktor:ktor-io-jvm:2.3.5"/>
+  <library
+      name="org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlinx\kotlinx-coroutines-jdk8\1.7.3\263611b87f7546402852e43a8dc7ef3223ada42a\kotlinx-coroutines-jdk8-1.7.3.jar"
+      resolved="org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3"/>
   <library
       name="org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3@jar"
       jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlinx\kotlinx-coroutines-core-jvm\1.7.3\2b09627576f0989a436a00a4a54b55fa5026fb86\kotlinx-coroutines-core-jvm-1.7.3.jar"
@@ -48,4 +100,16 @@
       name="org.jetbrains:annotations:23.0.0@jar"
       jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\org.jetbrains\annotations\23.0.0\8cc20c07506ec18e0834947b84a864bfc094484e\annotations-23.0.0.jar"
       resolved="org.jetbrains:annotations:23.0.0"/>
+  <library
+      name="org.slf4j:slf4j-api:1.7.36@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\org.slf4j\slf4j-api\1.7.36\6c62681a2f655b49963a5983b8b0950a6120ae14\slf4j-api-1.7.36.jar"
+      resolved="org.slf4j:slf4j-api:1.7.36"/>
+  <library
+      name="org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.7.3@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlinx\kotlinx-coroutines-slf4j\1.7.3\34086fbfd556969d86b45ee2a69b816ee2413701\kotlinx-coroutines-slf4j-1.7.3.jar"
+      resolved="org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.7.3"/>
+  <library
+      name="org.jetbrains.kotlinx:atomicfu-jvm:0.22.0@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlinx\atomicfu-jvm\0.22.0\c6a128a44ba52a18265e5ec816130cd341d80792\atomicfu-jvm-0.22.0.jar"
+      resolved="org.jetbrains.kotlinx:atomicfu-jvm:0.22.0"/>
 </libraries>

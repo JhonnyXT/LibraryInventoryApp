@@ -24,6 +24,11 @@ kotlin {
                 
                 // DateTime (para reemplazar Firebase.Timestamp)
                 implementation(libs.kotlinx.datetime)
+                
+                // HTTP Client (Ktor) para EmailService
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.serialization.kotlinx.json)
             }
         }
         
@@ -37,6 +42,9 @@ kotlin {
             dependencies {
                 // Corrutinas Android
                 implementation(libs.kotlinx.coroutines.android)
+                
+                // Ktor Android Engine
+                implementation(libs.ktor.client.android)
             }
         }
     }

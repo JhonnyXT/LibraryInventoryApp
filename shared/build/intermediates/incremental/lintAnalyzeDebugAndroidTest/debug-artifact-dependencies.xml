@@ -1,9 +1,48 @@
 <dependencies>
   <compile
-      roots=":@@:shared::debug,org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3@jar,org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3@jar,org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0@jar,org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.0@jar,org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.0@jar,org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0@jar,org.jetbrains.kotlinx:kotlinx-datetime-jvm:0.4.0@jar,org.jetbrains.kotlin:kotlin-stdlib:1.9.0@jar,org.jetbrains:annotations:23.0.0@jar">
+      roots=":@@:shared::debug,io.ktor:ktor-client-android-jvm:2.3.5@jar,io.ktor:ktor-client-content-negotiation-jvm:2.3.5@jar,io.ktor:ktor-client-core-jvm:2.3.5@jar,io.ktor:ktor-serialization-kotlinx-json-jvm:2.3.5@jar,io.ktor:ktor-events-jvm:2.3.5@jar,io.ktor:ktor-websocket-serialization-jvm:2.3.5@jar,io.ktor:ktor-serialization-kotlinx-jvm:2.3.5@jar,io.ktor:ktor-serialization-jvm:2.3.5@jar,io.ktor:ktor-websockets-jvm:2.3.5@jar,io.ktor:ktor-http-jvm:2.3.5@jar,io.ktor:ktor-utils-jvm:2.3.5@jar,io.ktor:ktor-io-jvm:2.3.5@jar,org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3@jar,org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3@jar,org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3@jar,org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0@jar,org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.0@jar,org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.0@jar,org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0@jar,org.jetbrains.kotlinx:kotlinx-datetime-jvm:0.4.0@jar,org.jetbrains.kotlin:kotlin-stdlib:1.9.0@jar,org.jetbrains:annotations:23.0.0@jar,org.slf4j:slf4j-api:1.7.36@jar">
     <dependency
         name=":@@:shared::debug"
         simpleName="LibraryInventoryApp:shared"/>
+    <dependency
+        name="io.ktor:ktor-client-android-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-client-android-jvm"/>
+    <dependency
+        name="io.ktor:ktor-client-content-negotiation-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-client-content-negotiation-jvm"/>
+    <dependency
+        name="io.ktor:ktor-client-core-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-client-core-jvm"/>
+    <dependency
+        name="io.ktor:ktor-serialization-kotlinx-json-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-serialization-kotlinx-json-jvm"/>
+    <dependency
+        name="io.ktor:ktor-events-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-events-jvm"/>
+    <dependency
+        name="io.ktor:ktor-websocket-serialization-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-websocket-serialization-jvm"/>
+    <dependency
+        name="io.ktor:ktor-serialization-kotlinx-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-serialization-kotlinx-jvm"/>
+    <dependency
+        name="io.ktor:ktor-serialization-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-serialization-jvm"/>
+    <dependency
+        name="io.ktor:ktor-websockets-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-websockets-jvm"/>
+    <dependency
+        name="io.ktor:ktor-http-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-http-jvm"/>
+    <dependency
+        name="io.ktor:ktor-utils-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-utils-jvm"/>
+    <dependency
+        name="io.ktor:ktor-io-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-io-jvm"/>
+    <dependency
+        name="org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3@jar"
+        simpleName="org.jetbrains.kotlinx:kotlinx-coroutines-jdk8"/>
     <dependency
         name="org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3@jar"
         simpleName="org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm"/>
@@ -31,12 +70,57 @@
     <dependency
         name="org.jetbrains:annotations:23.0.0@jar"
         simpleName="org.jetbrains:annotations"/>
+    <dependency
+        name="org.slf4j:slf4j-api:1.7.36@jar"
+        simpleName="org.slf4j:slf4j-api"/>
   </compile>
   <package
-      roots=":@@:shared::debug,org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3@jar,org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3@jar,org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0@jar,org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.0@jar,org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.0@jar,org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0@jar,org.jetbrains.kotlinx:kotlinx-datetime-jvm:0.4.0@jar,org.jetbrains.kotlin:kotlin-stdlib:1.9.0@jar,org.jetbrains:annotations:23.0.0@jar">
+      roots=":@@:shared::debug,io.ktor:ktor-client-android-jvm:2.3.5@jar,io.ktor:ktor-client-content-negotiation-jvm:2.3.5@jar,io.ktor:ktor-client-core-jvm:2.3.5@jar,io.ktor:ktor-serialization-kotlinx-json-jvm:2.3.5@jar,io.ktor:ktor-events-jvm:2.3.5@jar,io.ktor:ktor-websocket-serialization-jvm:2.3.5@jar,io.ktor:ktor-serialization-kotlinx-jvm:2.3.5@jar,io.ktor:ktor-serialization-jvm:2.3.5@jar,io.ktor:ktor-websockets-jvm:2.3.5@jar,io.ktor:ktor-http-jvm:2.3.5@jar,io.ktor:ktor-utils-jvm:2.3.5@jar,io.ktor:ktor-io-jvm:2.3.5@jar,org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3@jar,org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.7.3@jar,org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3@jar,org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3@jar,org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0@jar,org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.0@jar,org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.0@jar,org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0@jar,org.jetbrains.kotlinx:kotlinx-datetime-jvm:0.4.0@jar,org.jetbrains.kotlinx:atomicfu-jvm:0.22.0@jar,org.jetbrains.kotlin:kotlin-stdlib:1.9.0@jar,org.jetbrains:annotations:23.0.0@jar,org.slf4j:slf4j-api:1.7.36@jar">
     <dependency
         name=":@@:shared::debug"
         simpleName="LibraryInventoryApp:shared"/>
+    <dependency
+        name="io.ktor:ktor-client-android-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-client-android-jvm"/>
+    <dependency
+        name="io.ktor:ktor-client-content-negotiation-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-client-content-negotiation-jvm"/>
+    <dependency
+        name="io.ktor:ktor-client-core-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-client-core-jvm"/>
+    <dependency
+        name="io.ktor:ktor-serialization-kotlinx-json-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-serialization-kotlinx-json-jvm"/>
+    <dependency
+        name="io.ktor:ktor-events-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-events-jvm"/>
+    <dependency
+        name="io.ktor:ktor-websocket-serialization-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-websocket-serialization-jvm"/>
+    <dependency
+        name="io.ktor:ktor-serialization-kotlinx-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-serialization-kotlinx-jvm"/>
+    <dependency
+        name="io.ktor:ktor-serialization-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-serialization-jvm"/>
+    <dependency
+        name="io.ktor:ktor-websockets-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-websockets-jvm"/>
+    <dependency
+        name="io.ktor:ktor-http-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-http-jvm"/>
+    <dependency
+        name="io.ktor:ktor-utils-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-utils-jvm"/>
+    <dependency
+        name="io.ktor:ktor-io-jvm:2.3.5@jar"
+        simpleName="io.ktor:ktor-io-jvm"/>
+    <dependency
+        name="org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3@jar"
+        simpleName="org.jetbrains.kotlinx:kotlinx-coroutines-jdk8"/>
+    <dependency
+        name="org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.7.3@jar"
+        simpleName="org.jetbrains.kotlinx:kotlinx-coroutines-slf4j"/>
     <dependency
         name="org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3@jar"
         simpleName="org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm"/>
@@ -59,10 +143,16 @@
         name="org.jetbrains.kotlinx:kotlinx-datetime-jvm:0.4.0@jar"
         simpleName="org.jetbrains.kotlinx:kotlinx-datetime-jvm"/>
     <dependency
+        name="org.jetbrains.kotlinx:atomicfu-jvm:0.22.0@jar"
+        simpleName="org.jetbrains.kotlinx:atomicfu-jvm"/>
+    <dependency
         name="org.jetbrains.kotlin:kotlin-stdlib:1.9.0@jar"
         simpleName="org.jetbrains.kotlin:kotlin-stdlib"/>
     <dependency
         name="org.jetbrains:annotations:23.0.0@jar"
         simpleName="org.jetbrains:annotations"/>
+    <dependency
+        name="org.slf4j:slf4j-api:1.7.36@jar"
+        simpleName="org.slf4j:slf4j-api"/>
   </package>
 </dependencies>
