@@ -24,6 +24,10 @@
       jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlin\kotlin-stdlib-jdk7\1.9.0\f320478990d05e0cfaadd74f9619fd6027adbf37\kotlin-stdlib-jdk7-1.9.0.jar"
       resolved="org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0"/>
   <library
+      name="org.jetbrains.kotlinx:kotlinx-datetime-jvm:0.4.0@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlinx\kotlinx-datetime-jvm\0.4.0\2224732fcb9b6116fbeb0926dd108604e578356b\kotlinx-datetime-jvm-0.4.0.jar"
+      resolved="org.jetbrains.kotlinx:kotlinx-datetime-jvm:0.4.0"/>
+  <library
       name="org.jetbrains.kotlin:kotlin-stdlib:1.9.0@jar"
       jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlin\kotlin-stdlib\1.9.0\8ee15ef0c67dc83d874f412d84378d7f0eb50b63\kotlin-stdlib-1.9.0.jar"
       resolved="org.jetbrains.kotlin:kotlin-stdlib:1.9.0"/>

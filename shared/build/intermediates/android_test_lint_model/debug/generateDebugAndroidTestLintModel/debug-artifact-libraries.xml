@@ -1,9 +1,9 @@
 <libraries>
   <library
       name=":@@:shared::debug"
-      jars="C:\Users\BLANDON\.gradle\caches\transforms-4\7dd998ea0474f9034688cb43e133452c\transformed\out\jars\classes.jar;C:\Users\BLANDON\.gradle\caches\transforms-4\7dd998ea0474f9034688cb43e133452c\transformed\out\jars\libs\R.jar"
+      jars="C:\Users\BLANDON\.gradle\caches\transforms-4\581508dbcb1d50d4601354fdeb140c35\transformed\out\jars\classes.jar;C:\Users\BLANDON\.gradle\caches\transforms-4\581508dbcb1d50d4601354fdeb140c35\transformed\out\jars\libs\R.jar"
       resolved="LibraryInventoryApp:shared:unspecified"
-      folder="C:\Users\BLANDON\.gradle\caches\transforms-4\7dd998ea0474f9034688cb43e133452c\transformed\out"
+      folder="C:\Users\BLANDON\.gradle\caches\transforms-4\581508dbcb1d50d4601354fdeb140c35\transformed\out"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -36,6 +36,10 @@
       name="org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0@jar"
       jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlin\kotlin-stdlib-jdk7\1.9.0\f320478990d05e0cfaadd74f9619fd6027adbf37\kotlin-stdlib-jdk7-1.9.0.jar"
       resolved="org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0"/>
+  <library
+      name="org.jetbrains.kotlinx:kotlinx-datetime-jvm:0.4.0@jar"
+      jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlinx\kotlinx-datetime-jvm\0.4.0\2224732fcb9b6116fbeb0926dd108604e578356b\kotlinx-datetime-jvm-0.4.0.jar"
+      resolved="org.jetbrains.kotlinx:kotlinx-datetime-jvm:0.4.0"/>
   <library
       name="org.jetbrains.kotlin:kotlin-stdlib:1.9.0@jar"
       jars="C:\Users\BLANDON\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlin\kotlin-stdlib\1.9.0\8ee15ef0c67dc83d874f412d84378d7f0eb50b63\kotlin-stdlib-1.9.0.jar"

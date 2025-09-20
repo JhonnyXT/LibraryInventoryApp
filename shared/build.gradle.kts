@@ -21,6 +21,9 @@ kotlin {
                 
                 // Serialization
                 implementation(libs.kotlinx.serialization.json)
+                
+                // DateTime (para reemplazar Firebase.Timestamp)
+                implementation(libs.kotlinx.datetime)
             }
         }
         
