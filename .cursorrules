@@ -159,7 +159,7 @@ LibraryInventoryApp/
 - **fragments/**: Fragmentos para diferentes funcionalidades
 - **adapters/**: Adaptadores para RecyclerViews
 - **models/**: Data classes (Book, User, NotificationItem, OverdueBookItem)
-- **utils/**: Utilidades (EmailService, NotificationHelper, LibraryNotificationManager)
+- **utils/**: Utilidades (EmailService, NotificationHelper, LibraryNotificationManager, AuthManager, WishlistAvailabilityService)
 - **scripts/**: Sistema de automatización Node.js
 
 ## 🎯 FUNCIONALIDADES PRINCIPALES
@@ -170,7 +170,8 @@ LibraryInventoryApp/
 - **Google Sign-In** completamente funcional (SHA-1 configurado)
 - **Gestión de sesiones** persistentes
 - **Roles de usuario**: Admin y Usuario regular
-- **Logout** con redirección a login
+- **Logout completo**: AuthManager con limpieza dual (Firebase + Google Sign-In)
+- **Selector de cuentas**: revokeAccess() fuerza elección de cuenta en próximo login
 
 ### 👥 Gestión de Usuarios
 #### Administrador
