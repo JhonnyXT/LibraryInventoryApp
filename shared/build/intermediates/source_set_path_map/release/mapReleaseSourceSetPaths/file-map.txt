@@ -1,0 +1,9 @@
+com.example.libraryinventoryapp.shared-pngs-0 C:\Users\BLANDON\StudioProjects\LibraryInventoryApp\shared\build\generated\res\pngs\release
+com.example.libraryinventoryapp.shared-resValues-1 C:\Users\BLANDON\StudioProjects\LibraryInventoryApp\shared\build\generated\res\resValues\release
+com.example.libraryinventoryapp.shared-mergeReleaseResources-2 C:\Users\BLANDON\StudioProjects\LibraryInventoryApp\shared\build\intermediates\incremental\release\mergeReleaseResources\merged.dir
+com.example.libraryinventoryapp.shared-mergeReleaseResources-3 C:\Users\BLANDON\StudioProjects\LibraryInventoryApp\shared\build\intermediates\incremental\release\mergeReleaseResources\stripped.dir
+com.example.libraryinventoryapp.shared-release-4 C:\Users\BLANDON\StudioProjects\LibraryInventoryApp\shared\build\intermediates\merged_res\release\mergeReleaseResources
+com.example.libraryinventoryapp.shared-androidMain-5 C:\Users\BLANDON\StudioProjects\LibraryInventoryApp\shared\src\androidMain\res
+com.example.libraryinventoryapp.shared-androidRelease-6 C:\Users\BLANDON\StudioProjects\LibraryInventoryApp\shared\src\androidRelease\res
+com.example.libraryinventoryapp.shared-main-7 C:\Users\BLANDON\StudioProjects\LibraryInventoryApp\shared\src\main\res
+com.example.libraryinventoryapp.shared-release-8 C:\Users\BLANDON\StudioProjects\LibraryInventoryApp\shared\src\release\res

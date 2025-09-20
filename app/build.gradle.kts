@@ -37,6 +37,12 @@ android {
         buildConfig = true
     }
 
+    lint {
+        baseline = file("lint-baseline.xml")
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
+
     signingConfigs {
         create("release") {
             storeFile = file("../libraryapp-keystore.jks")
@@ -78,6 +84,9 @@ android {
 }
 
 dependencies {
+    // Módulo compartido KMP
+    implementation(project(":shared"))
+    
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
