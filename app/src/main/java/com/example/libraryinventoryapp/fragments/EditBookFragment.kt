@@ -147,32 +147,60 @@ class EditBookFragment : Fragment() {
                                     // Show result on main thread
                                     capturedImageView.post {
                                         if (success) {
-                                            Toast.makeText(context, "✅ Imagen capturada exitosamente", Toast.LENGTH_SHORT).show()
+                                            NotificationHelper.showSuccess(
+                                                context = context!!,
+                                                title = "Imagen Capturada",
+                                                message = "La imagen del libro se capturó exitosamente."
+                                            )
                                         } else {
-                                            Toast.makeText(context, "⚠️ Error al guardar imagen", Toast.LENGTH_SHORT).show()
+                                            NotificationHelper.showWarning(
+                                                context = context!!,
+                                                title = "Error al Guardar",
+                                                message = "La imagen se capturó pero hubo un problema al guardarla."
+                                            )
                                         }
                                     }
                                 }.start()
                                 
                             } else {
                                 Log.e("EditBookFragment", "No bitmap found in camera result")
-                                Toast.makeText(context, "❌ Error: No se pudo obtener la imagen", Toast.LENGTH_SHORT).show()
+                                NotificationHelper.showError(
+                                    context = context!!,
+                                    title = "Error de Imagen",
+                                    message = "No se pudo obtener la imagen de la cámara."
+                                )
                             }
                         } else {
                             Log.e("EditBookFragment", "No extras in camera intent")
-                            Toast.makeText(context, "❌ Error: Datos de imagen no encontrados", Toast.LENGTH_SHORT).show()
+                            NotificationHelper.showError(
+                                context = context!!,
+                                title = "Datos No Encontrados",
+                                message = "No se encontraron datos de imagen en la captura."
+                            )
                         }
                     } ?: run {
                         Log.e("EditBookFragment", "No data in camera result")
-                        Toast.makeText(context, "❌ Error: Sin datos de la cámara", Toast.LENGTH_SHORT).show()
+                        NotificationHelper.showError(
+                            context = context!!,
+                            title = "Sin Datos",
+                            message = "La cámara no proporcionó ningún dato."
+                        )
                     }
                 } else {
                     Log.w("EditBookFragment", "Camera cancelled or failed, result code: ${result.resultCode}")
-                    Toast.makeText(context, "📷 Captura cancelada", Toast.LENGTH_SHORT).show()
+                    NotificationHelper.showInfo(
+                        context = context!!,
+                        title = "Captura Cancelada",
+                        message = "La captura de imagen fue cancelada."
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("EditBookFragment", "Exception in camera result handler", e)
-                Toast.makeText(context, "❌ Error procesando imagen: ${e.message}", Toast.LENGTH_LONG).show()
+                NotificationHelper.showError(
+                    context = context!!,
+                    title = "Error de Procesamiento",
+                    message = "Hubo un error al procesar la imagen: ${e.message}"
+                )
             }
         }
 
@@ -181,7 +209,11 @@ class EditBookFragment : Fragment() {
             if (isGranted) {
                 launchCamera()
             } else {
-                Toast.makeText(context, "❌ Permiso de cámara requerido", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showError(
+                    context = context!!,
+                    title = "Permiso Requerido",
+                    message = "La aplicación necesita acceso a la cámara para capturar imágenes de libros."
+                )
             }
         }
 
@@ -191,7 +223,11 @@ class EditBookFragment : Fragment() {
                 val scannedCode = result.data?.getStringExtra("SCAN_RESULT")
                 scannedCode?.let {
                     bookIsbnInput.setText(it)
-                    Toast.makeText(context, "✅ ISBN escaneado: $it", Toast.LENGTH_LONG).show()
+                    NotificationHelper.showSuccess(
+                        context = context!!,
+                        title = "ISBN Escaneado",
+                        message = "Código ISBN escaneado correctamente: $it"
+                    )
                 }
             }
         }
@@ -277,7 +313,11 @@ class EditBookFragment : Fragment() {
             }
             .addOnFailureListener { e ->
                 hideProgressBar()
-                Toast.makeText(context, "Error al cargar datos: ${e.message}", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showError(
+                    context = context!!,
+                    title = "Error de Carga",
+                    message = "No se pudieron cargar los datos del libro: ${e.message}"
+                )
                 Log.e("EditBookFragment", "Error loading book", e)
             }
     }
@@ -307,8 +347,6 @@ class EditBookFragment : Fragment() {
                 .into(capturedImageView)
             capturedImageView.visibility = View.VISIBLE
         }
-        
-        Toast.makeText(context, "📚 Datos del libro cargados correctamente", Toast.LENGTH_SHORT).show()
     }
 
     private fun loadUsersWithLoans(book: Book) {
@@ -482,7 +520,11 @@ class EditBookFragment : Fragment() {
                 userSearchAutoComplete.setAdapter(adapter)
             }
             .addOnFailureListener { e ->
-                Toast.makeText(requireContext(), "Error al cargar usuarios: ${e.message}", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showError(
+                    context = requireContext(),
+                    title = "Error de Carga",
+                    message = "No se pudieron cargar los usuarios: ${e.message}"
+                )
             }
     }
 
@@ -491,19 +533,31 @@ class EditBookFragment : Fragment() {
         val selectedUserName = userSearchAutoComplete.text.toString().trim()
         
         if (selectedUserName.isEmpty()) {
-            Toast.makeText(requireContext(), "❌ Selecciona un usuario", Toast.LENGTH_SHORT).show()
+            NotificationHelper.showValidationError(
+                context = requireContext(),
+                field = "Usuario",
+                requirement = "Selecciona un usuario de la lista."
+            )
             return
         }
         
         val selectedUser = allUsers.find { it.name == selectedUserName }
         if (selectedUser == null) {
-            Toast.makeText(requireContext(), "❌ Usuario no encontrado", Toast.LENGTH_SHORT).show()
+            NotificationHelper.showError(
+                context = requireContext(),
+                title = "Usuario No Encontrado",
+                message = "El usuario seleccionado no existe en la base de datos."
+            )
             return
         }
         
         // Verificar si el usuario ya está asignado
         if (editingBook?.assignedTo?.contains(selectedUser.uid) == true) {
-            Toast.makeText(requireContext(), "⚠️ El usuario ya tiene este libro asignado", Toast.LENGTH_SHORT).show()
+            NotificationHelper.showWarning(
+                context = requireContext(),
+                title = "Libro Ya Asignado",
+                message = "El usuario ya tiene este libro asignado."
+            )
             return
         }
         
@@ -570,9 +624,13 @@ class EditBookFragment : Fragment() {
             .update(updates)
             .addOnSuccessListener {
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                Toast.makeText(requireContext(), 
-                    "✅ Usuario \"${user.name}\" asignado hasta ${dateFormat.format(expirationDate.time)}", 
-                    Toast.LENGTH_LONG).show()
+                NotificationHelper.showBookAssigned(
+                    context = requireContext(),
+                    bookTitle = book.title,
+                    userName = user.name,
+                    expirationDate = dateFormat.format(expirationDate.time),
+                    view = view
+                )
                     
                 // 🔔 NUEVA FUNCIONALIDAD: Programar notificaciones push
                 try {
@@ -678,7 +736,11 @@ class EditBookFragment : Fragment() {
                 loadBookData() // Recargar datos para actualizar la vista
             }
             .addOnFailureListener { e ->
-                Toast.makeText(requireContext(), "❌ Error al asignar: ${e.message}", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showError(
+                    context = requireContext(),
+                    title = "Error de Asignación",
+                    message = "No se pudo asignar el libro: ${e.message}"
+                )
             }
     }
 
@@ -686,7 +748,11 @@ class EditBookFragment : Fragment() {
     private fun showChangeDateDialog(book: Book, userId: String, userName: String) {
         val userIndex = book.assignedTo?.indexOf(userId) ?: -1
         if (userIndex == -1) {
-            Toast.makeText(requireContext(), "❌ Error: Usuario no encontrado", Toast.LENGTH_SHORT).show()
+            NotificationHelper.showError(
+                context = requireContext(),
+                title = "Usuario No Encontrado",
+                message = "No se pudo encontrar el usuario en la lista para cambiar fecha."
+            )
             return
         }
 
@@ -742,9 +808,12 @@ class EditBookFragment : Fragment() {
             .update(updates)
             .addOnSuccessListener {
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                Toast.makeText(requireContext(), 
-                    "✅ Fecha actualizada para $userName: ${dateFormat.format(newDate.time)}", 
-                    Toast.LENGTH_LONG).show()
+                NotificationHelper.showSuccess(
+                    context = requireContext(),
+                    title = "Fecha Actualizada",
+                    message = "Fecha actualizada para $userName: ${dateFormat.format(newDate.time)}",
+                    view = view
+                )
                 
                 // 🔔 REPROGRAMAR NOTIFICACIONES: Cancelar viejas y crear nuevas
                 try {
@@ -766,9 +835,12 @@ class EditBookFragment : Fragment() {
                     Log.d("EditBookFragment", "📱 Nuevas notificaciones programadas para $userName - ${dateFormat.format(newDate.time)}")
                     
                     // 🔔 Mostrar confirmación de reprogramación
-                    Toast.makeText(requireContext(), 
-                        "🔔 Notificaciones reprogramadas para la nueva fecha", 
-                        Toast.LENGTH_SHORT).show()
+                    NotificationHelper.showSuccess(
+                        context = requireContext(),
+                        title = "Notificaciones Programadas",
+                        message = "🔔 Notificaciones reprogramadas para la nueva fecha",
+                        view = view
+                    )
                         
                 } catch (e: Exception) {
                     Log.e("EditBookFragment", "❌ Error reprogramando notificaciones: ${e.message}")
@@ -777,7 +849,11 @@ class EditBookFragment : Fragment() {
                 loadBookData() // Recargar datos para actualizar la vista
             }
             .addOnFailureListener { e ->
-                Toast.makeText(requireContext(), "❌ Error al actualizar fecha: ${e.message}", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showError(
+                    context = requireContext(),
+                    title = "Error de Actualización",
+                    message = "No se pudo actualizar la fecha: ${e.message}"
+                )
             }
     }
 
@@ -798,7 +874,11 @@ class EditBookFragment : Fragment() {
     private fun unassignUserFromBook(book: Book, userId: String, userName: String) {
         val userIndex = book.assignedTo?.indexOf(userId) ?: -1
         if (userIndex == -1) {
-            Toast.makeText(requireContext(), "❌ Error: Usuario no encontrado", Toast.LENGTH_SHORT).show()
+            NotificationHelper.showError(
+                context = requireContext(),
+                title = "Usuario No Encontrado", 
+                message = "No se pudo encontrar el usuario para desasignar."
+            )
             return
         }
 
@@ -835,7 +915,11 @@ class EditBookFragment : Fragment() {
             }
         } catch (e: IndexOutOfBoundsException) {
             Log.e("EditBookFragment", "Error al remover usuario del índice $userIndex: ${e.message}", e)
-            Toast.makeText(requireContext(), "❌ Error al desasignar usuario. Las listas están desincronizadas.", Toast.LENGTH_LONG).show()
+            NotificationHelper.showError(
+                context = requireContext(),
+                title = "Error de Sincronización",
+                message = "No se pudo desasignar el usuario. Las listas de datos están desincronizadas. Intenta recargar la pantalla."
+            )
             return
         }
 
@@ -863,7 +947,12 @@ class EditBookFragment : Fragment() {
         firestore.collection("books").document(book.id)
             .update(updates)
             .addOnSuccessListener {
-                Toast.makeText(requireContext(), "✅ Usuario \"$userName\" desasignado exitosamente", Toast.LENGTH_LONG).show()
+                NotificationHelper.showBookUnassigned(
+                    context = requireContext(),
+                    bookTitle = book.title,
+                    userName = userName,
+                    view = view
+                )
                 
                 // 🔔 CANCELAR NOTIFICACIONES: Al desasignar, cancelar todas las notificaciones programadas
                 try {
@@ -877,7 +966,11 @@ class EditBookFragment : Fragment() {
                 loadBookData() // Recargar datos para actualizar la vista
             }
             .addOnFailureListener { e ->
-                Toast.makeText(requireContext(), "❌ Error al desasignar: ${e.message}", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showError(
+                    context = requireContext(),
+                    title = "Error de Desasignación",
+                    message = "No se pudo desasignar el usuario: ${e.message}"
+                )
             }
     }
 
@@ -926,7 +1019,11 @@ class EditBookFragment : Fragment() {
             barcodeLauncher.launch(intent)
         } catch (e: Exception) {
             Log.e("EditBookFragment", "Error launching barcode scanner", e)
-            Toast.makeText(context, "❌ Error al iniciar escáner: ${e.message}", Toast.LENGTH_SHORT).show()
+            NotificationHelper.showError(
+                context = context!!,
+                title = "Error del Escáner",
+                message = "No se pudo iniciar el escáner de códigos: ${e.message}"
+            )
         }
     }
 
@@ -946,11 +1043,19 @@ class EditBookFragment : Fragment() {
             if (takePictureIntent.resolveActivity(requireActivity().packageManager) != null) {
                 cameraLauncher.launch(takePictureIntent)
             } else {
-                Toast.makeText(context, "❌ No hay app de cámara disponible", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showError(
+                    context = context!!,
+                    title = "Cámara No Disponible",
+                    message = "No se encontró una aplicación de cámara en tu dispositivo."
+                )
             }
         } catch (e: Exception) {
             Log.e("EditBookFragment", "Error launching camera", e)
-            Toast.makeText(context, "❌ Error al abrir cámara: ${e.message}", Toast.LENGTH_SHORT).show()
+            NotificationHelper.showError(
+                context = context!!,
+                title = "Error de Cámara",
+                message = "No se pudo abrir la cámara: ${e.message}"
+            )
         }
     }
 
@@ -1001,17 +1106,29 @@ class EditBookFragment : Fragment() {
 
     private fun validateFields(): Boolean {
         if (bookTitleInput.text.toString().trim().isEmpty()) {
-            Toast.makeText(context, "❌ El título es obligatorio", Toast.LENGTH_SHORT).show()
+            NotificationHelper.showValidationError(
+                context = context!!,
+                field = "Título",
+                requirement = "El título del libro es obligatorio."
+            )
             return false
         }
         if (bookAuthorInput.text.toString().trim().isEmpty()) {
-            Toast.makeText(context, "❌ El autor es obligatorio", Toast.LENGTH_SHORT).show()
+            NotificationHelper.showValidationError(
+                context = context!!,
+                field = "Autor", 
+                requirement = "El autor del libro es obligatorio."
+            )
             return false
         }
         val quantityText = bookQuantityInput.text.toString()
         val quantity = try { quantityText.toInt() } catch (e: Exception) { -1 }
         if (quantity < 0) {
-            Toast.makeText(context, "❌ La cantidad debe ser un número válido", Toast.LENGTH_SHORT).show()
+            NotificationHelper.showValidationError(
+                context = context!!,
+                field = "Cantidad",
+                requirement = "La cantidad debe ser un número válido mayor o igual a 0."
+            )
             return false
         }
         return true
@@ -1029,7 +1146,11 @@ class EditBookFragment : Fragment() {
             }
             .addOnFailureListener { e ->
                 hideProgressBar()
-                Toast.makeText(context, "❌ Error al subir imagen: ${e.message}", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showError(
+                    context = context!!,
+                    title = "Error al Subir Imagen",
+                    message = "No se pudo subir la imagen del libro: ${e.message}"
+                )
                 Log.e("EditBookFragment", "Error uploading image", e)
             }
     }
@@ -1038,12 +1159,20 @@ class EditBookFragment : Fragment() {
         firestore.collection("books").document(book.id).update(updates)
             .addOnSuccessListener {
                 hideProgressBar()
-                Toast.makeText(context, "✅ Libro actualizado exitosamente", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showBookEdited(
+                    context = context!!,
+                    bookTitle = book.title,
+                    view = view
+                )
                 parentFragmentManager.popBackStack()
             }
             .addOnFailureListener { e ->
                 hideProgressBar()
-                Toast.makeText(context, "❌ Error al actualizar: ${e.message}", Toast.LENGTH_SHORT).show()
+                NotificationHelper.showError(
+                    context = context!!,
+                    title = "Error al Actualizar",
+                    message = "No se pudo actualizar la información del libro: ${e.message}"
+                )
                 Log.e("EditBookFragment", "Error updating book", e)
             }
     }
