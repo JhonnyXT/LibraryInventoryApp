@@ -386,51 +386,103 @@ class EmailService {
         expirationDate: String,
         daysOverdue: String
     ): Result<String> {
-        Log.d("EmailService", "📤 Preparando email de recordatorio para usuario: $userEmail")
+        Log.d("EmailService", "📤 Preparando email de recordatorio PROFESIONAL para usuario: $userEmail")
+        
+        // Determinar el tipo de recordatorio y colores
+        val (urgencyLevel, headerColor, statusColor, statusIcon) = when {
+            daysOverdue.contains("Vencido") -> arrayOf("URGENTE", "#f44336", "#d32f2f", "🚨")
+            daysOverdue.contains("Vence hoy") -> arrayOf("HOY", "#ff9800", "#f57c00", "⚠️")
+            daysOverdue.contains("mañana") -> arrayOf("PRÓXIMO", "#2196f3", "#1976d2", "📅")
+            else -> arrayOf("RECORDATORIO", "#4caf50", "#388e3c", "📚")
+        }
         
         val subject = "📚 Recordatorio: Devolución de libro - $bookTitle"
         val htmlContent = """
             <!DOCTYPE html>
-            <html>
+            <html lang="es">
             <head>
                 <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Recordatorio Devolución - Sistema de Biblioteca</title>
                 <style>
-                    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
-                    .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-                    .header { text-align: center; color: #2c3e50; margin-bottom: 30px; }
-                    .book-info { background-color: #ecf0f1; padding: 20px; border-radius: 8px; margin: 20px 0; }
-                    .warning { background-color: #e74c3c; color: white; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0; }
-                    .footer { text-align: center; color: #7f8c8d; margin-top: 30px; font-size: 14px; }
+                    @media screen and (max-width: 600px) {
+                        .container { width: 100% !important; padding: 15px !important; }
+                        .book-card { padding: 15px !important; }
+                        .header h1 { font-size: 24px !important; }
+                    }
                 </style>
             </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>📚 Recordatorio de Devolución</h1>
-                        <h2>$FROM_NAME</h2>
+            <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; line-height: 1.6;">
+                <div class="container" style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff;">
+                    
+                    <!-- Header Moderno con Gradiente Dinámico -->
+                    <div class="header" style="text-align: center; padding: 30px 0; background: linear-gradient(135deg, $headerColor 0%, ${headerColor}cc 100%); border-radius: 12px; margin-bottom: 30px; color: white;">
+                        <h1 style="margin: 0; font-size: 28px; font-weight: 600;">$statusIcon Recordatorio de Devolución</h1>
+                        <p style="margin: 10px 0 0 0; opacity: 0.9; font-size: 16px;">Sistema de Biblioteca Digital</p>
                     </div>
                     
-                    <p>Hola <strong>$userName</strong>,</p>
-                    
-                    <p>Te recordamos sobre la devolución del siguiente libro:</p>
-                    
-                    <div class="book-info">
-                        <h3>📖 $bookTitle</h3>
-                        <p><strong>Autor:</strong> $bookAuthor</p>
-                        <p><strong>Fecha de devolución:</strong> $expirationDate</p>
+                    <!-- Saludo Personal -->
+                    <div style="text-align: center; margin-bottom: 25px;">
+                        <h2 style="color: #2d3748; margin: 0 0 10px 0; font-size: 24px; font-weight: 500;">Hola $userName 👋</h2>
+                        <p style="color: #4a5568; margin: 0; font-size: 16px;">Te recordamos sobre la devolución del siguiente libro:</p>
                     </div>
                     
-                    <div class="warning">
-                        <h3>⚠️ Estado: $daysOverdue</h3>
+                    <!-- Card del Libro - Diseño Material -->
+                    <div class="book-card" style="background-color: #f7fafc; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin: 25px 0;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h3 style="margin: 0; color: #2d3748; font-size: 20px; font-weight: 600;">$bookTitle</h3>
+                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Información del libro</p>
+                        </div>
+                        
+                        <div style="background-color: white; padding: 20px; border-radius: 8px; border-left: 4px solid $headerColor;">
+                            <div style="text-align: center; margin-bottom: 15px;">
+                                <span style="display: inline-block; background-color: #e3f2fd; color: #1976d2; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; margin-bottom: 8px;">TÍTULO</span>
+                                <p style="margin: 0; color: #2d3748; font-size: 16px; font-weight: 500;">$bookTitle</p>
+                            </div>
+                            
+                            <div style="text-align: center; margin-bottom: 15px;">
+                                <span style="display: inline-block; background-color: #f3e5f5; color: #7b1fa2; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; margin-bottom: 8px;">AUTOR</span>
+                                <p style="margin: 0; color: #2d3748; font-size: 16px;">$bookAuthor</p>
+                            </div>
+                            
+                            <div style="text-align: center;">
+                                <span style="display: inline-block; background-color: #fff3e0; color: #ef6c00; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; margin-bottom: 8px;">FECHA DEVOLUCIÓN</span>
+                                <p style="margin: 0; color: #2d3748; font-size: 16px; font-weight: 500;">$expirationDate</p>
+                            </div>
+                        </div>
                     </div>
                     
-                    <p>Por favor, devuelve el libro a la mayor brevedad posible.</p>
+                    <!-- Estado de Urgencia -->
+                    <div style="background: linear-gradient(135deg, ${statusColor}22 0%, ${statusColor}11 100%); padding: 20px; border-radius: 12px; text-align: center; margin: 25px 0; border: 2px solid ${statusColor}44;">
+                        <h3 style="margin: 0 0 10px 0; color: $statusColor; font-size: 18px;">$statusIcon Estado: $daysOverdue</h3>
+                        <p style="margin: 0; color: #555; font-size: 14px; font-weight: 500;">Nivel de prioridad: $urgencyLevel</p>
+                    </div>
                     
-                    <p>Si ya lo devolviste, puedes ignorar este mensaje.</p>
+                    <!-- Mensaje de Acción -->
+                    <div style="background-color: #f0f4f8; padding: 20px; border-radius: 12px; text-align: center; margin: 25px 0;">
+                        <p style="margin: 0 0 10px 0; color: #2d3748; font-size: 16px; font-weight: 500;">Por favor, devuelve el libro a la mayor brevedad posible.</p>
+                        <p style="margin: 0; color: #4a5568; font-size: 14px;">Si ya lo devolviste, puedes ignorar este mensaje.</p>
+                    </div>
                     
-                    <div class="footer">
-                        <p>Gracias por tu colaboración</p>
-                        <p><strong>$FROM_NAME</strong></p>
+                    <!-- Mensaje Motivacional -->
+                    <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); padding: 20px; border-radius: 12px; text-align: center; margin: 25px 0;">
+                        <h3 style="margin: 0 0 10px 0; color: #e65100; font-size: 18px;">📖 Gracias por cuidar nuestros libros</h3>
+                        <p style="margin: 0; color: #bf360c; font-size: 14px; font-style: italic;">Tu responsabilidad permite que otros también disfruten de la lectura</p>
+                    </div>
+                
+                    <!-- Footer Profesional -->
+                    <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e2e8f0; text-align: center;">
+                        <p style="margin: 0 0 5px 0; color: #2d3748; font-weight: 600; font-size: 16px;">Iglesia Hermanos en Cristo Bello</p>
+                        <p style="margin: 0 0 15px 0; color: #718096; font-size: 14px;">Sistema de Biblioteca Digital</p>
+                        
+                        <div style="background-color: #f7fafc; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                            <p style="margin: 0; color: #4a5568; font-size: 12px; line-height: 1.5;">
+                                Este es un recordatorio automático generado por nuestro sistema de biblioteca.
+                                <br>Para cualquier consulta, contacta a la administración.
+                            </p>
+                        </div>
+                        
+                        <p style="margin: 15px 0 0 0; color: #a0aec0; font-size: 11px;">© 2024 Sistema de Biblioteca - Iglesia Hermanos en Cristo Bello</p>
                     </div>
                 </div>
             </body>

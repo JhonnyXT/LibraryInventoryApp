@@ -531,15 +531,17 @@ npm run release:patch "Nueva versión con mejoras"
 
 ### Tipos de Notificaciones Email
 1. **Asignación de Libros**: Dual (usuario + admin) con template responsive
-2. **Recordatorios de Vencimiento**: Solo usuario con diseño urgencia
+2. **Recordatorios de Vencimiento**: Template profesional Material Design 3 con colores dinámicos según urgencia
 3. **Releases de App**: Masivo a todos los usuarios con APK descargable
 
 ### Templates Modernos
 - **HTML5 Responsive**: Compatible móvil y desktop
-- **CSS Gradientes**: Efectos visuales profesionales  
+- **CSS Gradientes**: Efectos visuales profesionales con colores dinámicos
 - **Material Design Cards**: Información estructurada elegantemente
 - **Tipografía Premium**: Segoe UI para máxima legibilidad
 - **Mensaje Personalizado**: Branding de iglesia integrado
+- **Colores Dinámicos**: Headers que cambian según urgencia (Verde/Azul/Naranja/Rojo)
+- **Estados de Urgencia**: Visual diferenciado para "Vencido", "Hoy", "Próximo", "Recordatorio"
 
 ### Configuración Email
 - **Proveedor**: Brevo (Sendinblue) - 9,000 emails/mes gratis
