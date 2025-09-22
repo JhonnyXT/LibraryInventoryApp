@@ -73,9 +73,8 @@ class LoginActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
         
-        // 🧪 Test KMP Integration
-        com.example.libraryinventoryapp.utils.KmpTestUtils.testKmpConnectivity()
-        com.example.libraryinventoryapp.utils.KmpTestUtils.testEmailServiceBridge()
+        // 🧪 Test KMP Integration - Todos los bridges
+        com.example.libraryinventoryapp.utils.KmpTestUtils.testAllKmpBridges(this)
 
         auth = FirebaseAuth.getInstance()
         permissionHelper = PermissionHelper(this)

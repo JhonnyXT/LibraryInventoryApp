@@ -27,7 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import android.view.MenuItem
 import android.widget.PopupMenu
 import com.example.libraryinventoryapp.LoginActivity
-import com.example.libraryinventoryapp.utils.AuthManager
+import com.example.libraryinventoryapp.utils.AuthServiceBridge
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -420,7 +420,7 @@ class HomeModernFragment : Fragment() {
      */
     private fun performLogout() {
         // 🔐 Usar AuthManager para logout completo (Firebase + Google Sign-In)
-        val authManager = AuthManager.getInstance()
+        val authManager = AuthServiceBridge.getInstance()
         authManager.performCompleteLogout(this, showSuccessMessage = true)
     }
 
@@ -743,7 +743,7 @@ class HomeModernFragment : Fragment() {
      */
     private fun logout() {
         // 🔐 Usar AuthManager para logout completo (Firebase + Google Sign-In)
-        val authManager = AuthManager.getInstance()
+        val authManager = AuthServiceBridge.getInstance()
         authManager.performCompleteLogout(this, showSuccessMessage = true)
     }
 

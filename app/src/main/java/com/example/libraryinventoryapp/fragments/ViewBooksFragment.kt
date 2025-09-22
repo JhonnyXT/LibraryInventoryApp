@@ -28,7 +28,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
-import com.example.libraryinventoryapp.utils.AuthManager
+import com.example.libraryinventoryapp.utils.AuthServiceBridge
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 import java.util.*
@@ -771,7 +771,7 @@ class ViewBooksFragment : Fragment() {
      */
     private fun performLogout() {
         // 🔐 Usar AuthManager para logout completo (Firebase + Google Sign-In)
-        val authManager = AuthManager.getInstance()
+        val authManager = AuthServiceBridge.getInstance()
         authManager.performCompleteLogout(this, showSuccessMessage = true)
     }
 

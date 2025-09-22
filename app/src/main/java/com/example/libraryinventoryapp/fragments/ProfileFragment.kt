@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.libraryinventoryapp.LoginActivity
 import com.example.libraryinventoryapp.R
-import com.example.libraryinventoryapp.utils.AuthManager
+import com.example.libraryinventoryapp.utils.AuthServiceBridge
 import com.google.firebase.auth.FirebaseAuth
 
 class ProfileFragment : Fragment() {
@@ -39,7 +39,7 @@ class ProfileFragment : Fragment() {
 
     private fun logoutUser() {
         // 🔐 Usar AuthManager para logout completo (Firebase + Google Sign-In)
-        val authManager = AuthManager.getInstance()
+        val authManager = AuthServiceBridge.getInstance()
         authManager.performCompleteLogout(this, showSuccessMessage = true)
     }
 }

@@ -61,7 +61,7 @@ class AuthManager private constructor() {
                 
                 // 3. Detener servicio de lista de deseos
                 try {
-                    val wishlistService = WishlistAvailabilityService.getInstance(context)
+                    val wishlistService = WishlistServiceBridge.getInstance(context)
                     wishlistService.stopMonitoring()
                     Log.d(TAG, "✅ Servicio de lista de deseos detenido")
                 } catch (e: Exception) {
@@ -122,7 +122,7 @@ class AuthManager private constructor() {
                 
                 // 3. Detener servicio de lista de deseos
                 try {
-                    val wishlistService = WishlistAvailabilityService.getInstance(activity)
+                    val wishlistService = WishlistServiceBridge.getInstance(activity)
                     wishlistService.stopMonitoring()
                     Log.d(TAG, "✅ Servicio de lista de deseos detenido")
                 } catch (e: Exception) {

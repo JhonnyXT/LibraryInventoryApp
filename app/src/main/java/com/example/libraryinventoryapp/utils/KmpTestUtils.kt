@@ -78,4 +78,75 @@ object KmpTestUtils {
             }
         }
     }
+    
+    /**
+     * 🔐 Test del AuthServiceBridge (DEMO MODE)
+     */
+    fun testAuthServiceBridge() {
+        try {
+            Log.i(TAG, "🧪 Iniciando test de AuthServiceBridge...")
+            
+            val authBridge = AuthServiceBridge.getInstance()
+            
+            // Test 1: Verificar instancia
+            Log.i(TAG, "🔐 Test 1: Verificar instancia de AuthServiceBridge")
+            Log.i(TAG, "✅ AuthServiceBridge instanciado correctamente")
+            
+            // Test 2: getCurrentUser (sin autenticación)
+            Log.i(TAG, "👤 Test 2: getCurrentUser (sin autenticación)")
+            val currentUser = authBridge.getCurrentUser()
+            if (currentUser != null) {
+                Log.i(TAG, "✅ Usuario actual: ${currentUser.name} (${currentUser.email})")
+            } else {
+                Log.i(TAG, "ℹ️ No hay usuario autenticado (esperado)")
+            }
+            
+            Log.i(TAG, "🎯 Tests de AuthServiceBridge completados")
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error en tests AuthServiceBridge: ${e.message}", e)
+        }
+    }
+    
+    /**
+     * 🌟 Test del WishlistServiceBridge (DEMO MODE)
+     */
+    fun testWishlistServiceBridge(context: android.content.Context) {
+        try {
+            Log.i(TAG, "🧪 Iniciando test de WishlistServiceBridge...")
+            
+            val wishlistBridge = WishlistServiceBridge.getInstance(context)
+            
+            // Test 1: Verificar instancia
+            Log.i(TAG, "🌟 Test 1: Verificar instancia de WishlistServiceBridge")
+            Log.i(TAG, "✅ WishlistServiceBridge instanciado correctamente")
+            
+            // Test 2: startMonitoring (sin usuario autenticado - debería advertir)
+            Log.i(TAG, "🚀 Test 2: startMonitoring (sin autenticación)")
+            wishlistBridge.startMonitoring()
+            
+            // Test 3: stopMonitoring
+            Log.i(TAG, "🛑 Test 3: stopMonitoring")
+            wishlistBridge.stopMonitoring()
+            
+            Log.i(TAG, "🎯 Tests de WishlistServiceBridge completados")
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error en tests WishlistServiceBridge: ${e.message}", e)
+        }
+    }
+    
+    /**
+     * 🚀 Test completo de todos los bridges KMP
+     */
+    fun testAllKmpBridges(context: android.content.Context) {
+        Log.i(TAG, "🚀 Iniciando tests completos de KMP Bridges...")
+        
+        testKmpConnectivity()
+        testEmailServiceBridge()
+        testAuthServiceBridge()
+        testWishlistServiceBridge(context)
+        
+        Log.i(TAG, "✅ Tests completos de KMP Bridges finalizados")
+    }
 }

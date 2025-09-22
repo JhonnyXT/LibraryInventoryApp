@@ -12,7 +12,7 @@ import com.example.libraryinventoryapp.fragments.HomeModernFragment
 import com.example.libraryinventoryapp.fragments.NotificationsFragment
 import com.example.libraryinventoryapp.fragments.WishlistModernFragment
 import com.example.libraryinventoryapp.models.Book
-import com.example.libraryinventoryapp.utils.WishlistAvailabilityService
+import com.example.libraryinventoryapp.utils.WishlistServiceBridge
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.Timestamp
@@ -57,7 +57,7 @@ class UserActivity : AppCompatActivity() {
         
         // 🌟 Inicializar servicio de lista de deseos
         if (currentUserId != null) {
-            val wishlistService = WishlistAvailabilityService.getInstance(this)
+            val wishlistService = WishlistServiceBridge.getInstance(this)
             wishlistService.startMonitoring()
             Log.i(TAG, "🌟 Servicio de lista de deseos iniciado para usuario: $currentUserId")
         }
@@ -275,7 +275,7 @@ class UserActivity : AppCompatActivity() {
         
         // 🌟 Detener servicio de lista de deseos
         try {
-            val wishlistService = WishlistAvailabilityService.getInstance(this)
+            val wishlistService = WishlistServiceBridge.getInstance(this)
             wishlistService.stopMonitoring()
             Log.i(TAG, "🌟 Servicio de lista de deseos detenido")
         } catch (e: Exception) {

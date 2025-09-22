@@ -31,7 +31,7 @@ import com.example.libraryinventoryapp.models.User
 import com.example.libraryinventoryapp.utils.LibraryNotificationManager
 import com.example.libraryinventoryapp.utils.EmailServiceBridge
 import com.example.libraryinventoryapp.utils.NotificationHelper
-import com.example.libraryinventoryapp.utils.WishlistAvailabilityService
+import com.example.libraryinventoryapp.utils.WishlistServiceBridge
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
@@ -662,7 +662,7 @@ class EditBookFragment : Fragment() {
                 
                 // 🌟 NUEVA FUNCIONALIDAD: Remover de lista de deseos automáticamente
                 try {
-                    val wishlistService = WishlistAvailabilityService.getInstance(requireContext())
+                    val wishlistService = WishlistServiceBridge.getInstance(requireContext())
                     wishlistService.removeFromWishlistOnAssignment(book.id, user.uid)
                     Log.d("EditBookFragment", "✨ Verificando remoción de lista de deseos para ${user.name} - ${book.title}")
                 } catch (e: Exception) {
