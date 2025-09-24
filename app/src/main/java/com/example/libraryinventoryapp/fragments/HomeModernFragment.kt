@@ -437,18 +437,38 @@ class HomeModernFragment : Fragment() {
                 var notificationCount = 0
                 
                 for (document in documents) {
-                    val book = document.toObject(Book::class.java)
-                    book.id = document.id
-                    
-                    // 🔍 Buscar asignación del usuario actual
-                    val userIndex = book.assignedTo?.indexOf(currentUserId) ?: -1
-                    if (userIndex >= 0 && book.loanExpirationDates != null && userIndex < book.loanExpirationDates!!.size) {
-                        val expirationDate = book.loanExpirationDates!![userIndex]
-                        val daysUntilDue = calculateDaysUntilDue(expirationDate)
+                    try {
+                        val book = document.toObject(Book::class.java)
+                        book.id = document.id
                         
-                        // 🎯 Contar notificaciones (próximos 5 días o vencidos)
-                        if (daysUntilDue <= 5) {
-                            notificationCount++
+                        // 🔍 Buscar asignación del usuario actual
+                        val userIndex = book.assignedTo?.indexOf(currentUserId) ?: -1
+                        if (userIndex >= 0 && book.loanExpirationDates != null && userIndex < book.loanExpirationDates!!.size) {
+                            val expirationDate = book.loanExpirationDates!![userIndex]
+                            val daysUntilDue = calculateDaysUntilDue(expirationDate)
+                            
+                            // 🎯 Contar notificaciones (próximos 5 días o vencidos)
+                            if (daysUntilDue <= 5) {
+                                notificationCount++
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.w("HomeModernFragment", "⚠️ Error deserializando libro para notificaciones ${document.id}: ${e.message}")
+                        // Intentar acceder directamente a los campos necesarios para notificaciones
+                        try {
+                            val bookMap = document.data
+                            val assignedTo = (bookMap["assignedTo"] as? List<*>)?.filterIsInstance<String>()
+                            val loanExpirationDates = bookMap["loanExpirationDates"] as? List<*>
+                            
+                            val userIndex = assignedTo?.indexOf(currentUserId) ?: -1
+                            if (userIndex >= 0 && loanExpirationDates != null && userIndex < loanExpirationDates.size) {
+                                // Si llegamos aquí, probablemente hay notificaciones pendientes
+                                // Sin evaluar fechas específicas, asumimos que hay al menos una notificación
+                                notificationCount++
+                                Log.d("HomeModernFragment", "📊 Contando notificación para libro ${document.id} (fallback)")
+                            }
+                        } catch (e2: Exception) {
+                            Log.e("HomeModernFragment", "❌ Error crítico en notificaciones ${document.id}: ${e2.message}")
                         }
                     }
                 }
@@ -545,9 +565,15 @@ class HomeModernFragment : Fragment() {
                 allBooks.clear()
                 
                 for (document in documents) {
-                    val book = document.toObject(Book::class.java)
-                    book.id = document.id
-                    allBooks.add(book)
+                    try {
+                        val book = document.toObject(Book::class.java)
+                        book.id = document.id
+                        allBooks.add(book)
+                    } catch (e: Exception) {
+                        Log.w("HomeModernFragment", "⚠️ Salteando libro ${document.id} con error de deserialización: ${e.message}")
+                        // Simplemente continuamos con el siguiente libro
+                        // Este enfoque es más seguro que intentar crear objetos manualmente
+                    }
                 }
                 
                 Log.d(TAG, "✅ Libros cargados: ${allBooks.size}")

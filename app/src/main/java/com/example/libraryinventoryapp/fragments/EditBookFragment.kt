@@ -301,12 +301,24 @@ class EditBookFragment : Fragment() {
         firestore.collection("books").document(bookId).get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    val book = document.toObject(Book::class.java)
-                    book?.let {
-                        it.id = document.id
-                        editingBook = it
-                        populateFields(it)
-                        loadUsersWithLoans(it)
+                    try {
+                        val book = document.toObject(Book::class.java)
+                        book?.let {
+                            it.id = document.id
+                            editingBook = it
+                            populateFields(it)
+                            loadUsersWithLoans(it)
+                        }
+                    } catch (e: Exception) {
+                        Log.w("EditBookFragment", "⚠️ Problema deserializando libro $bookId: ${e.message}")
+                        // En lugar de intentar cargar manualmente, simplemente mostramos error
+                        Log.e("EditBookFragment", "❌ No se pudieron cargar los datos del libro por problema de compatibilidad")
+                        NotificationHelper.showError(
+                            context = requireContext(),
+                            title = "Error de Datos",
+                            message = "No se pudieron cargar los datos del libro debido a un problema de compatibilidad"
+                        )
+                        parentFragmentManager.popBackStack()
                     }
                 }
                 hideProgressBar()

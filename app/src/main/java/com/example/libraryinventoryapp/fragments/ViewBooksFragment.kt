@@ -288,9 +288,15 @@ class ViewBooksFragment : Fragment() {
                 
                 booksList.clear()
                 for (document in result) {
-                    val book = document.toObject(Book::class.java)
-                    book.id = document.id
-                    booksList.add(book)
+                    try {
+                        val book = document.toObject(Book::class.java)
+                        book.id = document.id
+                        booksList.add(book)
+                    } catch (e: Exception) {
+                        Log.w("ViewBooksFragment", "⚠️ Salteando libro ${document.id} con error de deserialización: ${e.message}")
+                        // Simplemente continuamos con el siguiente libro
+                        // Este enfoque es más seguro que intentar crear objetos manualmente
+                    }
                 }
 
                 // Ordenar la lista de libros alfabéticamente por el título sin acentos

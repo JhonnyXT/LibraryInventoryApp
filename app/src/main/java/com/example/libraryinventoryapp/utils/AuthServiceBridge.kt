@@ -173,29 +173,27 @@ class AuthServiceBridge private constructor() {
     /**
      * 🌐 Logout de Google Sign-In con revoke access
      */
-    private suspend fun logoutFromGoogle(context: Context): Boolean {
-        return withContext(Dispatchers.IO) {
-            try {
-                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(context.getString(com.example.libraryinventoryapp.R.string.default_web_client_id))
-                    .requestEmail()
-                    .build()
-                
-                val googleSignInClient = GoogleSignIn.getClient(context, gso)
-                
-                // 1. Sign out
-                googleSignInClient.signOut().await()
-                Log.d(TAG, "✅ Google signOut exitoso")
-                
-                // 2. Revoke access para forzar selector de cuentas
-                googleSignInClient.revokeAccess().await()
-                Log.d(TAG, "✅ Google revokeAccess exitoso - selector de cuentas habilitado")
-                
-                true
-            } catch (e: Exception) {
-                Log.e(TAG, "❌ Error en logout Google: ${e.message}", e)
-                false
-            }
+    private fun logoutFromGoogle(context: Context): Boolean {
+        return try {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(context.getString(com.example.libraryinventoryapp.R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+            
+            val googleSignInClient = GoogleSignIn.getClient(context, gso)
+            
+            // 1. Sign out (operación síncrona simple)
+            googleSignInClient.signOut()
+            Log.d(TAG, "✅ Google signOut exitoso")
+            
+            // 2. Revoke access para forzar selector de cuentas (operación síncrona simple)
+            googleSignInClient.revokeAccess()
+            Log.d(TAG, "✅ Google revokeAccess exitoso - selector de cuentas habilitado")
+            
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error en logout Google: ${e.message}", e)
+            false
         }
     }
 

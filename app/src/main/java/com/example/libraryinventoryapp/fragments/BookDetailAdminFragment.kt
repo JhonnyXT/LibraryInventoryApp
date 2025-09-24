@@ -240,14 +240,21 @@ class BookDetailAdminFragment : Fragment() {
             .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    val book = document.toObject(Book::class.java)
-                    if (book != null) {
-                        book.id = document.id
-                        currentBook = book
-                        displayBookDetails(book)
-                        Log.d(TAG, "✅ Libro cargado: ${book.title}")
-                    } else {
-                        showError("Error al procesar datos del libro")
+                    try {
+                        val book = document.toObject(Book::class.java)
+                        if (book != null) {
+                            book.id = document.id
+                            currentBook = book
+                            displayBookDetails(book)
+                            Log.d(TAG, "✅ Libro cargado: ${book.title}")
+                        } else {
+                            showError("Error al procesar datos del libro")
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "❌ Error deserializando libro ${document.id}: ${e.message}")
+                        showError("Error cargando detalles del libro - Problema de compatibilidad")
+                        // Regresar al listado
+                        parentFragmentManager.popBackStack()
                     }
                 } else {
                     showError("Libro no encontrado")

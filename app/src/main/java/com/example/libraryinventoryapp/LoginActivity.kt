@@ -74,7 +74,8 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         
         // 🧪 Test KMP Integration - Todos los bridges
-        com.example.libraryinventoryapp.utils.KmpTestUtils.testAllKmpBridges(this)
+        // KMP Tests comentados - ya no es necesario ejecutarlos automáticamente
+        // com.example.libraryinventoryapp.utils.KmpTestUtils.testAllKmpBridges(this)
 
         auth = FirebaseAuth.getInstance()
         permissionHelper = PermissionHelper(this)

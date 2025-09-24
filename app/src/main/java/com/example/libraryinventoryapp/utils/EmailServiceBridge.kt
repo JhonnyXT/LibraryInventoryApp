@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.libraryinventoryapp.BuildConfig
 import com.example.libraryinventoryapp.services.EmailService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.withContext
 
 /**
@@ -31,6 +32,7 @@ class EmailServiceBridge {
 
     /**
      * 📚 Envío de correos de asignación de libros - COMPATIBLE con interfaz original
+     * Usa GlobalScope para evitar cancelaciones por navegación del usuario
      */
     suspend fun sendBookAssignmentEmail(
         adminEmail: String,
@@ -43,14 +45,17 @@ class EmailServiceBridge {
         return try {
             Log.i(TAG, "🌉 Bridge: Delegando al EmailService KMP")
             
-            val result = emailService.sendBookAssignmentEmail(
-                adminEmail = adminEmail,
-                userEmail = userEmail,
-                userName = userName,
-                bookTitle = bookTitle,
-                bookAuthor = bookAuthor,
-                adminName = adminName
-            )
+            // Usar GlobalScope para que el email se complete independientemente de la UI
+            val result = withContext(Dispatchers.IO + SupervisorJob()) {
+                emailService.sendBookAssignmentEmail(
+                    adminEmail = adminEmail,
+                    userEmail = userEmail,
+                    userName = userName,
+                    bookTitle = bookTitle,
+                    bookAuthor = bookAuthor,
+                    adminName = adminName
+                )
+            }
             
             if (result.isSuccess) {
                 Log.i(TAG, "✅ Bridge: Correos enviados exitosamente via KMP")
@@ -81,16 +86,19 @@ class EmailServiceBridge {
         return try {
             Log.i(TAG, "🌉 Bridge: Delegando recordatorio al EmailService KMP")
             
-            val result = emailService.sendBookExpirationReminderEmail(
-                adminEmail = adminEmail,
-                userEmail = userEmail,
-                userName = userName,
-                bookTitle = bookTitle,
-                bookAuthor = bookAuthor,
-                adminName = adminName,
-                expirationDate = expirationDate,
-                daysOverdue = daysOverdue
-            )
+            // Usar scope independiente para que el email se complete sin cancelaciones
+            val result = withContext(Dispatchers.IO + SupervisorJob()) {
+                emailService.sendBookExpirationReminderEmail(
+                    adminEmail = adminEmail,
+                    userEmail = userEmail,
+                    userName = userName,
+                    bookTitle = bookTitle,
+                    bookAuthor = bookAuthor,
+                    adminName = adminName,
+                    expirationDate = expirationDate,
+                    daysOverdue = daysOverdue
+                )
+            }
             
             if (result.isSuccess) {
                 Log.i(TAG, "✅ Bridge: Recordatorio enviado exitosamente via KMP")

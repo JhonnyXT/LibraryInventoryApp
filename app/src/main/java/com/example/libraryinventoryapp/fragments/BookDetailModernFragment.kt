@@ -233,12 +233,19 @@ class BookDetailModernFragment : Fragment() {
             .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    val book = document.toObject(Book::class.java)
-                    book?.id = document.id
-                    currentBook = book
-                    
-                    if (book != null) {
-                        populateBookDetails(book)
+                    try {
+                        val book = document.toObject(Book::class.java)
+                        book?.id = document.id
+                        currentBook = book
+                        
+                        if (book != null) {
+                            populateBookDetails(book)
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "❌ Error deserializando libro ${document.id}: ${e.message}")
+                        showError("Error cargando detalles del libro - Problema de compatibilidad")
+                        // Regresar al listado
+                        parentFragmentManager.popBackStack()
                     }
                 } else {
                     Log.e(TAG, "❌ Libro no encontrado")
