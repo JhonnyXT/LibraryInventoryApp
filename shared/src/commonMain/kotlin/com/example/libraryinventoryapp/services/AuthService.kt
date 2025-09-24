@@ -1,67 +1,45 @@
 package com.example.libraryinventoryapp.services
 
-import com.example.libraryinventoryapp.models.User
-import kotlinx.coroutines.flow.Flow
-
 /**
- * 🔐 AuthService - Servicio de autenticación multiplataforma
+ * 🔐 AuthService KMP - Servicio de autenticación multiplataforma
  * 
- * FUNCIONALIDADES:
- * ✅ Abstrae Firebase Auth + Google Sign-In para ambas plataformas
- * ✅ Manejo de estado de autenticación con Flow
- * ✅ Login/logout multiplataforma
+ * Este servicio proporciona funcionalidades de autenticación básicas
+ * que serán implementadas específicamente para cada plataforma.
  */
-interface AuthService {
+expect class AuthService {
     
     /**
-     * 👤 Estado actual del usuario autenticado
+     * 🔄 Logout completo de la sesión actual
+     * Incluye Firebase Auth y Google Sign-In si aplica
      */
-    val currentUser: Flow<User?>
+    suspend fun performLogout(): Result<Boolean>
     
     /**
-     * ✅ Verificar si hay un usuario autenticado
+     * 👤 Obtener usuario actual autenticado
+     * Retorna información básica del usuario o null si no hay sesión
      */
-    val isAuthenticated: Flow<Boolean>
+    suspend fun getCurrentUser(): Result<AuthUser?>
     
     /**
-     * 🔑 Login con email y contraseña
+     * 🔒 Verificar si hay una sesión activa
      */
-    suspend fun signInWithEmail(email: String, password: String): Result<User>
-    
-    /**
-     * 🌐 Login con Google Sign-In
-     */
-    suspend fun signInWithGoogle(): Result<User>
-    
-    /**
-     * 📝 Registrar nuevo usuario
-     */
-    suspend fun signUp(email: String, password: String, name: String): Result<User>
-    
-    /**
-     * 🚪 Logout completo (Firebase + Google)
-     */
-    suspend fun signOut(): Result<Unit>
-    
-    /**
-     * 👤 Obtener usuario actual sincronamente
-     */
-    fun getCurrentUser(): User?
-    
-    /**
-     * 📧 Enviar email de recuperación de contraseña
-     */
-    suspend fun sendPasswordResetEmail(email: String): Result<Unit>
-    
-    /**
-     * 🔄 Refrescar token de autenticación
-     */
-    suspend fun refreshToken(): Result<Unit>
+    fun isUserLoggedIn(): Boolean
 }
 
 /**
- * 🏭 Factory para crear AuthService específico de plataforma
+ * 👤 Modelo simple de usuario para KMP
+ * Usado solo para transferencia de datos entre plataformas
  */
-expect class AuthServiceFactory() {
+data class AuthUser(
+    val uid: String,
+    val email: String,
+    val displayName: String,
+    val isAdmin: Boolean
+)
+
+/**
+ * 🏭 Factory para crear instancias de AuthService según la plataforma
+ */
+expect object AuthServiceFactory {
     fun create(): AuthService
 }

@@ -3,6 +3,7 @@ package com.example.libraryinventoryapp.services
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.header
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -199,9 +200,7 @@ class EmailService(
                 )
 
                 val response = httpClient.post(BREVO_URL) {
-                    headers {
-                        append(HttpHeaders.Authorization, "Bearer $apiKey")
-                    }
+                    header("api-key", apiKey)
                     contentType(ContentType.Application.Json)
                     setBody(requestPayload)
                 }
